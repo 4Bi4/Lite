@@ -37,6 +37,7 @@ public:
 	void	setHres(int hres);
 	void	setVres(int vres);
 	void	setFpsLimit(int fpsLimit);
+
 private:
 	int		_hres;
 	int		_vres;

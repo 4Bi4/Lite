@@ -3,8 +3,22 @@ TEST_NAME	= test
 COMPILER	= g++
 CFLAGS		= -Wall -Wextra -Werror -std=c++17
 
-SRC			= 
-OBJ			= $(SRC:.cpp=.o)
+COMPILER	= g++
+
+CFLAGS		= -Wall -Wextra -Werror -O3 -std=c++17
+
+SRC			= src/main.cpp \
+			  src/Data.cpp \
+			  src/utils.cpp \
+			  src/SDL_utils.cpp
+
+OBJDIR		= obj
+
+OBJ			= $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(SRC))
+
+SDL_FLAGS	= $(shell sdl2-config --cflags)
+
+SDL_LIBS	= -lSDL2_mixer -lSDL2_ttf -lSDL2_image $(shell sdl2-config --libs)
 
 # It is safer to put LDFLAGS at the end of the compilation command
 SDL_FLAGS	= -IC:/msys64/mingw64/include/SDL2
