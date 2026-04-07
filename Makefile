@@ -1,12 +1,3 @@
-# COLORS
-GREEN   := \033[1;32m
-RED     := \033[1;31m
-MAGENTA := \033[1;35m
-BLUE	:= \033[1;34m
-FLASH   := \033[1;33;5m
-NEGRITA := \033[1m
-NC      := \033[0m
-
 NAME		= lite
 
 TEST_NAME	= test
@@ -32,28 +23,22 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	$(COMPILER) $(CFLAGS) $(OBJ) -o $(NAME) $(SDL_FLAGS) $(SDL_LIBS)
-	@echo "->$(GREEN) PROGRAM COMPILED SUCCESSFULLY!$(NC)"
 
-$(OBJDIR)/%.o: src/%.cpp
-	@mkdir -p $(dir $@)
+%.o: %.cpp
 	$(COMPILER) $(CFLAGS) $(SDL_FLAGS) -c $< -o $@
 
-#	Build the test executable
+# Build the test executable
 $(TEST_NAME): test.cpp
-	@echo "->$(BLUE) Compiling test...$(NC)"
 	$(COMPILER) $(CFLAGS) test.cpp -o $(TEST_NAME) $(SDL_FLAGS) $(SDL_LIBS)
-	@echo "->$(GREEN) TEST COMPILED SUCCESSFULLY!$(NC)"
 
 clean:
-	@rm -rf $(OBJDIR)
-	@echo "$(RED)removed object files$(NC)"
+	rm -f $(OBJ)
 
+# fclean now explicitly targets both the main name and the test name
 fclean: clean
-	@rm -f $(NAME)
-	@rm -f $(TEST_NAME)
-	@echo "$(RED)removed executables$(NC)"
-	@echo "->$(GREEN) [all clean]$(NC)"
+	rm -f $(NAME)
+	rm -f $(TEST_NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re test
+.PHONY: all clean fclean re
