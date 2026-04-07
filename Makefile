@@ -15,9 +15,13 @@ OBJDIR		= obj
 
 OBJ			= $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(SRC))
 
-SDL_FLAGS	= $(shell sdl2-config --cflags)
-
-SDL_LIBS	= -lSDL2_mixer -lSDL2_ttf -lSDL2_image $(shell sdl2-config --libs)
+ifeq ($(OS), Windows_NT)
+    SDL_FLAGS	= -IC:/msys64/mingw64/include/SDL2
+	SDL_LIBS = -LC:/msys64/mingw64/lib -lSDL2_mixer -lSDL2_ttf -lSDL2_image -lSDL2 
+else
+    SDL_FLAGS = $(shell sdl2-config --cflags)
+    SDL_LIBS  = -lSDL2_mixer -lSDL2_ttf -lSDL2_image $(shell sdl2-config --libs)
+endif
 
 all: $(NAME)
 
