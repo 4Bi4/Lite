@@ -39,11 +39,6 @@ float	Data::getTargetFrameTime() const
 	return (this->_targetFrameTime);
 }
 
-t_sdl	Data::getSdl() const
-{
-	return (this->_sdl);
-}
-
 //	Setters
 void	Data::setHres(int hres)
 {
@@ -64,11 +59,6 @@ void	Data::setFpsLimit(int fpsLimit)
 //	Clears all the data (frees memory, destroys textures, etc.)
 void	Data::clearData()
 {
-    TTF_CloseFont(this->_sdl.fontSmall);
-    TTF_CloseFont(this->_sdl.fontLarge);
-    SDL_DestroyRenderer(this->_sdl.renderer);
-    SDL_DestroyWindow(this->_sdl.window);
-    Mix_CloseAudio();
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();

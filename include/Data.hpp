@@ -31,7 +31,6 @@ public:
 	int		getVres() const;
 	int		getFpsLimit() const;
 	float	getTargetFrameTime() const;
-	t_sdl	getSdl() const;
 
 	//	Setters
 	void	setHres(int hres);
