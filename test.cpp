@@ -1,3 +1,4 @@
+#define SDL_MAIN_HANDLED
 #include <string>
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -99,7 +100,7 @@ int main(void)
     }
 
     // 6. Load assets
-    const std::string fontPath = "/usr/share/fonts/truetype/tlwg/TlwgTypo-Bold.ttf";
+    const std::string fontPath = "./resources/fonts/comic_sans/comicbd.ttf";
     TTF_Font* fontLarge = TTF_OpenFont(fontPath.c_str(), 72);
     TTF_Font* fontSmall = TTF_OpenFont(fontPath.c_str(), 26);
     if (!fontLarge || !fontSmall)
