@@ -1,7 +1,6 @@
 NAME		= lite
+
 TEST_NAME	= test
-COMPILER	= g++
-CFLAGS		= -Wall -Wextra -Werror -std=c++17
 
 COMPILER	= g++
 
@@ -20,9 +19,6 @@ SDL_FLAGS	= $(shell sdl2-config --cflags)
 
 SDL_LIBS	= -lSDL2_mixer -lSDL2_ttf -lSDL2_image $(shell sdl2-config --libs)
 
-# It is safer to put LDFLAGS at the end of the compilation command
-SDL_FLAGS	= -IC:/msys64/mingw64/include/SDL2
-SDL_LIBS = -LC:/msys64/mingw64/lib -lSDL2_mixer -lSDL2_ttf -lSDL2_image -lSDL2 
 all: $(NAME)
 
 $(NAME): $(OBJ)
@@ -46,6 +42,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-
-#g++ -Wall -Wextra -std=c++17 test.cpp -o test \
-$(sdl2-config --cflags --libs) -lSDL2_mixer -lSDL2_ttf -lSDL2_image
