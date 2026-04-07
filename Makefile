@@ -11,7 +11,7 @@ NAME		= lite
 
 TEST_NAME	= test
 
-COMPILER	= c++
+COMPILER	= g++
 
 CFLAGS		= -Wall -Wextra -Werror -O3 -std=c++17
 

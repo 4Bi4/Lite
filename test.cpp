@@ -1,3 +1,4 @@
+#define SDL_MAIN_HANDLED
 #include <string>
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -129,7 +130,8 @@ int main(void)
     {
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT) running = false;
+            if (event.type == SDL_QUIT)
+                running = false;
             if (event.type == SDL_KEYDOWN)
             {
                 switch (event.key.keysym.sym)
