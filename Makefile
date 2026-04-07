@@ -28,7 +28,8 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(COMPILER) $(CFLAGS) $(OBJ) -o $(NAME) $(SDL_FLAGS) $(SDL_LIBS)
 
-%.o: %.cpp
+$(OBJDIR)/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(CFLAGS) $(SDL_FLAGS) -c $< -o $@
 
 # Build the test executable
@@ -38,7 +39,6 @@ $(TEST_NAME): test.cpp
 clean:
 	rm -f $(OBJ)
 
-# fclean now explicitly targets both the main name and the test name
 fclean: clean
 	rm -f $(NAME)
 	rm -f $(TEST_NAME)

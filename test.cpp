@@ -100,7 +100,7 @@ int main(void)
     }
 
     // 6. Load assets
-    const std::string fontPath = "./resources/fonts/comic_sans/comicbd.ttf";
+    const std::string fontPath = "./resources/fonts/TlwgTypo/TlwgTypo-Bold.ttf";
     TTF_Font* fontLarge = TTF_OpenFont(fontPath.c_str(), 72);
     TTF_Font* fontSmall = TTF_OpenFont(fontPath.c_str(), 26);
     if (!fontLarge || !fontSmall)
