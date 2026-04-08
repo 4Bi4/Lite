@@ -24,15 +24,10 @@ Data::~Data(void)
 		TTF_CloseFont(this->_sdl.fontLarge);
 	if (this->_sdl.fontSmall)
 		TTF_CloseFont(this->_sdl.fontSmall);
-	if (this->_sdl.sound)
-		Mix_FreeChunk(this->_sdl.sound);
 	if (this->_sdl.renderer)
 		SDL_DestroyRenderer(this->_sdl.renderer);
 	if (this->_sdl.window)
 		SDL_DestroyWindow(this->_sdl.window);
-	Mix_CloseAudio();
-	Mix_Quit();
-	IMG_Quit();
 	TTF_Quit();
 	SDL_Quit();
 }
