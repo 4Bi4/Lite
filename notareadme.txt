@@ -6,10 +6,7 @@ NORMAS DEL REPO:
 	3. IDK SOLO SE ME OCURREN 2 NORMAS
 
 LIBRERÍAS NECESARIAS:
-	sdl2		- librería gráfica base
-	sdl2_ttf	- estensión TrueTypeFont para poder usar texto bien
-	sdl2_image	- para poder usar imagenes como .png, .jpg o .gif y no solo .bpm
-	sdl2_mixer	- para manejar audio (god)
+	todas las librerías está incluidas en la carpeta vendor
 
 MAKEFILE:
 	make		- compila el programa (pero aun no hay programa)
