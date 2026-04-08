@@ -1,3 +1,12 @@
+# COLORS
+GREEN   := \033[1;32m
+RED     := \033[1;31m
+MAGENTA := \033[1;35m
+BLUE	:= \033[1;34m
+FLASH   := \033[1;33;5m
+NEGRITA := \033[1m
+NC      := \033[0m
+
 NAME		= lite
 
 TEST_NAME	= test
@@ -27,6 +36,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	$(COMPILER) $(CFLAGS) $(OBJ) -o $(NAME) $(SDL_FLAGS) $(SDL_LIBS)
+	@echo "->$(GREEN) PROGRAM COMPILED SUCCESSFULLY!$(NC)"
 
 $(OBJDIR)/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
@@ -35,14 +45,19 @@ $(OBJDIR)/%.o: src/%.cpp
 # Build the test executable
 $(TEST_NAME): test.cpp
 	$(COMPILER) $(CFLAGS) test.cpp -o $(TEST_NAME) $(SDL_FLAGS) $(SDL_LIBS)
+	@echo "->$(GREEN) TEST COMPILED SUCCESSFULLY!$(NC)"
 
 clean:
-	rm -f $(OBJ)
+	@rm -f $(OBJ)
+	@echo "$(RED)removed object files$(NC)"
+
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f $(TEST_NAME)
+	@rm -f $(NAME)
+	@rm -f $(TEST_NAME)
+	@echo "$(RED)removed executables$(NC)"
+	@echo "->$(GREEN) [all clean]$(NC)"
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test
