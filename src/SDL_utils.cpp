@@ -20,9 +20,8 @@ int	initSDLWindow(Data& data)
 {
 	data.setWindow(SDL_CreateWindow(
 		"Lite Engine",
-		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		data.getHres(), data.getVres(),
-		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE)
+		SDL_WINDOW_RESIZABLE)
 	);
 	if (!data.getWindow())
 	{
@@ -30,15 +29,14 @@ int	initSDLWindow(Data& data)
 		return (1);
 	}
 
-	data.setRenderer(SDL_CreateRenderer(
-		data.getWindow(), -1,
-		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
-	);
+	data.setRenderer(SDL_CreateRenderer(data.getWindow(), nullptr));
 	if (!data.getRenderer())
 	{
 		std::cerr << "SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		return (1);
 	}
+	if (!SDL_SetRenderVSync(data.getRenderer(), 1))
+		std::cerr << "SDL_SetRenderVSync: " << SDL_GetError() << "\n";
 	return (0);
 }
 
@@ -46,27 +44,15 @@ int	initSDLWindow(Data& data)
 //	RETURN: 0 on success, 1 on error
 int	initSDLCore(Data& data)
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 	{
 		std::cerr << "SDL_Init: " << SDL_GetError() << "\n";
 		return (1);
 	}
 
-	if (TTF_Init() != 0)
+	if (!TTF_Init())
 	{
-		std::cerr << "TTF_Init: " << TTF_GetError() << "\n";
-		return (1);
-	}
-
-	if (!(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) & (IMG_INIT_PNG | IMG_INIT_JPG)))
-	{
-		std::cerr << "IMG_Init: " << IMG_GetError() << "\n";
-		return (1);
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0)
-	{
-		std::cerr << "Mix_OpenAudio: " << Mix_GetError() << "\n";
+		std::cerr << "TTF_Init: " << SDL_GetError() << "\n";
 		return (1);
 	}
 
@@ -97,15 +83,20 @@ int	initSDL(Data& data)
 //	Helper: prints text centred at (cx, cy) via SDL_ttf
 void drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
 {
-    SDL_Surface* surf = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+	SDL_Surface* surf = TTF_RenderText_Blended(font, text.c_str(), text.size(), color);
     if (!surf)
         return;
     SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
-    SDL_Rect dst = { cx - surf->w / 2, cy - surf->h / 2, surf->w, surf->h };
-    SDL_FreeSurface(surf);
+	SDL_FRect dst = {
+		static_cast<float>(cx - surf->w / 2),
+		static_cast<float>(cy - surf->h / 2),
+		static_cast<float>(surf->w),
+		static_cast<float>(surf->h)
+	};
+    SDL_DestroySurface(surf);
     if (tex)
     {
-        SDL_RenderCopy(ren, tex, nullptr, &dst);
+        SDL_RenderTexture(ren, tex, nullptr, &dst);
         SDL_DestroyTexture(tex);
     }
 }

@@ -14,10 +14,10 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
+#include "SDL3/SDL.h"
+#include "SDL3_ttf/SDL_ttf.h"
+#include "SDL3_mixer/SDL_mixer.h"
+#include "SDL3_image/SDL_image.h"
 
 //	Hold all the SDL-related data
 typedef struct	s_sdl
@@ -27,7 +27,6 @@ typedef struct	s_sdl
 	TTF_Font*		fontLarge = nullptr;
 	TTF_Font*		fontSmall = nullptr;
 	SDL_Texture*	iconTex = nullptr;
-	Mix_Chunk*		sound = nullptr;
 }				t_sdl;
 
 //	Data is the main data structure of the engine
@@ -55,7 +54,6 @@ public:
 	TTF_Font*		getFontLarge() const { return (this->_sdl.fontLarge); }
 	TTF_Font*		getFontSmall() const { return (this->_sdl.fontSmall); }
 	SDL_Texture*	getIconTex() const { return (this->_sdl.iconTex); }
-	Mix_Chunk*		getSound() const { return (this->_sdl.sound); }
 
 	//	SDL Setters
 	void	setWindow(SDL_Window* window) { this->_sdl.window = window; }
@@ -63,7 +61,6 @@ public:
 	void	setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
 	void	setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
 	void	setIconTex(SDL_Texture* iconTex) { this->_sdl.iconTex = iconTex; }
-	void	setSound(Mix_Chunk* sound) { this->_sdl.sound = sound; }
 
 private:
 	int		_hres;

@@ -21,6 +21,7 @@ void	printUsage()
 }
 
 //	Checks user argumets for flags (like "--debug")
+//	exits the program if "--help" is passed
 //	RETURN: 0 on success, 1 on error
 int		checkArgs(char* argv[])
 {
@@ -29,7 +30,10 @@ int		checkArgs(char* argv[])
 		if (std::string(argv[i]) == "--debug")
 			Debug::state = true;
 		else if (std::string(argv[i]) == "--help")
+		{
 			printUsage();
+			exit(0);
+		}
 		else
 		{
 			std::cerr << "unknown argument \"" << argv[i] <<
