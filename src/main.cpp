@@ -25,14 +25,7 @@ int main(int argc, char* argv[])
 
 	if (Debug::state == true)
 		std::cout << "initializing SDL..." << std::endl;
-	if (initSDL() != 0)
+	if (initSDL(data) != 0)
 		return (1);
-	if (Debug::state == true)
-	{
-		std::cout << "SDL initialized:\n" << "\n";
-		std::cout << "  horizontal resolution: " << data.getHres() << "\n";
-		std::cout << "  vertical resolution: " << data.getVres() << "\n";
-		std::cout << "  FPS limit: " << data.getFpsLimit() << std::endl;
-	}
 	return (0);
 }

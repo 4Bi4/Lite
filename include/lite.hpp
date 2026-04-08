@@ -59,21 +59,6 @@ namespace Debug
 }
 
 /******************************/
-//	---- DATA STRUCTURES ---- //
-/******************************/
-
-//	Hold all the SDL-related data
-typedef struct s_sdl
-{
-	SDL_Window*		window = nullptr;
-	SDL_Renderer*	renderer = nullptr;
-	TTF_Font*		fontLarge = nullptr;
-	TTF_Font*		fontSmall = nullptr;
-	SDL_Texture*	iconTex = nullptr;
-	Mix_Chunk*		beep = nullptr;
-}				t_sdl;
-
-/******************************/
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
@@ -89,6 +74,6 @@ int				checkArgs(char* argv[]);
 // 	---- SDL UTILS FUNCTIONS ---- //
 /**********************************/
 
-int				initSDL();
+int				initSDL(Data &data);
 void			drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy);
 SDL_Texture*	loadTexture(SDL_Renderer* ren, const std::string& path);
