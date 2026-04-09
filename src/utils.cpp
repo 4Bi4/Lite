@@ -17,13 +17,16 @@
 //	Prints the help page (possible arguments)
 void	printUsage()
 {
-	std::cout << "usage: ./lite [--debug]\n" << "              [--help]" << std::endl;
+	std::cout << "usage: ./lite \"\"\n";
+	std::cout << "              [--help]         - display this help page\n";
+	std::cout << "              [--debug]        - enable debug mode displaying debug information on the console\n";
+	std::cout << "              [--no-fps-limit] - disable FPS limit on startup\n" << std::endl;
 }
 
 //	Checks user argumets for flags (like "--debug")
 //	exits the program if "--help" is passed
 //	RETURN: 0 on success, 1 on error
-int		checkArgs(char* argv[])
+int		checkArgs(char* argv[], Data& data)
 {
 	for (int i = 1; argv[i] ; i++)
 	{
@@ -34,11 +37,11 @@ int		checkArgs(char* argv[])
 			printUsage();
 			exit(0);
 		}
+		else if (std::string(argv[i]) == "--no-fps-limit")
+			data.setFpsLimit(0);
 		else
 		{
-			std::cerr << "unknown argument \"" << argv[i] <<
-				"\" try one of the following arguments:\n" << std::endl;
-			printUsage();
+			std::cerr << "unknown argument \"" << argv[i] << "\" try './lite --help'." << std::endl;
 			return (1);
 		}
 	}

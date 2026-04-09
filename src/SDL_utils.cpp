@@ -76,7 +76,7 @@ int	initSDL(Data& data)
 	if (initSDLWindow(data) != 0)
 		return (1);
 	if (Debug::state == true)
-		std::cout << GREEN << "SDL initialized successfully!" << NO_COLOR << std::endl;
+		std::cout << B_GREEN << " SDL " << GREEN "initialized successfully!" << NO_COLOR << std::endl;
 	return (0);
 }
 

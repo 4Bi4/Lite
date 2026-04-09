@@ -40,12 +40,14 @@ public:
 	//	Getters
 	int		getHres() const;
 	int		getVres() const;
+	bool	isRunning() const;
 	int		getFpsLimit() const;
 	float	getTargetFrameTime() const;
 
 	//	Setters
 	void	setHres(int hres);
 	void	setVres(int vres);
+	void	setRunning(bool running);
 	void	setFpsLimit(int fpsLimit);
 
 	//	SDL Getters
@@ -65,6 +67,7 @@ public:
 private:
 	int		_hres;
 	int		_vres;
+	bool	_running;
 	int		_fpsLimit;
 	float	_targetFrameTime;
 	t_sdl	_sdl;

@@ -15,6 +15,7 @@
 #pragma once
 
 #include <string>
+#include <iomanip>
 #include <iostream>
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
@@ -68,7 +69,7 @@ namespace Debug
 // 	---- UTILS FUNCTIONS ---- //
 /******************************/
 
-int				checkArgs(char* argv[]);
+int				checkArgs(char* argv[], Data& data);
 
 /**********************************/
 // 	---- SDL UTILS FUNCTIONS ---- //

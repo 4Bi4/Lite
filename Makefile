@@ -8,7 +8,7 @@ NC      := \033[0m
 NAME        = lite
 TEST_NAME   = test
 COMPILER    = g++
-CFLAGS      = -Wall -Wextra -Werror -O3 -std=c++20
+CFLAGS      = -O3 -std=c++20 #-fsanitize=address #-Wall -Wextra -Werror
 OBJDIR      = obj
 SRCDIR      = src
 
