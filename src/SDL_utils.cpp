@@ -84,19 +84,19 @@ int	initSDL(Data& data)
 void drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
 {
 	SDL_Surface* surf = TTF_RenderText_Blended(font, text.c_str(), text.size(), color);
-    if (!surf)
-        return;
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
+	if (!surf)
+		return;
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
 	SDL_FRect dst = {
 		static_cast<float>(cx - surf->w / 2),
 		static_cast<float>(cy - surf->h / 2),
 		static_cast<float>(surf->w),
 		static_cast<float>(surf->h)
 	};
-    SDL_DestroySurface(surf);
-    if (tex)
-    {
-        SDL_RenderTexture(ren, tex, nullptr, &dst);
-        SDL_DestroyTexture(tex);
-    }
+	SDL_DestroySurface(surf);
+	if (tex)
+	{
+		SDL_RenderTexture(ren, tex, nullptr, &dst);
+		SDL_DestroyTexture(tex);
+	}
 }
