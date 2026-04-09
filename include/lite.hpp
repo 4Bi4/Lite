@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <string>
 #include <iomanip>
 #include <iostream>
@@ -69,7 +70,14 @@ namespace Debug
 // 	---- UTILS FUNCTIONS ---- //
 /******************************/
 
-int				checkArgs(char* argv[], Data& data);
+int			checkArgs(char* argv[], Data& data);
+
+/*******************************/
+// 	---- RENDER FUNCTIONS ---- //
+/*******************************/
+
+void		makeBGRainbow(Data& data);
+void		renderBackground(Data& data, SDL_Color color);
 
 /**********************************/
 // 	---- SDL UTILS FUNCTIONS ---- //

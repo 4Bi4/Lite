@@ -36,6 +36,7 @@ int	mainLoop(Data& data)
 			frameCount++;
 		}
 
+		makeBGRainbow(data);
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_EVENT_QUIT)
@@ -43,6 +44,7 @@ int	mainLoop(Data& data)
 
 			// Future: Handle keyboard/mouse events here
 		}
+
 		// Future: Update game state and render here
 		Uint64	targetNS = (Uint64)data.getTargetFrameTime() * 1000000;
 		Uint64	frameWorkTime = SDL_GetTicksNS() - currentFrame;
@@ -51,11 +53,13 @@ int	mainLoop(Data& data)
 		{
 			SDL_DelayNS(targetNS - frameWorkTime);
 		}
+		SDL_RenderPresent(data.getRenderer());
 	}
 
 	// DEBUG OUTPUT
 	if (Debug::state == true && frameCount > 0)
 	{
+		std::cout << "\nvsync is: " << (data.getVsync() ? "enabled" : "disabled") << std::endl;
 		std::cout << std::fixed << std::setprecision(0);
 		std::cout << "\ntotal frames counted: " << frameCount << "\n";
 		std::cout << "average frameTime is: " << (double)totalTime / frameCount  << " ns\n";

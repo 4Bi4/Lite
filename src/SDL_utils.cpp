@@ -14,10 +14,11 @@
 
 #include "../include/lite.hpp"
 
-//	Initializes SDL windows (windowed and fullscreen) and renderers
+//	Initializes SDL window and renderer (windowed and fullscreen)
 //	RETURN: 0 on success, 1 on error
 int	initSDLWindow(Data& data)
 {
+	//	Create window
 	data.setWindow(SDL_CreateWindow(
 		"Lite Engine",
 		data.getHres(), data.getVres(),
@@ -29,14 +30,25 @@ int	initSDLWindow(Data& data)
 		return (1);
 	}
 
+	//	Create renderer
 	data.setRenderer(SDL_CreateRenderer(data.getWindow(), nullptr));
 	if (!data.getRenderer())
 	{
 		std::cerr << "SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		return (1);
 	}
-	if (!SDL_SetRenderVSync(data.getRenderer(), 1))
-		std::cerr << "SDL_SetRenderVSync: " << SDL_GetError() << "\n";
+
+	//	Set vsync
+	if (data.getVsync() == false)
+	{
+		SDL_SetRenderVSync(data.getRenderer(), SDL_RENDERER_VSYNC_DISABLED);
+		SDL_SetWindowSurfaceVSync(data.getWindow(), SDL_WINDOW_SURFACE_VSYNC_DISABLED);
+	}
+	else
+	{
+		SDL_SetRenderVSync(data.getRenderer(), 1);
+		SDL_SetWindowSurfaceVSync(data.getWindow(), 1);
+	}
 	return (0);
 }
 

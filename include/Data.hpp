@@ -40,6 +40,7 @@ public:
 	//	Getters
 	int		getHres() const;
 	int		getVres() const;
+	bool	getVsync() const;
 	bool	isRunning() const;
 	int		getFpsLimit() const;
 	float	getTargetFrameTime() const;
@@ -47,6 +48,7 @@ public:
 	//	Setters
 	void	setHres(int hres);
 	void	setVres(int vres);
+	void	setVsync(bool vsync);
 	void	setRunning(bool running);
 	void	setFpsLimit(int fpsLimit);
 
@@ -67,6 +69,7 @@ public:
 private:
 	int		_hres;
 	int		_vres;
+	bool	_vsync;
 	bool	_running;
 	int		_fpsLimit;
 	float	_targetFrameTime;

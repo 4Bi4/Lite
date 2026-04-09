@@ -14,7 +14,7 @@
 
 #include "../include/lite.hpp"
 
-Data::Data(void) : _hres(DEFAULT_HRES), _vres(DEFAULT_VRES), _running(true), _fpsLimit(DEFAULT_FPS_LIMIT), _targetFrameTime(1000 / DEFAULT_FPS_LIMIT), _sdl() {}
+Data::Data(void) : _hres(DEFAULT_HRES), _vres(DEFAULT_VRES), _vsync(true), _running(true), _fpsLimit(DEFAULT_FPS_LIMIT), _targetFrameTime(1000 / DEFAULT_FPS_LIMIT), _sdl() {}
 
 Data::~Data(void)
 {
@@ -43,6 +43,11 @@ int		Data::getVres() const
 	return (this->_vres);
 }
 
+bool	Data::getVsync() const
+{
+	return (this->_vsync);
+}
+
 bool	Data::isRunning() const
 {
 	return (this->_running);
@@ -67,6 +72,11 @@ void	Data::setHres(int hres)
 void	Data::setVres(int vres)
 {
 	this->_vres = vres;
+}
+
+void	Data::setVsync(bool vsync)
+{
+	this->_vsync = vsync;
 }
 
 void	Data::setRunning(bool running)

@@ -8,7 +8,7 @@ NC      := \033[0m
 NAME        = lite
 TEST_NAME   = test
 COMPILER    = g++
-CFLAGS      = -O3 -std=c++20 #-fsanitize=address #-Wall -Wextra -Werror
+CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror
 OBJDIR      = obj
 SRCDIR      = src
 
@@ -30,7 +30,8 @@ endif
 SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
-              $(SRCDIR)/SDL_utils.cpp
+			  $(SRCDIR)/SDL_utils.cpp \
+			  $(SRCDIR)/graphicsUtils.cpp
 
 OBJ         = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
 
