@@ -14,10 +14,11 @@
 
 #include "../include/lite.hpp"
 
-//	Initializes SDL windows (windowed and fullscreen) and renderers
+//	Initializes SDL window and renderer (windowed and fullscreen)
 //	RETURN: 0 on success, 1 on error
 int	initSDLWindow(Data& data)
 {
+	//	Create window
 	data.setWindow(SDL_CreateWindow(
 		"Lite Engine",
 		data.getHres(), data.getVres(),
@@ -29,14 +30,25 @@ int	initSDLWindow(Data& data)
 		return (1);
 	}
 
+	//	Create renderer
 	data.setRenderer(SDL_CreateRenderer(data.getWindow(), nullptr));
 	if (!data.getRenderer())
 	{
 		std::cerr << "SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		return (1);
 	}
-	if (!SDL_SetRenderVSync(data.getRenderer(), 1))
-		std::cerr << "SDL_SetRenderVSync: " << SDL_GetError() << "\n";
+
+	//	Set vsync
+	if (data.getVsync() == false)
+	{
+		SDL_SetRenderVSync(data.getRenderer(), SDL_RENDERER_VSYNC_DISABLED);
+		SDL_SetWindowSurfaceVSync(data.getWindow(), SDL_WINDOW_SURFACE_VSYNC_DISABLED);
+	}
+	else
+	{
+		SDL_SetRenderVSync(data.getRenderer(), 1);
+		SDL_SetWindowSurfaceVSync(data.getWindow(), 1);
+	}
 	return (0);
 }
 
@@ -76,7 +88,7 @@ int	initSDL(Data& data)
 	if (initSDLWindow(data) != 0)
 		return (1);
 	if (Debug::state == true)
-		std::cout << GREEN << "SDL initialized successfully!" << NO_COLOR << std::endl;
+		std::cout << B_GREEN << " SDL " << GREEN "initialized successfully!" << NO_COLOR << std::endl;
 	return (0);
 }
 
@@ -84,19 +96,19 @@ int	initSDL(Data& data)
 void drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
 {
 	SDL_Surface* surf = TTF_RenderText_Blended(font, text.c_str(), text.size(), color);
-    if (!surf)
-        return;
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
+	if (!surf)
+		return;
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
 	SDL_FRect dst = {
 		static_cast<float>(cx - surf->w / 2),
 		static_cast<float>(cy - surf->h / 2),
 		static_cast<float>(surf->w),
 		static_cast<float>(surf->h)
 	};
-    SDL_DestroySurface(surf);
-    if (tex)
-    {
-        SDL_RenderTexture(ren, tex, nullptr, &dst);
-        SDL_DestroyTexture(tex);
-    }
+	SDL_DestroySurface(surf);
+	if (tex)
+	{
+		SDL_RenderTexture(ren, tex, nullptr, &dst);
+		SDL_DestroyTexture(tex);
+	}
 }
