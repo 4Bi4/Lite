@@ -1,48 +1,68 @@
-NAME		= lite
+# --- COLORS ---
+GREEN   := \033[1;32m
+RED     := \033[1;31m
+MAGENTA := \033[1;35m
+BLUE    := \033[1;34m
+NC      := \033[0m
 
-TEST_NAME	= test
+NAME        = lite
+TEST_NAME   = test
+COMPILER    = g++
+CFLAGS      = -Wall -Wextra -Werror -O3 -std=c++20
+OBJDIR      = obj
+SRCDIR      = src
 
-COMPILER	= g++
 
-CFLAGS		= -Wall -Wextra -Werror -O3 -std=c++17
+VENDOR_DIR  = vendor
+V_INCLUDE   = -I$(VENDOR_DIR)/include
+DLL_DIR     = $(VENDOR_DIR)/lib/$(PLATFORM)
 
-SRC			= src/main.cpp \
-			  src/Data.cpp \
-			  src/utils.cpp \
-			  src/SDL_utils.cpp
-
-OBJDIR		= obj
-
-OBJ			= $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(SRC))
-
-ifeq ($(OS), Windows_NT)
-    SDL_FLAGS	= -IC:/msys64/mingw64/include/SDL2
-	SDL_LIBS = -LC:/msys64/mingw64/lib -lSDL2_mixer -lSDL2_ttf -lSDL2_image -lSDL2 
+ifeq ($(OS),Windows_NT)
+     PLATFORM    = windows
+    BIN_NAME    = $(NAME).exe
+    SDL_LIBS    = -L$(VENDOR_DIR)/lib/$(PLATFORM) -lSDL3 -lSDL3_image -lSDL3_ttf -lSDL3_mixer
+    COPY_DLLS   = cp $(DLL_DIR)/*.dll .
 else
-    SDL_FLAGS = $(shell sdl2-config --cflags)
-    SDL_LIBS  = -lSDL2_mixer -lSDL2_ttf -lSDL2_image $(shell sdl2-config --libs)
+    PLATFORM    = linux
+    BIN_NAME    = $(NAME)
+    SDL_LIBS    = -L$(VENDOR_DIR)/lib/$(PLATFORM) \
+                  -Wl,-rpath,'$$ORIGIN/$(VENDOR_DIR)/lib/$(PLATFORM)' \
+                  -lSDL3 -lSDL3_image -lSDL3_ttf -lSDL3_mixer
 endif
 
-all: $(NAME)
+SRC         = $(SRCDIR)/main.cpp \
+              $(SRCDIR)/Data.cpp \
+              $(SRCDIR)/utils.cpp \
+              $(SRCDIR)/SDL_utils.cpp
 
-$(NAME): $(OBJ)
-	$(COMPILER) $(CFLAGS) $(OBJ) -o $(NAME) $(SDL_FLAGS) $(SDL_LIBS)
+OBJ         = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
 
-%.o: %.cpp
-	$(COMPILER) $(CFLAGS) $(SDL_FLAGS) -c $< -o $@
+all: $(BIN_NAME)
 
-# Build the test executable
+$(BIN_NAME): $(OBJ)
+	$(COMPILER) $(CFLAGS) $(OBJ) -o $(BIN_NAME) $(SDL_LIBS)
+	$(COPY_DLLS)
+	@echo "-> $(GREEN)PROGRAM COMPILED SUCCESSFULLY!$(NC)"
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(COMPILER) $(CFLAGS) $(V_INCLUDE) -c $< -o $@
+
 $(TEST_NAME): test.cpp
-	$(COMPILER) $(CFLAGS) test.cpp -o $(TEST_NAME) $(SDL_FLAGS) $(SDL_LIBS)
+	$(COMPILER) $(CFLAGS) test.cpp -o $(TEST_NAME) $(V_INCLUDE) $(SDL_LIBS)
+	@echo "-> $(GREEN)TEST COMPILED SUCCESSFULLY!$(NC)"
 
 clean:
-	rm -f $(OBJ)
+	@rm -rf $(OBJDIR)
+	@echo "$(RED)removed object files and directory$(NC)"
 
-# fclean now explicitly targets both the main name and the test name
 fclean: clean
-	rm -f $(NAME)
-	rm -f $(TEST_NAME)
+	@rm -f $(BIN_NAME)
+	@rm -f $(TEST_NAME) 
+	@rm -f  *.dll
+	@echo "$(RED)removed executables$(NC)"
+	@echo "-> $(GREEN)[all clean]$(NC)"
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test

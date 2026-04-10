@@ -12,11 +12,25 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Data.hpp"
+#include "../include/lite.hpp"
 
 Data::Data(void) : _hres(DEFAULT_HRES), _vres(DEFAULT_VRES), _fpsLimit(DEFAULT_FPS_LIMIT), _targetFrameTime(1000 / DEFAULT_FPS_LIMIT), _sdl() {}
 
-Data::~Data(void) {}
+Data::~Data(void)
+{
+	if (this->_sdl.iconTex)
+		SDL_DestroyTexture(this->_sdl.iconTex);
+	if (this->_sdl.fontLarge)
+		TTF_CloseFont(this->_sdl.fontLarge);
+	if (this->_sdl.fontSmall)
+		TTF_CloseFont(this->_sdl.fontSmall);
+	if (this->_sdl.renderer)
+		SDL_DestroyRenderer(this->_sdl.renderer);
+	if (this->_sdl.window)
+		SDL_DestroyWindow(this->_sdl.window);
+	TTF_Quit();
+	SDL_Quit();
+}
 
 //	Getters
 int		Data::getHres() const
@@ -39,11 +53,6 @@ float	Data::getTargetFrameTime() const
 	return (this->_targetFrameTime);
 }
 
-t_sdl	Data::getSdl() const
-{
-	return (this->_sdl);
-}
-
 //	Setters
 void	Data::setHres(int hres)
 {
@@ -59,17 +68,4 @@ void	Data::setFpsLimit(int fpsLimit)
 {
 	this->_fpsLimit = fpsLimit;
 	this->_targetFrameTime = 1000 / fpsLimit;
-}
-
-//	Clears all the data (frees memory, destroys textures, etc.)
-void	Data::clearData()
-{
-    TTF_CloseFont(this->_sdl.fontSmall);
-    TTF_CloseFont(this->_sdl.fontLarge);
-    SDL_DestroyRenderer(this->_sdl.renderer);
-    SDL_DestroyWindow(this->_sdl.window);
-    Mix_CloseAudio();
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
 }
