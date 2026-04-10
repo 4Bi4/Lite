@@ -57,6 +57,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(TEST_NAME): test.cpp
 	$(COMPILER) $(CFLAGS) test.cpp -o $(TEST_NAME) $(V_INCLUDE) $(SDL_LIBS)
+	$(COPY_DLLS)
 	@echo "-> $(GREEN)TEST COMPILED SUCCESSFULLY!$(NC)"
 
 clean:
