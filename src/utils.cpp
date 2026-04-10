@@ -19,7 +19,7 @@ void	printUsage()
 {
 	std::cout << "usage: ./lite \"\"\n";
 	std::cout << "              [--help]         - display this help page\n";
-	std::cout << "              [--debug]        - enable debug mode displaying debug information on the console\n";
+	std::cout << "              [--debug]        - displays debug information on the console\n";
 	std::cout << "              [--no-vsync]     - turn off vsync on startup\n";
 	std::cout << "              [--no-fps-limit] - disable FPS limit on startup\n" << std::endl;
 }
