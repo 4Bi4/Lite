@@ -42,7 +42,7 @@ SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/SDL_utils.cpp \
 			  $(SRCDIR)/graphicsUtils.cpp
 
-OBJ         = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
+OBJ			= $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
 
 all: $(BIN_NAME)
 
