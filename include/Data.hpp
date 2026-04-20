@@ -73,11 +73,14 @@ public:
 
 	Player	*_player;
 private:
-	int		_hres;
-	int		_vres;
-	bool	_vsync;
-	bool	_running;
+	int		_hRes;
+	int		_vRes;
+	int		_h;
+	int		_v;
 	int		_fpsLimit;
 	float	_targetFrameTime;
+
+	bool	_vSync;
+	bool	_running;
 	t_sdl	_sdl;
 };

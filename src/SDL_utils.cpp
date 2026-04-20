@@ -19,17 +19,12 @@
 int	initSDLWindow(Data& data)
 {
 	//	Create window
-	data.setWindow(SDL_CreateWindow(
-		"Lite Engine",
-		data.getHres(), data.getVres(),
-		SDL_WINDOW_RESIZABLE)
-	);
+	data.setWindow(SDL_CreateWindow("Lite Engine", data.getHres(), data.getVres(), SDL_WINDOW_RESIZABLE));
 	if (!data.getWindow())
 	{
 		std::cerr << "SDL_CreateWindow: " << SDL_GetError() << "\n";
 		return (1);
 	}
-
 	IMG_LoadTexture(data.getRenderer(), "assets/icon.png");
 
 	//	Create renderer
@@ -39,6 +34,7 @@ int	initSDLWindow(Data& data)
 		std::cerr << "SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		return (1);
 	}
+	SDL_SetRenderLogicalPresentation(data.getRenderer(), data.getHres(), data.getVres(), SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
 	//	Set vsync
 	if (data.getVsync() == false)
@@ -95,7 +91,7 @@ int	initSDL(Data& data)
 }
 
 //	Helper: prints text centred at (cx, cy) via SDL_ttf
-void drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
+void	drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
 {
 	SDL_Surface* surf = TTF_RenderText_Blended(font, text.c_str(), text.size(), color);
 	if (!surf)

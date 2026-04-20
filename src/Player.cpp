@@ -50,7 +50,7 @@ void	Player::Render(SDL_Renderer* renderer)
 	SDL_RenderTexture(renderer, _texture, &_srcRect, &_destRect);
 }
 
-void Player::Update(float deltaTime, SDL_Renderer* renderer)
+void Player::Update(float deltaTime, Data& data)
 {
 	HandleInput();
 	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
@@ -67,9 +67,10 @@ void Player::Update(float deltaTime, SDL_Renderer* renderer)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	int winW, winH;
+	int winW = data.getHres();
+	int winH = data.getVres();
 
-	SDL_GetCurrentRenderOutputSize(renderer, &winW, &winH);
+	// SDL_GetCurrentRenderOutputSize(renderer, &winW, &winH);
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;

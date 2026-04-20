@@ -14,6 +14,10 @@
 
 #include "../include/lite.hpp"
 
+int	gameLogic(Data& data);
+
+int renderLogic(Data& data);
+
 //	Main loop of the engine
 //	RETURN: 0 on success, 1 on error
 int	mainLoop(Data& data)
@@ -48,7 +52,7 @@ int	mainLoop(Data& data)
 		// Future: Update game state and render here
 		if (data._player)
 		{
-			data._player->Update(deltaTime, data.getRenderer()); // Convert ns to seconds
+			data._player->Update(deltaTime, data); // Convert ns to seconds
 			data._player->Render(data.getRenderer());
 		}
 		else

@@ -16,6 +16,8 @@
 
 #include "lite.hpp"
 
+class Data;
+
 class Player
 {
 public:
@@ -23,7 +25,7 @@ public:
 	Player(SDL_Texture* tex, float x, float y, int w, int h);
 
 	void	HandleInput();
-	void	Update(float deltaTime, SDL_Renderer* renderer);
+	void	Update(float deltaTime, Data& data);
 	void	Render(SDL_Renderer* renderer);
 
 private:
