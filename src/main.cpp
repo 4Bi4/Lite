@@ -46,6 +46,14 @@ int	mainLoop(Data& data)
 		}
 
 		// Future: Update game state and render here
+		if (data._player)
+		{
+			data._player->Update(deltaTime, data.getRenderer()); // Convert ns to seconds
+			data._player->Render(data.getRenderer());
+		}
+		else
+			std::cerr << RED << "Error: No player object found!" << NO_COLOR << std::endl;
+	
 		Uint64	targetNS = (Uint64)data.getTargetFrameTime() * 1000000;
 		Uint64	frameWorkTime = SDL_GetTicksNS() - currentFrame;
 
@@ -80,9 +88,13 @@ int	main(int argc, char* argv[])
 
 	if (Debug::state == true)
 		std::cout << "initializing SDL..." << std::endl;
+
 	if (initSDL(data) != 0)
 		return (1);
 
+	Player player(TextureManager::LoadTexture("./resources/textures/player/error.png", data.getRenderer()));
+	data._player = &player;
+	
 	mainLoop(data);
 
 	return (0);

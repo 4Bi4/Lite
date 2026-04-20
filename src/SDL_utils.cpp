@@ -30,6 +30,8 @@ int	initSDLWindow(Data& data)
 		return (1);
 	}
 
+	IMG_LoadTexture(data.getRenderer(), "assets/icon.png");
+
 	//	Create renderer
 	data.setRenderer(SDL_CreateRenderer(data.getWindow(), nullptr));
 	if (!data.getRenderer())
