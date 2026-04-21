@@ -18,6 +18,8 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
+#include <unordered_map>
+
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "SDL3_mixer/SDL_mixer.h"
@@ -64,7 +66,17 @@ namespace Debug
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
+#include "Player.hpp"
 #include "Data.hpp"
+#include "TextureManager.hpp"
+
+/******************************/
+// --- CLASS DECLARATIONS --- //
+/******************************/
+
+class Data;
+class Player;
+class TextureManager;
 
 /******************************/
 // 	---- UTILS FUNCTIONS ---- //

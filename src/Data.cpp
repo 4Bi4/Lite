@@ -14,7 +14,10 @@
 
 #include "../include/lite.hpp"
 
-Data::Data(void) : _hres(DEFAULT_HRES), _vres(DEFAULT_VRES), _vsync(true), _running(true), _fpsLimit(DEFAULT_FPS_LIMIT), _targetFrameTime(1000 / DEFAULT_FPS_LIMIT), _sdl() {}
+Data::Data(void)
+	: _player(nullptr), _hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
+	_vSync(true), _running(true), _fpsLimit(DEFAULT_FPS_LIMIT),
+	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT), _sdl() {}
 
 Data::~Data(void)
 {
@@ -33,19 +36,20 @@ Data::~Data(void)
 }
 
 //	Getters
+
 int		Data::getHres() const
 {
-	return (this->_hres);
+	return (this->_hRes);
 }
 
 int		Data::getVres() const
 {
-	return (this->_vres);
+	return (this->_vRes);
 }
 
 bool	Data::getVsync() const
 {
-	return (this->_vsync);
+	return (this->_vSync);
 }
 
 bool	Data::isRunning() const
@@ -64,19 +68,20 @@ float	Data::getTargetFrameTime() const
 }
 
 //	Setters
-void	Data::setHres(int hres)
+
+void	Data::setHres(int hRes)
 {
-	this->_hres = hres;
+	this->_hRes = hRes;
 }
 
-void	Data::setVres(int vres)
+void	Data::setVres(int vRes)
 {
-	this->_vres = vres;
+	this->_vRes = vRes;
 }
 
-void	Data::setVsync(bool vsync)
+void	Data::setVsync(bool vSync)
 {
-	this->_vsync = vsync;
+	this->_vSync = vSync;
 }
 
 void	Data::setRunning(bool running)
@@ -92,3 +97,6 @@ void	Data::setFpsLimit(int fpsLimit)
 	else
 		this->_targetFrameTime = 1000 / fpsLimit;
 }
+
+// Static member initialization
+std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;

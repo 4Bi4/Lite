@@ -11,7 +11,7 @@ TEST_NAME   = test
 
 COMPILER    = g++
 
-CFLAGS      = -Wall -Wextra -Werror -O3 -std=c++20
+CFLAGS      = -O3 -std=c++20 #-Wall -Wextra -Werror
 
 OBJDIR      = obj
 
@@ -39,10 +39,11 @@ endif
 SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
+			  $(SRCDIR)/Player.cpp \
               $(SRCDIR)/SDL_utils.cpp \
 			  $(SRCDIR)/graphicsUtils.cpp
 
-OBJ         = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
+OBJ			= $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
 
 all: $(BIN_NAME)
 
@@ -69,7 +70,7 @@ fclean: clean
 	@rm -f $(TEST_NAME) 
 	@rm -f  *.dll
 	@echo "$(RED)removed executables$(NC)"
-	@echo "-> $(GREEN)[all clean]$(NC)"
+	@echo "-> $(BLUE)[all clean]$(NC)"
 
 re: fclean all
 
