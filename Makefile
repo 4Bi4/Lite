@@ -1,9 +1,20 @@
-# --- COLORS ---
-GREEN   := \033[1;32m
-RED     := \033[1;31m
-MAGENTA := \033[1;35m
-BLUE    := \033[1;34m
-NC      := \033[0m
+# --- COLOR DEFINITON ---
+ifeq ($(shell tput colors 2>/dev/null),)
+	GREEN   :=
+	RED     :=
+	MAGENTA :=
+	BLUE    :=
+	NC      :=
+else
+	BOLD    := $(shell tput bold)
+	RESET   := $(shell tput sgr0)
+
+	GREEN   := $(BOLD)$(shell tput setaf 2)
+	RED     := $(BOLD)$(shell tput setaf 1)
+	MAGENTA := $(BOLD)$(shell tput setaf 5)
+	BLUE    := $(BOLD)$(shell tput setaf 4)
+	NC      := $(RESET)
+endif
 
 NAME        = lite
 
@@ -11,7 +22,7 @@ TEST_NAME   = test
 
 COMPILER    = g++
 
-CFLAGS      = -Wall -Wextra -Werror -O3 -std=c++20
+CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror
 
 OBJDIR      = obj
 
@@ -34,22 +45,25 @@ else
     SDL_LIBS    = -L$(VENDOR_DIR)/lib/$(PLATFORM) \
                   -Wl,-rpath,'$$ORIGIN/$(VENDOR_DIR)/lib/$(PLATFORM)' \
                   -lSDL3 -lSDL3_image -lSDL3_ttf -lSDL3_mixer
+	COPY_DLLS   = # NO DLLS TO COPY ON LINUX
 endif
 
 SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
+			  $(SRCDIR)/Player.cpp \
               $(SRCDIR)/SDL_utils.cpp \
-			  $(SRCDIR)/graphicsUtils.cpp
+			  $(SRCDIR)/graphicsUtils.cpp \
+			  $(SRCDIR)/Map.cpp 
 
-OBJ         = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
+OBJ			= $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
 
 all: $(BIN_NAME)
 
 $(BIN_NAME): $(OBJ)
 	$(COMPILER) $(CFLAGS) $(OBJ) -o $(BIN_NAME) $(SDL_LIBS)
 	$(COPY_DLLS)
-	@echo "-> $(GREEN)PROGRAM COMPILED SUCCESSFULLY!$(NC)"
+	@printf "%b""-> $(GREEN)PROGRAM COMPILED SUCCESSFULLY!$(NC)\n"
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
@@ -57,18 +71,19 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(TEST_NAME): test.cpp
 	$(COMPILER) $(CFLAGS) test.cpp -o $(TEST_NAME) $(V_INCLUDE) $(SDL_LIBS)
-	@echo "-> $(GREEN)TEST COMPILED SUCCESSFULLY!$(NC)"
+	$(COPY_DLLS)
+	@printf "%b""-> $(GREEN)TEST COMPILED SUCCESSFULLY!$(NC)\n"
 
 clean:
 	@rm -rf $(OBJDIR)
-	@echo "$(RED)removed object files and directory$(NC)"
+	@printf "%b""$(RED)removed object files and directory$(NC)\n"
 
 fclean: clean
 	@rm -f $(BIN_NAME)
-	@rm -f $(TEST_NAME) 
-	@rm -f  *.dll
-	@echo "$(RED)removed executables$(NC)"
-	@echo "-> $(GREEN)[all clean]$(NC)"
+	@rm -f $(TEST_NAME)
+	@rm -f *.dll
+	@printf "%b""$(RED)removed executables$(NC)\n"
+	@printf "%b""-> $(BLUE)[all clean]$(NC)\n"
 
 re: fclean all
 
