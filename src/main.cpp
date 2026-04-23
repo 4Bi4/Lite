@@ -27,6 +27,8 @@ int	mainLoop(Data& data)
 	long long	frameCount = 0;
 	long long	totalTime = 0;
 
+	Map map(data.getRenderer());
+
 	while (data.isRunning())
 	{
 		Uint64	currentFrame = SDL_GetTicksNS();
@@ -40,7 +42,10 @@ int	mainLoop(Data& data)
 			frameCount++;
 		}
 
-		makeBGRainbow(data);
+		SDL_RenderClear(data.getRenderer());
+		map.DrawMap(data.getRenderer());
+		//makeBGRainbow(data);
+		
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_EVENT_QUIT)

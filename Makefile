@@ -53,7 +53,8 @@ SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/utils.cpp \
 			  $(SRCDIR)/Player.cpp \
               $(SRCDIR)/SDL_utils.cpp \
-			  $(SRCDIR)/graphicsUtils.cpp
+			  $(SRCDIR)/graphicsUtils.cpp \
+			  $(SRCDIR)/Map.cpp 
 
 OBJ			= $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
 

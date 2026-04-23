@@ -69,6 +69,7 @@ namespace Debug
 #include "Player.hpp"
 #include "Data.hpp"
 #include "TextureManager.hpp"
+#include "Map.hpp"
 
 /******************************/
 // --- CLASS DECLARATIONS --- //
@@ -77,6 +78,7 @@ namespace Debug
 class Data;
 class Player;
 class TextureManager;
+class Map;
 
 /******************************/
 // 	---- UTILS FUNCTIONS ---- //
