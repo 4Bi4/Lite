@@ -35,6 +35,7 @@ int	gameLogic(Data& data, Uint64 deltaTime)
 void	renderLogic(Data& data)
 {
 	//	Background
+	makeBGRainbow(data);
 	data._map->drawMap(data.getRenderer(), data._camera);
 
 	//	Foreground
@@ -142,7 +143,7 @@ int	main(int argc, char* argv[])
 	if (initSDL(data) != 0)
 		return (1);
 
-	Player player(TextureManager::LoadTexture("./resources/textures/player/error.png", data.getRenderer()));
+	Player player(TextureManager::loadTexture("./resources/textures/player/error.png", data.getRenderer()));
 	data._player = &player;
 	
 	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);

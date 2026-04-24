@@ -68,8 +68,6 @@ public:
 	void	setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
 	void	setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
 
-	// Future: This should be a list of game objects, not just one player
-
 	Player*	_player;
 	Camera*	_camera;
 	Map*	_map;

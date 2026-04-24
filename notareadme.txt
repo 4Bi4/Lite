@@ -18,14 +18,14 @@ TO DO LIST:
 
 	[x] Fijar Resolución Lógica: Usar SDL_SetRenderLogicalPresentation para que el tamaño de la ventana deje de importar.
 
-	[ ] Definir constantes del Mundo: Establecer el ancho y alto máximo del mapa.
+	[x] Definir constantes del Mundo: Establecer el ancho y alto máximo del mapa.
 
-	[ ] Sistema de Cámara:
+	[x] Sistema de Cámara:
 		Crear una estructura Camera.
 		Hacer que la cámara siga al jugador (con suavizado si quieres).
 		Modificar el Render de tus objetos para que usen las coordenadas de la cámara.
 
-	[ ] Pintar el Suelo: Cargar una textura pequeña y repetirla (tiling) por todo el mapa para que el usuario sienta que se está moviendo.
+	[x] Pintar el Suelo: Cargar una textura pequeña y repetirla (tiling) por todo el mapa para que el usuario sienta que se está moviendo.
 
 	[ ] Sistema de Spawning de Enemigos: Crear una clase Enemy y un EnemyManager que los haga aparecer en los bordes de la pantalla y los dirija hacia el jugador.
 

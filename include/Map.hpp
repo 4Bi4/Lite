@@ -16,38 +16,37 @@
 
 #include "lite.hpp"
 
-#define MAP_WIDTH 15
-#define MAP_HEIGHT 15
+#define MAP_WIDTH 30
+#define MAP_HEIGHT 20
 
 class Map;
 class Camera;
 
 class Map
 {
-public: 
-
+public:
 	Map(SDL_Renderer* renderer, unsigned int height, unsigned int width);
 	~Map();
 
-	char**	createMap(unsigned int height, unsigned int width);
 	void	drawMap(SDL_Renderer* renderer, Camera* camera);
+	char**	createMap(unsigned int height, unsigned int width);
 
 	//	Getters
 
 	char**			getMap() const { return (this->_map); }
-	unsigned int	getHeight() const { return (this->_height); }
 	unsigned int	getWidth() const { return (this->_width); }
+	unsigned int	getHeight() const { return (this->_height); }
 
 private:
 
-	SDL_Texture*	_grass;
 	SDL_Texture*	_wall;
+	SDL_Texture*	_grass;
 
 	SDL_FRect		_src;
 	SDL_FRect		_dest;
 
-	unsigned int	_height;
 	unsigned int	_width;
+	unsigned int	_height;
 
 	char**			_map;
 };

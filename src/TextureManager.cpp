@@ -12,30 +12,25 @@
 *                                                               *
 \***************************************************************/
 
-#pragma once
+#include "../include/lite.hpp"
 
-#include "lite.hpp"
-
-class Data;
-
-class Player
+SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
 {
-public:
-	Player(SDL_Texture* texture);
-	~Player();
+	if (textureCache.find(filePath) != textureCache.end())
+		return (textureCache[filePath]);
 
-	void	handleInput();
-	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
+	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
+	if (!tex)
+		SDL_Log("Error loading texture: %s", SDL_GetError());
+	else
+		textureCache[filePath] = tex;
+	return (tex);
+}
 
-	const SDL_FRect& getRect() const;
+void	TextureManager::Clean()
+{
+	for (auto& pair : textureCache)
+		SDL_DestroyTexture(pair.second);
 
-protected:
-	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
-
-	float		_speed;
-	float		_dirX;
-	float		_dirY;
-};
+	textureCache.clear();
+}

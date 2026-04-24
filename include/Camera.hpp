@@ -16,6 +16,8 @@
 
 #include "lite.hpp"
 
+#define VOID_TILES 2
+
 class Camera
 {
 public:

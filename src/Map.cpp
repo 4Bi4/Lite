@@ -17,8 +17,8 @@
 
 Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
 {
-	_wall = TextureManager::LoadTexture("./resources/textures/map/wall.png", renderer);
-	_grass = TextureManager::LoadTexture("./resources/textures/map/grass.png", renderer);
+	_wall = TextureManager::loadTexture("./resources/textures/map/wall.png", renderer);
+	_grass = TextureManager::loadTexture("./resources/textures/map/grass.png", renderer);
 	_src = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_dest = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_height = height;
@@ -70,7 +70,7 @@ void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 	//	(Add -1 and +1 to include partially visible tiles at the edges)
 	int startCol = std::max(0, (int)(view.x / PIXEL_SIZE));
 	int startRow = std::max(0, (int)(view.y / PIXEL_SIZE));
-	
+
 	int endCol   = std::min((int)this->getWidth(), (int)((view.x + view.w) / PIXEL_SIZE) + 1);
 	int endRow   = std::min((int)this->getHeight(), (int)((view.y + view.h) / PIXEL_SIZE) + 1);
 

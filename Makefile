@@ -55,6 +55,7 @@ SRC         = $(SRCDIR)/main.cpp \
 			  $(SRCDIR)/Camera.cpp \
               $(SRCDIR)/SDL_utils.cpp \
 			  $(SRCDIR)/graphicsUtils.cpp \
+			  $(SRCDIR)/TextureManager.cpp \
 			  $(SRCDIR)/Map.cpp 
 
 OBJ			= $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))
