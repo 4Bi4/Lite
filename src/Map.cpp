@@ -15,87 +15,77 @@
 #include "../include/Map.hpp"
 #include "../include/lite.hpp"
 
-int map1[20][25] = {
-
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-
-};
-
-Map::Map(SDL_Renderer* renderer)
+Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
 {
-    _grass = TextureManager::LoadTexture("./resources/textures/map/grass.png", renderer);
-    _wall = TextureManager::LoadTexture("./resources/textures/map/wall.png", renderer);
-    _src = {0, 0, 64, 64};
-    _dest = {0, 0, 64, 64};
+	_grass = TextureManager::LoadTexture("./resources/textures/map/grass.png", renderer);
+	_wall = TextureManager::LoadTexture("./resources/textures/map/wall.png", renderer);
+	_src = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
+	_dest = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
+	_height = height;
+	_width = width;
 
-    LoadMap(map1);
-    DrawMap(renderer);
+	_map = createMap(height, width);
 }
 
 Map::~Map()
 {
-    if(_grass)
-        SDL_DestroyTexture(_grass);
-    if(_wall)
-        SDL_DestroyTexture(_wall);
+	// Destroy textures
+	if(_grass)
+		SDL_DestroyTexture(_grass);
+	if(_wall)
+		SDL_DestroyTexture(_wall);
+
+	// Free the map memory
+	for (unsigned int i = 0; i < _height; i++)
+		delete[] (_map[i]);
+	delete[] (_map);
 }
 
-
-void Map::LoadMap(int array[20][25])
+char**	Map::createMap(unsigned int height, unsigned int width)
 {
-    for (int i = 0; i < 20; i++)
-    {
-        for (int j = 0; j < 25; j++)
-        {
-            map[i][j] = array[i][j];
-        }
-    }
+	char** newMap = new char*[height];
+	for (unsigned int i = 0; i < height; i++)
+		newMap[i] = new char[width];
+
+	// Fill the map with grass (0) and walls (1)
+	for (unsigned int i = 0; i < height; i++)
+	{
+		for (unsigned int j = 0; j < width; j++)
+		{
+			if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
+				newMap[i][j] = 1; // Wall
+			else
+				newMap[i][j] = 0; // Grass
+		}
+	}
+
+	return (newMap);
 }
 
-void Map::DrawMap(SDL_Renderer* renderer)
+void	Map::DrawMap(SDL_Renderer* renderer)
 {
-    int type = 0;
+	int type = 0;
 
-    for (int i = 0; i < 20; i++)
-    {
-        for (int j = 0; j < 25; j++)
-        {
-            type = map[i][j];
-            
-            SDL_FRect dest = { j * 64.0f, i * 64.0f, 64.0f, 64.0f };
+	for (unsigned int i = 0; i < this->getHeight(); i++)
+	{
+		for (unsigned int j = 0; j < this->getWidth(); j++)
+		{
+			type = _map[i][j];
+			
+			SDL_FRect dest = { j * (float)PIXEL_SIZE, i * (float)PIXEL_SIZE, (float)PIXEL_SIZE, (float)PIXEL_SIZE };
 
-            switch (type)
-            {
-                case 0:
-                    SDL_RenderTexture(renderer, _grass, &_src, &dest);
-                    break;
-                case 1:
-                    SDL_RenderTexture(renderer, _wall, &_src, &dest);
-                    break;
-                default:
-                    SDL_RenderTexture(renderer, _grass, &_src, &dest);
-                    break;
-            }
-        }
-    }
-
+			switch (type)
+			{
+				case (0):
+					SDL_RenderTexture(renderer, _grass, &_src, &dest);
+					break;
+				case (1):
+					SDL_RenderTexture(renderer, _wall, &_src, &dest);
+					break;
+				default:
+					SDL_RenderTexture(renderer, _grass, &_src, &dest);
+					break;
+			}
+		}
+	}
 }

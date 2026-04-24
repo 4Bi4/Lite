@@ -15,7 +15,7 @@
 #include "../include/lite.hpp"
 
 Data::Data(void)
-	: _player(nullptr), _hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
+	: _player(nullptr), _map(nullptr), _hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
 	_h(0), _v(0), _fpsLimit(DEFAULT_FPS_LIMIT),
 	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT),
 	_vSync(true), _running(true), _sdl() {}

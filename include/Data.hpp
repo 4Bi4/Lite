@@ -17,16 +17,17 @@
 #include "lite.hpp"
 
 //	Hold all the SDL-related data
-typedef struct	s_sdl
+struct SdlData
 {
 	SDL_Window*		window = nullptr;
 	SDL_Renderer*	renderer = nullptr;
 	TTF_Font*		fontLarge = nullptr;
 	TTF_Font*		fontSmall = nullptr;
 	SDL_Texture*	iconTex = nullptr;
-}				t_sdl;
+};
 
 class Player;
+class Map;
 
 //	Data is the main data structure of the engine
 //	It holds all the necessary data for the engine to run
@@ -71,7 +72,9 @@ public:
 
 	// Future: This should be a list of game objects, not just one player
 
-	Player	*_player;
+	Player*	_player;
+	Map*	_map;
+
 private:
 	int		_hRes;
 	int		_vRes;
@@ -82,5 +85,5 @@ private:
 
 	bool	_vSync;
 	bool	_running;
-	t_sdl	_sdl;
+	SdlData	_sdl;
 };

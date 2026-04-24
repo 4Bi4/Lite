@@ -28,7 +28,7 @@ public:
 	void	Update(float deltaTime, Data& data);
 	void	Render(SDL_Renderer* renderer);
 
-private:
+protected:
 	SDL_Texture*	_texture;		// Puntero simple (el Manager se encarga de la memoria)
 	SDL_FRect		_destRect;		// Posición y tamaño en pantalla (floats!)
 	SDL_FRect		_srcRect;		// El recorte de la imagen original (ints)

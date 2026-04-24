@@ -16,6 +16,8 @@
 
 #pragma once
 
+#define PIXEL_SIZE 64
+
 class TextureManager
 {
 public:
@@ -24,7 +26,7 @@ public:
 	static SDL_Texture* LoadTexture(const std::string& filePath, SDL_Renderer* renderer)
 	{
 		if (textureCache.find(filePath) != textureCache.end())
-			return textureCache[filePath];
+			return (textureCache[filePath]);
 
 		SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
 		if (!tex)

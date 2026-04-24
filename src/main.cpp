@@ -14,9 +14,25 @@
 
 #include "../include/lite.hpp"
 
-int	gameLogic(Data& data);
+int	gameLogic(Data& data, Uint64 deltaTime)
+{
+	if (!data._player)
+	{
+		std::cerr << RED << "Error: Player not initialized!" << NO_COLOR << std::endl;
+		return (1);
+	}
+	data._player->Update(deltaTime, data);
+	return (0);
+}
 
-int renderLogic(Data& data);
+void	renderLogic(Data& data)
+{
+	//	Background
+	data._map->DrawMap(data.getRenderer());
+
+	//	Foreground
+	data._player->Render(data.getRenderer());
+}
 
 //	Main loop of the engine
 //	RETURN: 0 on success, 1 on error
@@ -26,8 +42,6 @@ int	mainLoop(Data& data)
 	Uint64		lastFrame = SDL_GetTicksNS();
 	long long	frameCount = 0;
 	long long	totalTime = 0;
-
-	Map map(data.getRenderer());
 
 	while (data.isRunning())
 	{
@@ -42,10 +56,10 @@ int	mainLoop(Data& data)
 			frameCount++;
 		}
 
+		//	Clear the screen before rendering
 		SDL_RenderClear(data.getRenderer());
-		map.DrawMap(data.getRenderer());
-		//makeBGRainbow(data);
 		
+		//	Handle events
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_EVENT_QUIT)
@@ -54,15 +68,14 @@ int	mainLoop(Data& data)
 			// Future: Handle keyboard/mouse events here
 		}
 
-		// Future: Update game state and render here
-		if (data._player)
-		{
-			data._player->Update(deltaTime, data); // Convert ns to seconds
-			data._player->Render(data.getRenderer());
-		}
-		else
-			std::cerr << RED << "Error: No player object found!" << NO_COLOR << std::endl;
+		//Move game logic to a separate function for better organization
+		if (gameLogic(data, deltaTime) != 0)
+			return (1);
 	
+		//	Render stuff here
+		renderLogic(data);
+
+		//	Frame limiting (if vsync is disabled)
 		Uint64	targetNS = (Uint64)data.getTargetFrameTime() * 1000000;
 		Uint64	frameWorkTime = SDL_GetTicksNS() - currentFrame;
 
@@ -104,6 +117,9 @@ int	main(int argc, char* argv[])
 	Player player(TextureManager::LoadTexture("./resources/textures/player/error.png", data.getRenderer()));
 	data._player = &player;
 	
+	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);
+	data._map = &map;
+
 	mainLoop(data);
 
 	return (0);

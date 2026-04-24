@@ -15,8 +15,8 @@
 #include "../include/Player.hpp"
 
 Player::Player(SDL_Texture* tex) : _texture(tex),
-	_destRect{ 100.0f, 100.0f, 64.0f, 64.0f },
-	_srcRect{ 0.0f, 0.0f, 64.0f, 64.0f } {}
+	_destRect{ 100.0f, 100.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE } {}
 
 Player::Player(SDL_Texture* tex, float x, float y, int w, int h)
 {
@@ -70,8 +70,6 @@ void Player::Update(float deltaTime, Data& data)
 	int winW = data.getHres();
 	int winH = data.getVres();
 
-	// SDL_GetCurrentRenderOutputSize(renderer, &winW, &winH);
-
 	if (_destRect.x < 0)
 		_destRect.x = 0;
 	if (_destRect.y < 0)
@@ -80,4 +78,8 @@ void Player::Update(float deltaTime, Data& data)
 		_destRect.x = winW - _destRect.w;
 	if (_destRect.y + _destRect.h > winH)
 		_destRect.y = winH - _destRect.h;
+
+	//	Debug player info
+	if (Debug::state == true)
+		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
 }

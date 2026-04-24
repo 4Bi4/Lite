@@ -22,7 +22,7 @@ TEST_NAME   = test
 
 COMPILER    = g++
 
-CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror
+CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror #-fsanitize=address
 
 OBJDIR      = obj
 
