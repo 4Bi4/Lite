@@ -16,10 +16,11 @@
 
 #include "lite.hpp"
 
-#define MAP_WIDTH 10
-#define MAP_HEIGHT 10
+#define MAP_WIDTH 15
+#define MAP_HEIGHT 15
 
 class Map;
+class Camera;
 
 class Map
 {
@@ -29,8 +30,7 @@ public:
 	~Map();
 
 	char**	createMap(unsigned int height, unsigned int width);
-	void	DrawMap(SDL_Renderer* renderer);
-	void	MapBoundary();
+	void	drawMap(SDL_Renderer* renderer, Camera* camera);
 
 	//	Getters
 

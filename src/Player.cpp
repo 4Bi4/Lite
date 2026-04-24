@@ -14,21 +14,18 @@
 
 #include "../include/Player.hpp"
 
-Player::Player(SDL_Texture* tex) : _texture(tex),
+Player::Player(SDL_Texture* texture) : _texture(texture),
 	_destRect{ 100.0f, 100.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE } {}
-
-Player::Player(SDL_Texture* tex, float x, float y, int w, int h)
+	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_speed(600.0f),
+	_dirX(0.0f), _dirY(0.0f),
+	_posX(100.0f), _posY(100.0f)
 {
-	_texture = tex;
-	_destRect = { x, y, (float)w, (float)h };
-
-	float texW, texH;
-	SDL_GetTextureSize(tex, &texW, &texH);
-	_srcRect = { 0, 0, texW, texH };
 }
 
-void Player::HandleInput()
+Player::~Player() {}
+
+void Player::handleInput()
 {
 	const bool*	keys = SDL_GetKeyboardState(NULL);
 
@@ -36,23 +33,27 @@ void Player::HandleInput()
 	_dirY = 0.0f;
 
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])
-		_dirY -= _speed;
+		_dirY = -1.0f;
 	if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])
-		_dirY += _speed;
+		_dirY = 1.0f;
 	if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
-		_dirX -= _speed;
+		_dirX = -1.0f;
 	if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
-		_dirX += _speed;
+		_dirX = 1.0f;
 }
 
-void	Player::Render(SDL_Renderer* renderer)
+void	Player::render(Data& data)
 {
-	SDL_RenderTexture(renderer, _texture, &_srcRect, &_destRect);
+	//	Get the player's position relative to the camera
+	SDL_FRect screenRect = data._camera->apply(_destRect);
+
+	//	Render the player to the screen
+	SDL_RenderTexture(data.getRenderer(), _texture, &_srcRect, &screenRect);
 }
 
-void Player::Update(float deltaTime, Data& data)
+void Player::update(float deltaTime, Data& data)
 {
-	HandleInput();
+	handleInput();
 	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
 
 	//	Normalize the vector to prevent faster diagonal movement
@@ -67,19 +68,24 @@ void Player::Update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	int winW = data.getHres();
-	int winH = data.getVres();
+	float maxX = data._map->getWidth() * PIXEL_SIZE;
+    float maxY = data._map->getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;
 	if (_destRect.y < 0)
 		_destRect.y = 0;
-	if (_destRect.x + _destRect.w > winW)
-		_destRect.x = winW - _destRect.w;
-	if (_destRect.y + _destRect.h > winH)
-		_destRect.y = winH - _destRect.h;
+	if (_destRect.x + _destRect.w > maxX)
+		_destRect.x = maxX - _destRect.w;
+	if (_destRect.y + _destRect.h > maxY)
+		_destRect.y = maxY - _destRect.h;
 
 	//	Debug player info
 	if (Debug::state == true)
 		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
+}
+
+const SDL_FRect& Player::getRect() const
+{
+	return (_destRect);
 }

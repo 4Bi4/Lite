@@ -21,19 +21,23 @@ class Data;
 class Player
 {
 public:
-	Player(SDL_Texture* tex);
-	Player(SDL_Texture* tex, float x, float y, int w, int h);
+	Player(SDL_Texture* texture);
+	~Player();
 
-	void	HandleInput();
-	void	Update(float deltaTime, Data& data);
-	void	Render(SDL_Renderer* renderer);
+	void	handleInput();
+	void	update(float deltaTime, Data& data);
+	void	render(Data& data);
+
+	const SDL_FRect& getRect() const;
 
 protected:
 	SDL_Texture*	_texture;		// Puntero simple (el Manager se encarga de la memoria)
-	SDL_FRect		_destRect;		// Posición y tamaño en pantalla (floats!)
-	SDL_FRect		_srcRect;		// El recorte de la imagen original (ints)
+	SDL_FRect		_destRect;		// Posición y tamaño en pantalla
+	SDL_FRect		_srcRect;		// El recorte de la imagen original
 
-	float		_speed = 600.0f;
-	float		_dirX = 0.0f;
-	float		_dirY = 0.0f;
+	float		_speed;
+	float		_dirX;
+	float		_dirY;
+	float		_posX;
+	float		_posY;
 };

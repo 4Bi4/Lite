@@ -17,8 +17,8 @@
 
 Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
 {
-	_grass = TextureManager::LoadTexture("./resources/textures/map/grass.png", renderer);
 	_wall = TextureManager::LoadTexture("./resources/textures/map/wall.png", renderer);
+	_grass = TextureManager::LoadTexture("./resources/textures/map/grass.png", renderer);
 	_src = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_dest = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_height = height;
@@ -29,13 +29,10 @@ Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
 
 Map::~Map()
 {
-	// Destroy textures
-	if(_grass)
-		SDL_DestroyTexture(_grass);
-	if(_wall)
-		SDL_DestroyTexture(_wall);
+	//	No need to destroy textures here
+	//	TextureManager handles that :p
 
-	// Free the map memory
+	//	Free the map memory
 	for (unsigned int i = 0; i < _height; i++)
 		delete[] (_map[i]);
 	delete[] (_map);
@@ -47,7 +44,7 @@ char**	Map::createMap(unsigned int height, unsigned int width)
 	for (unsigned int i = 0; i < height; i++)
 		newMap[i] = new char[width];
 
-	// Fill the map with grass (0) and walls (1)
+	//	Fill the map with grass (0) and walls (1)
 	for (unsigned int i = 0; i < height; i++)
 	{
 		for (unsigned int j = 0; j < width; j++)
@@ -62,28 +59,52 @@ char**	Map::createMap(unsigned int height, unsigned int width)
 	return (newMap);
 }
 
-void	Map::DrawMap(SDL_Renderer* renderer)
+void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 {
-	int type = 0;
+	if (!camera)
+		return;
 
-	for (unsigned int i = 0; i < this->getHeight(); i++)
+	const SDL_FRect& view = camera->getView();
+
+	//	Calculate visible tile range based on camera position and size
+	//	(Add -1 and +1 to include partially visible tiles at the edges)
+	int startCol = std::max(0, (int)(view.x / PIXEL_SIZE));
+	int startRow = std::max(0, (int)(view.y / PIXEL_SIZE));
+	
+	int endCol   = std::min((int)this->getWidth(), (int)((view.x + view.w) / PIXEL_SIZE) + 1);
+	int endRow   = std::min((int)this->getHeight(), (int)((view.y + view.h) / PIXEL_SIZE) + 1);
+
+	for (int i = startRow; i < endRow; i++)
 	{
-		for (unsigned int j = 0; j < this->getWidth(); j++)
+		for (int j = startCol; j < endCol; j++)
 		{
-			type = _map[i][j];
+			int type = _map[i][j];
 			
-			SDL_FRect dest = { j * (float)PIXEL_SIZE, i * (float)PIXEL_SIZE, (float)PIXEL_SIZE, (float)PIXEL_SIZE };
+			//	1. Calculate the world position of the tile
+			SDL_FRect worldDest = { 
+				j * (float)PIXEL_SIZE, 
+				i * (float)PIXEL_SIZE, 
+				(float)PIXEL_SIZE, 
+				(float)PIXEL_SIZE 
+			};
 
+			//	2. Transform to screen position using the camera
+			SDL_FRect screenDest = camera->apply(worldDest);
+
+			//	3. Render based on the tile type
 			switch (type)
 			{
-				case (0):
-					SDL_RenderTexture(renderer, _grass, &_src, &dest);
+				case (0): // Grass
+				{
+					SDL_RenderTexture(renderer, _grass, &_src, &screenDest);
 					break;
-				case (1):
-					SDL_RenderTexture(renderer, _wall, &_src, &dest);
+				}
+				case (1): // Wall
+				{
+					SDL_RenderTexture(renderer, _wall, &_src, &screenDest);
 					break;
+				}
 				default:
-					SDL_RenderTexture(renderer, _grass, &_src, &dest);
 					break;
 			}
 		}

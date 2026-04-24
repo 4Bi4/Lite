@@ -18,20 +18,27 @@ int	gameLogic(Data& data, Uint64 deltaTime)
 {
 	if (!data._player)
 	{
-		std::cerr << RED << "Error: Player not initialized!" << NO_COLOR << std::endl;
+		std::cerr << B_RED << "Error: Player not initialized!" << NO_COLOR << std::endl;
 		return (1);
 	}
-	data._player->Update(deltaTime, data);
+	data._player->update(deltaTime, data);
+
+	data._camera->update(
+        data._player->getRect(), 
+        data._map->getWidth(), 
+        data._map->getHeight()
+    );
+
 	return (0);
 }
 
 void	renderLogic(Data& data)
 {
 	//	Background
-	data._map->DrawMap(data.getRenderer());
+	data._map->drawMap(data.getRenderer(), data._camera);
 
 	//	Foreground
-	data._player->Render(data.getRenderer());
+	data._player->render(data);
 }
 
 //	Main loop of the engine
@@ -42,6 +49,13 @@ int	mainLoop(Data& data)
 	Uint64		lastFrame = SDL_GetTicksNS();
 	long long	frameCount = 0;
 	long long	totalTime = 0;
+
+	//	Check all the modules
+	if (!data._player || !data._map || !data._camera)
+	{
+		std::cerr << B_RED << "Error: Not all game modules initialized!" << NO_COLOR << std::endl;
+		return (1);
+	}
 
 	while (data.isRunning())
 	{
@@ -65,6 +79,20 @@ int	mainLoop(Data& data)
 			if (event.type == SDL_EVENT_QUIT)
 				data.setRunning(false);
 
+			//	Handle window resize events to update camera view
+			if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED || event.type == SDL_EVENT_WINDOW_RESIZED) 
+			{
+				int	newW;
+				int	newH;
+
+				SDL_GetRenderOutputSize(data.getRenderer(), &newW, &newH);
+				
+				data.setHres(newW);
+				data.setVres(newH);
+
+				if (data._camera)
+					data._camera->resizeView((float)newW, (float)newH);
+			}
 			// Future: Handle keyboard/mouse events here
 		}
 
@@ -120,7 +148,11 @@ int	main(int argc, char* argv[])
 	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);
 	data._map = &map;
 
+	Camera camera(data.getHres(), data.getVres());
+	data._camera = &camera;
+
 	mainLoop(data);
 
+	TextureManager::Clean();
 	return (0);
 }

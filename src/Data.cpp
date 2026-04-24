@@ -22,8 +22,6 @@ Data::Data(void)
 
 Data::~Data(void)
 {
-	if (this->_sdl.iconTex)
-		SDL_DestroyTexture(this->_sdl.iconTex);
 	if (this->_sdl.fontLarge)
 		TTF_CloseFont(this->_sdl.fontLarge);
 	if (this->_sdl.fontSmall)
