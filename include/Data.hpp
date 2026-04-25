@@ -44,6 +44,7 @@ public:
 	bool	getVsync() const;
 	bool	isRunning() const;
 	int		getFpsLimit() const;
+	bool	isFullscreen() const;
 	float	getTargetFrameTime() const;
 
 	//	Setters
@@ -53,6 +54,7 @@ public:
 	void	setVsync(bool vsync);
 	void	setRunning(bool running);
 	void	setFpsLimit(int fpsLimit);
+	void	setFullscreen(bool fullscreen);
 
 	//	SDL Getters
 
@@ -75,12 +77,12 @@ public:
 private:
 	int		_hRes;
 	int		_vRes;
-	int		_h;
-	int		_v;
 	int		_fpsLimit;
 	float	_targetFrameTime;
 
 	bool	_vSync;
 	bool	_running;
+	bool	_fullscreen;
+
 	SdlData	_sdl;
 };

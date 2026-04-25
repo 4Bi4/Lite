@@ -47,13 +47,12 @@
 //	---- DEFAULT VALUES ----  //
 /******************************/
 
-//	Default  horizontal resolution
+//	Default resolution
 #define DEFAULT_HRES 1280
-//	Default vertical resolution
 #define DEFAULT_VRES 720
 
 //	Default FPS limit
-#define DEFAULT_FPS_LIMIT 60
+#define DEFAULT_FPS_LIMIT 144
 
 //	Global variable for debug mode
 //	Debug Mode prints information on the console about the engine's state

@@ -89,6 +89,6 @@ const SDL_FRect& Player::getRect() const
 
 void	Player::setPosition(float x, float y)
 {
-	_destRect.x = x;
-	_destRect.y = y;
+	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
+	_destRect.y = y  - (PIXEL_SIZE / 2.0f);
 }

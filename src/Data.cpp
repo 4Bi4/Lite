@@ -16,9 +16,10 @@
 
 Data::Data(void)
 	: _player(nullptr), _map(nullptr), _hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
-	_h(0), _v(0), _fpsLimit(DEFAULT_FPS_LIMIT),
+	_fpsLimit(DEFAULT_FPS_LIMIT),
 	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT),
-	_vSync(true), _running(true), _sdl() {}
+	_vSync(true), _running(true), _fullscreen(false),
+	_sdl() {}
 
 Data::~Data(void)
 {
@@ -66,6 +67,11 @@ float	Data::getTargetFrameTime() const
 	return (this->_targetFrameTime);
 }
 
+bool	Data::isFullscreen() const
+{
+	return (this->_fullscreen);
+}
+
 //	Setters
 
 void	Data::setHres(int hRes)
@@ -95,6 +101,11 @@ void	Data::setFpsLimit(int fpsLimit)
 		this->_targetFrameTime = 0;
 	else
 		this->_targetFrameTime = 1000 / fpsLimit;
+}
+
+void	Data::setFullscreen(bool fullscreen)
+{
+	this->_fullscreen = fullscreen;
 }
 
 // Static member initialization
