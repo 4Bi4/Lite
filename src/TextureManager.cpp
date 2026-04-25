@@ -24,6 +24,10 @@ SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Render
 		SDL_Log("Error loading texture: %s", SDL_GetError());
 	else
 		textureCache[filePath] = tex;
+
+	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
+	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
+	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
 	return (tex);
 }
 

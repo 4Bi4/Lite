@@ -42,6 +42,48 @@ void	renderLogic(Data& data)
 	data._player->render(data);
 }
 
+int handleEvents(Data& data, SDL_Event& event)
+{
+	//	Handle events
+	while (SDL_PollEvent(&event))
+	{
+		if (event.type == SDL_EVENT_QUIT)
+			data.setRunning(false);
+
+		if (event.type == SDL_EVENT_KEY_DOWN)
+		{
+			if (event.key.key == SDLK_F && !event.key.repeat)
+			{
+				bool	newState = !data.isFullscreen();
+
+				data.setFullscreen(newState);
+
+				if (SDL_SetWindowFullscreen(data.getWindow(), newState) != true)
+				{
+					std::cerr << "SDL_SetWindowFullscreen: " << SDL_GetError() << "\n";
+					data.setFullscreen(!newState); // Revert state on failure
+				}				
+			}
+		}
+
+		//	Handle window resize events to update camera view
+		if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED || event.type == SDL_EVENT_WINDOW_RESIZED) 
+		{
+			int	newW;
+			int	newH;
+
+			SDL_GetRenderOutputSize(data.getRenderer(), &newW, &newH);
+			
+			data.setHres(newW);
+			data.setVres(newH);
+
+			if (data._camera)
+				data._camera->resizeView((float)newW, (float)newH);
+		}
+	}
+	return (0);
+}
+
 //	Main loop of the engine
 //	RETURN: 0 on success, 1 on error
 int	mainLoop(Data& data)
@@ -59,8 +101,8 @@ int	mainLoop(Data& data)
 	}
 
 	//	Set the player's initial position to the center of the map
-	float initialX = ((data._map->getWidth() * PIXEL_SIZE) / 2.0f) - (PIXEL_SIZE / 2.0f);
-	float initialY = ((data._map->getHeight() * PIXEL_SIZE) / 2.0f) - (PIXEL_SIZE / 2.0f);
+	float initialX = ((data._map->getWidth() * PIXEL_SIZE) / 2.0f);
+	float initialY = ((data._map->getHeight() * PIXEL_SIZE) / 2.0f);
 	data._player->setPosition(initialX, initialY);
 
 	while (data.isRunning())
@@ -69,38 +111,15 @@ int	mainLoop(Data& data)
 		Uint64	deltaTime = currentFrame - lastFrame;
 
 		lastFrame = currentFrame;
-
-		if (Debug::state == true)
-		{
-			totalTime += deltaTime;
-			frameCount++;
-		}
+		totalTime += deltaTime;
+		frameCount++;
 
 		//	Clear the screen before rendering
 		SDL_RenderClear(data.getRenderer());
 		
 		//	Handle events
-		while (SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_EVENT_QUIT)
-				data.setRunning(false);
-
-			//	Handle window resize events to update camera view
-			if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED || event.type == SDL_EVENT_WINDOW_RESIZED) 
-			{
-				int	newW;
-				int	newH;
-
-				SDL_GetRenderOutputSize(data.getRenderer(), &newW, &newH);
-				
-				data.setHres(newW);
-				data.setVres(newH);
-
-				if (data._camera)
-					data._camera->resizeView((float)newW, (float)newH);
-			}
-			// Future: Handle keyboard/mouse events here
-		}
+		if (handleEvents(data, event) != 0)
+			return (1);
 
 		//Move game logic to a separate function for better organization
 		if (gameLogic(data, deltaTime) != 0)
@@ -129,7 +148,6 @@ int	mainLoop(Data& data)
 		std::cout << "average frameTime is: " << (double)totalTime / frameCount  << " ns\n";
 		std::cout << "target frametime is:  " << (double)data.getTargetFrameTime() * 1000000.0 << " ns" << std::endl;
 	}
-
 	return (0);
 }
 

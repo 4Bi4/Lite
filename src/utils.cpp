@@ -21,7 +21,8 @@ void	printUsage()
 	std::cout << "              [--help]         - display this help page\n";
 	std::cout << "              [--debug]        - displays debug information on the console\n";
 	std::cout << "              [--no-vsync]     - turn off vsync on startup\n";
-	std::cout << "              [--no-fps-limit] - disable FPS limit on startup\n" << std::endl;
+	std::cout << "              [--no-fps-limit] - disable FPS limit on startup\n";
+	std::cout << "              [--fullscreen]   - start in fullscreen mode\n" << std::endl;
 }
 
 //	Checks user argumets for flags (like "--debug")
@@ -42,6 +43,8 @@ int		checkArgs(char* argv[], Data& data)
 			data.setFpsLimit(0);
 		else if (std::string(argv[i]) == "--no-vsync")
 			data.setVsync(false);
+		else if (std::string(argv[i]) == "--fullscreen")
+			data.setFullscreen(true);
 		else
 		{
 			std::cerr << "unknown argument \"" << argv[i] << "\" try './lite --help'." << std::endl;
