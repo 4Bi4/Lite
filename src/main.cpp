@@ -14,9 +14,33 @@
 
 #include "../include/lite.hpp"
 
-int	gameLogic(Data& data);
+int	gameLogic(Data& data, Uint64 deltaTime)
+{
+	if (!data._player)
+	{
+		std::cerr << B_RED << "Error: Player not initialized!" << NO_COLOR << std::endl;
+		return (1);
+	}
+	data._player->update(deltaTime, data);
 
-int renderLogic(Data& data);
+	data._camera->update(
+        data._player->getRect(), 
+        data._map->getWidth(), 
+        data._map->getHeight()
+    );
+
+	return (0);
+}
+
+void	renderLogic(Data& data)
+{
+	//	Background
+	makeBGRainbow(data);
+	data._map->drawMap(data.getRenderer(), data._camera);
+
+	//	Foreground
+	data._player->render(data);
+}
 
 //	Main loop of the engine
 //	RETURN: 0 on success, 1 on error
@@ -27,7 +51,17 @@ int	mainLoop(Data& data)
 	long long	frameCount = 0;
 	long long	totalTime = 0;
 
-	Map map(data.getRenderer());
+	//	Check all the modules
+	if (!data._player || !data._map || !data._camera)
+	{
+		std::cerr << B_RED << "Error: Not all game modules initialized!" << NO_COLOR << std::endl;
+		return (1);
+	}
+
+	//	Set the player's initial position to the center of the map
+	float initialX = ((data._map->getWidth() * PIXEL_SIZE) / 2.0f) - (PIXEL_SIZE / 2.0f);
+	float initialY = ((data._map->getHeight() * PIXEL_SIZE) / 2.0f) - (PIXEL_SIZE / 2.0f);
+	data._player->setPosition(initialX, initialY);
 
 	while (data.isRunning())
 	{
@@ -42,27 +76,40 @@ int	mainLoop(Data& data)
 			frameCount++;
 		}
 
+		//	Clear the screen before rendering
 		SDL_RenderClear(data.getRenderer());
-		map.DrawMap(data.getRenderer());
-		//makeBGRainbow(data);
 		
+		//	Handle events
 		while (SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_EVENT_QUIT)
 				data.setRunning(false);
 
+			//	Handle window resize events to update camera view
+			if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED || event.type == SDL_EVENT_WINDOW_RESIZED) 
+			{
+				int	newW;
+				int	newH;
+
+				SDL_GetRenderOutputSize(data.getRenderer(), &newW, &newH);
+				
+				data.setHres(newW);
+				data.setVres(newH);
+
+				if (data._camera)
+					data._camera->resizeView((float)newW, (float)newH);
+			}
 			// Future: Handle keyboard/mouse events here
 		}
 
-		// Future: Update game state and render here
-		if (data._player)
-		{
-			data._player->Update(deltaTime, data); // Convert ns to seconds
-			data._player->Render(data.getRenderer());
-		}
-		else
-			std::cerr << RED << "Error: No player object found!" << NO_COLOR << std::endl;
+		//Move game logic to a separate function for better organization
+		if (gameLogic(data, deltaTime) != 0)
+			return (1);
 	
+		//	Render stuff here
+		renderLogic(data);
+
+		//	Frame limiting (if vsync is disabled)
 		Uint64	targetNS = (Uint64)data.getTargetFrameTime() * 1000000;
 		Uint64	frameWorkTime = SDL_GetTicksNS() - currentFrame;
 
@@ -101,10 +148,17 @@ int	main(int argc, char* argv[])
 	if (initSDL(data) != 0)
 		return (1);
 
-	Player player(TextureManager::LoadTexture("./resources/textures/player/error.png", data.getRenderer()));
+	Player player(TextureManager::loadTexture("./resources/textures/player/error.png", data.getRenderer()));
 	data._player = &player;
 	
+	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);
+	data._map = &map;
+
+	Camera camera(data.getHres(), data.getVres());
+	data._camera = &camera;
+
 	mainLoop(data);
 
+	TextureManager::Clean();
 	return (0);
 }

@@ -25,7 +25,6 @@ int	initSDLWindow(Data& data)
 		std::cerr << "SDL_CreateWindow: " << SDL_GetError() << "\n";
 		return (1);
 	}
-	IMG_LoadTexture(data.getRenderer(), "assets/icon.png");
 
 	//	Create renderer
 	data.setRenderer(SDL_CreateRenderer(data.getWindow(), nullptr));
@@ -34,7 +33,7 @@ int	initSDLWindow(Data& data)
 		std::cerr << "SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		return (1);
 	}
-	SDL_SetRenderLogicalPresentation(data.getRenderer(), data.getHres(), data.getVres(), SDL_LOGICAL_PRESENTATION_LETTERBOX);
+	// SDL_SetRenderLogicalPresentation(data.getRenderer(), data.getHres(), data.getVres(), SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
 	//	Set vsync
 	if (data.getVsync() == false)

@@ -16,28 +16,22 @@
 
 #include "lite.hpp"
 
-class Data;
+#define VOID_TILES 2
+#define TARGET_HEIGHT 1080.0f
 
-class Player
+class Camera
 {
 public:
-	Player(SDL_Texture* texture);
-	~Player();
+	Camera(int width, int height);
 
-	void	handleInput();
-	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
+	SDL_FRect	apply(const SDL_FRect& worldRect) const;
+	void		resizeView(float newWidth, float newHeight);
+	void		update(const SDL_FRect& target, int mapW, int mapH);
 
-	const SDL_FRect& getRect() const;
+	const SDL_FRect& getView() const { return _view; }
 
-	void	setPosition(float x, float y);
+private:
+	SDL_FRect	_view;
 
-protected:
-	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
-
-	float		_speed;
-	float		_dirX;
-	float		_dirY;
+	float		_zoom;
 };

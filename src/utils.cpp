@@ -50,3 +50,4 @@ int		checkArgs(char* argv[], Data& data)
 	}
 	return (0);
 }
+

@@ -17,16 +17,17 @@
 #include "lite.hpp"
 
 //	Hold all the SDL-related data
-typedef struct	s_sdl
+struct SdlData
 {
 	SDL_Window*		window = nullptr;
 	SDL_Renderer*	renderer = nullptr;
 	TTF_Font*		fontLarge = nullptr;
 	TTF_Font*		fontSmall = nullptr;
-	SDL_Texture*	iconTex = nullptr;
-}				t_sdl;
+};
 
 class Player;
+class Camera;
+class Map;
 
 //	Data is the main data structure of the engine
 //	It holds all the necessary data for the engine to run
@@ -59,7 +60,6 @@ public:
 	SDL_Renderer*	getRenderer() const { return (this->_sdl.renderer); }
 	TTF_Font*		getFontLarge() const { return (this->_sdl.fontLarge); }
 	TTF_Font*		getFontSmall() const { return (this->_sdl.fontSmall); }
-	SDL_Texture*	getIconTex() const { return (this->_sdl.iconTex); }
 
 	//	SDL Setters
 
@@ -67,11 +67,11 @@ public:
 	void	setRenderer(SDL_Renderer* renderer) { this->_sdl.renderer = renderer; }
 	void	setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
 	void	setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
-	void	setIconTex(SDL_Texture* iconTex) { this->_sdl.iconTex = iconTex; }
 
-	// Future: This should be a list of game objects, not just one player
+	Player*	_player;
+	Camera*	_camera;
+	Map*	_map;
 
-	Player	*_player;
 private:
 	int		_hRes;
 	int		_vRes;
@@ -82,5 +82,5 @@ private:
 
 	bool	_vSync;
 	bool	_running;
-	t_sdl	_sdl;
+	SdlData	_sdl;
 };

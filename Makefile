@@ -22,7 +22,7 @@ TEST_NAME   = test
 
 COMPILER    = g++
 
-CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror
+CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror #-fsanitize=address
 
 OBJDIR      = obj
 
@@ -52,8 +52,10 @@ SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
 			  $(SRCDIR)/Player.cpp \
+			  $(SRCDIR)/Camera.cpp \
               $(SRCDIR)/SDL_utils.cpp \
 			  $(SRCDIR)/graphicsUtils.cpp \
+			  $(SRCDIR)/TextureManager.cpp \
 			  $(SRCDIR)/Map.cpp 
 
 OBJ			= $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRC))

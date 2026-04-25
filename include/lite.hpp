@@ -66,19 +66,21 @@ namespace Debug
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
-#include "Player.hpp"
-#include "Data.hpp"
-#include "TextureManager.hpp"
 #include "Map.hpp"
+#include "Data.hpp"
+#include "Player.hpp"
+#include "Camera.hpp"
+#include "TextureManager.hpp"
 
 /******************************/
 // --- CLASS DECLARATIONS --- //
 /******************************/
 
+class Map;
 class Data;
 class Player;
+class Camera;
 class TextureManager;
-class Map;
 
 /******************************/
 // 	---- UTILS FUNCTIONS ---- //
