@@ -58,6 +58,11 @@ int	mainLoop(Data& data)
 		return (1);
 	}
 
+	//	Set the player's initial position to the center of the map
+	float initialX = ((data._map->getWidth() * PIXEL_SIZE) / 2.0f) - (PIXEL_SIZE / 2.0f);
+	float initialY = ((data._map->getHeight() * PIXEL_SIZE) / 2.0f) - (PIXEL_SIZE / 2.0f);
+	data._player->setPosition(initialX, initialY);
+
 	while (data.isRunning())
 	{
 		Uint64	currentFrame = SDL_GetTicksNS();

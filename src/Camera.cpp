@@ -15,7 +15,8 @@
 #include "../include/Camera.hpp"
 
 Camera::Camera(int width, int height) :
-	_view{0, 0, (float)width, (float)height} {}
+	_view{0, 0, (float)width, (float)height},
+	_zoom{1.0f} {}
 
 //	Centers the camera on a target (usually the player) and clamps it to the map boundaries
 void	Camera::update(const SDL_FRect& target, int mapW, int mapH)
@@ -60,19 +61,20 @@ void	Camera::update(const SDL_FRect& target, int mapW, int mapH)
 //	Allows resizing the camera view (useful for window resizing)
 void	Camera::resizeView(float newWidth, float newHeight)
 {
-	this->_view.w = newWidth;
-	this->_view.h = newHeight;
+	this->_zoom = newHeight / TARGET_HEIGHT;
+
+	this->_view.w = newWidth / this->_zoom;
+	this->_view.h = newHeight / this->_zoom;
 }
 
 //	Transforms a "world" coordinate to a "screen" coordinate
 //	RETURN: A new SDL_FRect with the transformed coordinates
 SDL_FRect	Camera::apply(const SDL_FRect& worldRect) const
 {
-	return
-	{
-		worldRect.x - this->_view.x,
-		worldRect.y - this->_view.y,
-		worldRect.w,
-		worldRect.h
+	return {
+		(worldRect.x - this->_view.x) * this->_zoom,
+		(worldRect.y - this->_view.y) * this->_zoom,
+		worldRect.w * this->_zoom,
+		worldRect.h * this->_zoom
 	};
 }

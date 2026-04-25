@@ -30,6 +30,8 @@ public:
 
 	const SDL_FRect& getRect() const;
 
+	void	setPosition(float x, float y);
+
 protected:
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)

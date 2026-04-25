@@ -17,6 +17,7 @@
 #include "lite.hpp"
 
 #define VOID_TILES 2
+#define TARGET_HEIGHT 1080.0f
 
 class Camera
 {
@@ -30,5 +31,7 @@ public:
 	const SDL_FRect& getView() const { return _view; }
 
 private:
-	SDL_FRect _view;
+	SDL_FRect	_view;
+
+	float		_zoom;
 };

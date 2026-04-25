@@ -15,7 +15,7 @@
 #include "../include/Player.hpp"
 
 Player::Player(SDL_Texture* texture) : _texture(texture),
-	_destRect{ 100.0f, 100.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_speed(600.0f),
 	_dirX(0.0f), _dirY(0.0f) {}
@@ -85,4 +85,10 @@ void Player::update(float deltaTime, Data& data)
 const SDL_FRect& Player::getRect() const
 {
 	return (_destRect);
+}
+
+void	Player::setPosition(float x, float y)
+{
+	_destRect.x = x;
+	_destRect.y = y;
 }
