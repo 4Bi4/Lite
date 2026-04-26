@@ -12,47 +12,44 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Player.hpp"
+#include "../include/Enemy.hpp"
 
-Player::Player(SDL_Texture* texture) :
+Enemy::Enemy(SDL_Texture* texture) :
 	_texture(texture), _flip(SDL_FLIP_NONE),
-	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_speed(600.0f),
-	_dirX(0.0f), _dirY(0.0f) {}
+	_type(DEFAULT), _speed(200), _dirX(0), _dirY(0) {}
 
-Player::~Player() {}
+Enemy::~Enemy() {}
 
-void Player::handleInput()
+void	Enemy::render(Data& data)
 {
-	const bool*	keys = SDL_GetKeyboardState(NULL);
-
-	_dirX = 0.0f;
-	_dirY = 0.0f;
-
-	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])
-		_dirY = -1.0f;
-	if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])
-		_dirY = 1.0f;
-	if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
-		_dirX = -1.0f;
-	if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
-		_dirX = 1.0f;
-}
-
-void	Player::render(Data& data)
-{
-	//	Get the player's position relative to the camera
+	//	Get the enemy's position relative to the camera
 	SDL_FRect screenRect = data._camera->apply(_destRect);
 
-	//	Render the player to the screen
+	//	Render the enemy to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
 }
 
-void	Player::update(float deltaTime, Data& data)
+//	(Movement "AI") updates dirX and dirY with the next
+//	desired position
+void	Enemy::calcNextMove(Data& data)
 {
-	//	read the input
-	handleInput();
+	//	for now we assume only 1 player
+	//	and this player is allways going to be the target
+	SDL_FRect target = data._player->getRect();
+
+	_dirX = target.x - _destRect.x;
+	_dirY = target.y - _destRect.y;
+}
+
+void	Enemy::update(float deltaTime, Data& data)
+{
+	//	!!!!!!!!  IMPORTANT !!!!!!!!
+	//	TODO:
+	//	Call the enemy AI to update _dirX and _dirY
+	calcNextMove(data);
+
 	//	call special physics function HERE (if there is one)
 
 	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
@@ -70,7 +67,7 @@ void	Player::update(float deltaTime, Data& data)
 	else if (_dirX > 0)
 		_flip = SDL_FLIP_HORIZONTAL;
 
-	//	Move the player based on direction, speed and delta time (in seconds)
+	//	Move the enemy based on direction, speed and delta time (in seconds)
 	_destRect.x += _dirX * _speed * deltaTime / 1000000000.0f;
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
@@ -87,20 +84,33 @@ void	Player::update(float deltaTime, Data& data)
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
 
-	//	Debug player info
-	// if (Debug::state == true)
-	// 	std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
+	if (Debug::state == true)
+		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
 }
+
+//	GETTERS
 
 //	Returns 4 floats.
 //	"x" and "y" are position
 //	"h" and "w" are the size on screen
-const SDL_FRect&	Player::getRect() const
+const SDL_FRect&	Enemy::getRect() const
 {
 	return (_destRect);
 }
 
-void	Player::setPosition(float x, float y)
+enemyType	Enemy::getType() const
+{
+	return (_type);
+}
+
+//	SETTERS
+
+void	Enemy::setType(enemyType newType)
+{
+	_type = newType;
+}
+
+void	Enemy::setPosition(float x, float y)
 {
 	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
 	_destRect.y = y  - (PIXEL_SIZE / 2.0f);

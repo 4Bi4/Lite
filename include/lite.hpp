@@ -16,6 +16,7 @@
 
 #include <cmath>
 #include <string>
+#include <vector>
 #include <iomanip>
 #include <iostream>
 #include <unordered_map>
@@ -67,6 +68,7 @@ namespace Debug
 
 #include "Map.hpp"
 #include "Data.hpp"
+#include "Enemy.hpp"
 #include "Player.hpp"
 #include "Camera.hpp"
 #include "TextureManager.hpp"
@@ -77,6 +79,7 @@ namespace Debug
 
 class Map;
 class Data;
+class Enemy;
 class Player;
 class Camera;
 class TextureManager;

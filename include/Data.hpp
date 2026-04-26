@@ -26,6 +26,7 @@ struct SdlData
 };
 
 class Player;
+class Enemy;
 class Camera;
 class Map;
 
@@ -70,9 +71,17 @@ public:
 	void	setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
 	void	setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
 
+	//	TODO:
+	//	store this variables in a new class
+	//	called game or whatever (la partida actual)
+	//	|  |  |  |  |  |  |  |  |  |
+	//	V  V  V  V  V  V  V  V  V  V
+
 	Player*	_player;
 	Camera*	_camera;
 	Map*	_map;
+	
+	std::vector<Enemy>	enemies;
 
 private:
 	int		_hRes;
