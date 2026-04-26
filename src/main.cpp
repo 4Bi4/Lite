@@ -23,23 +23,29 @@ int	gameLogic(Data& data, Uint64 deltaTime)
 	}
 	data._player->update(deltaTime, data);
 
+	for (auto& Enemy : data.enemies)
+		Enemy.update(deltaTime, data);
+
 	data._camera->update(
-        data._player->getRect(), 
-        data._map->getWidth(), 
-        data._map->getHeight()
-    );
+		data._player->getRect(), 
+		data._map->getWidth(), 
+		data._map->getHeight()
+	);
 
 	return (0);
 }
 
 void	renderLogic(Data& data)
 {
-	//	Background
+	//	--- Background ---
 	makeBGRainbow(data);
 	data._map->drawMap(data.getRenderer(), data._camera);
 
-	//	Foreground
+	//	--- Foreground ---
 	data._player->render(data);
+
+	for (auto& Enemy : data.enemies)
+		Enemy.render(data);
 }
 
 int handleEvents(Data& data, SDL_Event& event)
@@ -169,6 +175,20 @@ int	main(int argc, char* argv[])
 	Player player(TextureManager::loadTexture("./resources/textures/player/error.png", data.getRenderer()));
 	data._player = &player;
 	
+	//	TESTING
+	//	Create an enemy and give it a random position
+	Enemy joe(TextureManager::loadTexture("./resources/textures/enemy/enemy.png", data.getRenderer()));
+	joe.setPosition(1000.0f, 1000.0f);
+	data.enemies.push_back(joe);
+
+	Enemy joe2(TextureManager::loadTexture("./resources/textures/enemy/enemy.png", data.getRenderer()));
+	joe2.setPosition(100.0f, 100.0f);
+	data.enemies.push_back(joe2);
+
+	Enemy joe3(TextureManager::loadTexture("./resources/textures/enemy/enemy.png", data.getRenderer()));
+	joe3.setPosition(1500.0f, 100.0f);
+	data.enemies.push_back(joe3);
+
 	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);
 	data._map = &map;
 

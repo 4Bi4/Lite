@@ -51,6 +51,7 @@ endif
 SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
+			  $(SRCDIR)/Enemy.cpp \
 			  $(SRCDIR)/Player.cpp \
 			  $(SRCDIR)/Camera.cpp \
               $(SRCDIR)/SDL_utils.cpp \
