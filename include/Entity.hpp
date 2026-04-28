@@ -16,40 +16,29 @@
 
 #include "lite_common.hpp"
 
-//	Here we will list the type of enemies so
-//	they can be easily identified
-enum enemyType
-{
-	DEFAULT
-};
+class Data;
 
-class Enemy : public Entity
+class Entity
 {
 public:
-	Enemy(SDL_Texture* texture);
-	~Enemy();
+	Entity(SDL_Texture* texture);
+	virtual ~Entity() = 0;
 
-	void	calcNextMove(Data& data);
-	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
+	virtual void	update(float deltaTime, Data& data);
+	virtual void	render(Data& data);
 
-	const SDL_FRect&	getRect() const;
-	enemyType			getType() const;
+	virtual const SDL_FRect& getRect() const;
 
-	void	setType(enemyType type);
-	void	setPosition(float x, float y);
-
+	virtual void	setPosition(float x, float y);
 
 protected:
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FlipMode	_flip;
+	SDL_FlipMode	_flip;	
 
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
 	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
 
-	enemyType		_type;
-
-	float			_speed;
-	float			_dirX;
-	float			_dirY;
+	float		_speed;
+	float		_dirX;
+	float		_dirY;
 };

@@ -12,9 +12,10 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Player.hpp"
+#include "../include/lite.hpp"
 
 Player::Player(SDL_Texture* texture) :
+	Entity(texture),
 	_texture(texture), _flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
@@ -53,6 +54,7 @@ void	Player::update(float deltaTime, Data& data)
 {
 	//	read the input
 	handleInput();
+
 	//	call special physics function HERE (if there is one)
 
 	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
@@ -88,8 +90,8 @@ void	Player::update(float deltaTime, Data& data)
 		_destRect.y = maxY - _destRect.h;
 
 	//	Debug player info
-	// if (Debug::state == true)
-	// 	std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
+	if (Debug::state == true)
+		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
 }
 
 //	Returns 4 floats.

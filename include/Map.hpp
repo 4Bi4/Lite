@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "lite.hpp"
+#include "lite_common.hpp"
 
 #define MAP_WIDTH 30
 #define MAP_HEIGHT 20

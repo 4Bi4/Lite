@@ -92,7 +92,7 @@ int handleEvents(Data& data, SDL_Event& event)
 
 //	Main loop of the engine
 //	RETURN: 0 on success, 1 on error
-int	mainLoop(Data& data)
+int	gameLoop(Data& data)
 {
 	SDL_Event	event;
 	Uint64		lastFrame = SDL_GetTicksNS();
@@ -110,6 +110,9 @@ int	mainLoop(Data& data)
 	float initialX = ((data._map->getWidth() * PIXEL_SIZE) / 2.0f);
 	float initialY = ((data._map->getHeight() * PIXEL_SIZE) / 2.0f);
 	data._player->setPosition(initialX, initialY);
+
+	//	Update the State Machine
+	data.setState(IN_GAME);
 
 	while (data.isRunning())
 	{
@@ -144,6 +147,9 @@ int	mainLoop(Data& data)
 		}
 		SDL_RenderPresent(data.getRenderer());
 	}
+
+	//	Update the State Machine
+	data.setState(POSTGAME);
 
 	// DEBUG OUTPUT
 	if (Debug::state == true && frameCount > 0)
@@ -189,14 +195,21 @@ int	main(int argc, char* argv[])
 	joe3.setPosition(1500.0f, 100.0f);
 	data.enemies.push_back(joe3);
 
+	Enemy joe4(TextureManager::loadTexture("./resources/textures/player/error.png", data.getRenderer()));
+	joe4.setPosition(1500.0f, 1200.0f);
+	data.enemies.push_back(joe4);
+
 	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);
 	data._map = &map;
 
 	Camera camera(data.getHres(), data.getVres());
 	data._camera = &camera;
 
-	mainLoop(data);
+	gameLoop(data);
 
+	//	Close the program
+	data.setState(CLOSING);
 	TextureManager::Clean();
+
 	return (0);
 }

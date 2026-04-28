@@ -19,6 +19,7 @@ Data::Data(void)
 	_fpsLimit(DEFAULT_FPS_LIMIT),
 	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT),
 	_vSync(true), _running(true), _fullscreen(false),
+	_state(LOADING),
 	_sdl() {}
 
 Data::~Data(void)
@@ -72,6 +73,11 @@ bool	Data::isFullscreen() const
 	return (this->_fullscreen);
 }
 
+state	Data::getState() const
+{
+	return(this->_state);
+}
+
 //	Setters
 
 void	Data::setHres(int hRes)
@@ -107,6 +113,10 @@ void	Data::setFullscreen(bool fullscreen)
 {
 	this->_fullscreen = fullscreen;
 }
+
+// THIS IS FOR THE TEXTURE MANAGER
+//	|	|	|	|	|	|	|	|
+//	V	V	V	V	V	V	V	V
 
 // Static member initialization
 std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;

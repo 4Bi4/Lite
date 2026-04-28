@@ -12,7 +12,6 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Map.hpp"
 #include "../include/lite.hpp"
 
 Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)

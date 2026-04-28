@@ -14,42 +14,55 @@
 
 #pragma once
 
-#include "lite_common.hpp"
+#include <cmath>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <iostream>
+#include <unordered_map>
 
-//	Here we will list the type of enemies so
-//	they can be easily identified
-enum enemyType
+#include "SDL3/SDL.h"
+#include "SDL3_ttf/SDL_ttf.h"
+#include "SDL3_mixer/SDL_mixer.h"
+#include "SDL3_image/SDL_image.h"
+
+//\tCOLOR DEFINITIONS
+
+#define RED			"\033[0;31m"
+#define GREEN		"\033[0;32m"
+#define YELLOW		"\033[0;33m"
+#define BLUE		"\033[0;34m"
+#define MAGENTA		"\033[0;35m"
+#define CYAN		"\033[0;36m"
+
+#define B_RED		"\033[1;31m"
+#define B_GREEN		"\033[1;32m"
+#define B_YELLOW	"\033[1;33m"
+#define B_BLUE		"\033[1;34m"
+#define B_MAGENTA	"\033[1;35m"
+#define B_CYAN		"\033[1;36m"
+
+#define NO_COLOR	"\033[0m"
+
+/******************************/
+//\t---- DEFAULT VALUES ----  //
+/******************************/
+
+//\tDefault resolution
+#define DEFAULT_HRES 1280
+#define DEFAULT_VRES 720
+
+//\tDefault FPS limit
+#define DEFAULT_FPS_LIMIT 144
+
+//\tTile size in pixels
+#define PIXEL_SIZE 64
+
+//\tGlobal variable for debug mode
+//\tDebug Mode prints information on the console about the engine's state
+namespace Debug
 {
-	DEFAULT
-};
+	inline bool state = false;
+}
 
-class Enemy : public Entity
-{
-public:
-	Enemy(SDL_Texture* texture);
-	~Enemy();
-
-	void	calcNextMove(Data& data);
-	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
-
-	const SDL_FRect&	getRect() const;
-	enemyType			getType() const;
-
-	void	setType(enemyType type);
-	void	setPosition(float x, float y);
-
-
-protected:
-	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FlipMode	_flip;
-
-	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
-
-	enemyType		_type;
-
-	float			_speed;
-	float			_dirX;
-	float			_dirY;
-};
+class Data;

@@ -14,43 +14,26 @@
 
 #include "../include/lite.hpp"
 
-Enemy::Enemy(SDL_Texture* texture) :
-	Entity(texture),
+Entity::Entity(SDL_Texture* texture) :
 	_texture(texture), _flip(SDL_FLIP_NONE),
-	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_type(DEFAULT), _speed(200), _dirX(0), _dirY(0) {}
+	_speed(600.0f),
+	_dirX(0.0f), _dirY(0.0f) {}
 
-Enemy::~Enemy() {}
+Entity::~Entity() {}
 
-void	Enemy::render(Data& data)
+void	Entity::render(Data& data)
 {
-	//	Get the enemy's position relative to the camera
+	//	Get the Entity's position relative to the camera
 	SDL_FRect screenRect = data._camera->apply(_destRect);
 
-	//	Render the enemy to the screen
+	//	Render the Entity to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
 }
 
-//	(Movement "AI") updates dirX and dirY with the next
-//	desired position
-void	Enemy::calcNextMove(Data& data)
+void	Entity::update(float deltaTime, Data& data)
 {
-	//	for now we assume only 1 player
-	//	and this player is allways going to be the target
-	SDL_FRect target = data._player->getRect();
-
-	_dirX = target.x - _destRect.x;
-	_dirY = target.y - _destRect.y;
-}
-
-void	Enemy::update(float deltaTime, Data& data)
-{
-	//	!!!!!!!!  IMPORTANT !!!!!!!!
-	//	TODO:
-	//	Call the enemy AI to update _dirX and _dirY
-	calcNextMove(data);
-
 	//	call special physics function HERE (if there is one)
 
 	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
@@ -68,7 +51,7 @@ void	Enemy::update(float deltaTime, Data& data)
 	else if (_dirX > 0)
 		_flip = SDL_FLIP_HORIZONTAL;
 
-	//	Move the enemy based on direction, speed and delta time (in seconds)
+	//	Move the Entity based on direction, speed and delta time (in seconds)
 	_destRect.x += _dirX * _speed * deltaTime / 1000000000.0f;
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
@@ -86,29 +69,15 @@ void	Enemy::update(float deltaTime, Data& data)
 		_destRect.y = maxY - _destRect.h;
 }
 
-//	GETTERS
-
 //	Returns 4 floats.
 //	"x" and "y" are position
 //	"h" and "w" are the size on screen
-const SDL_FRect&	Enemy::getRect() const
+const SDL_FRect&	Entity::getRect() const
 {
 	return (_destRect);
 }
 
-enemyType	Enemy::getType() const
-{
-	return (_type);
-}
-
-//	SETTERS
-
-void	Enemy::setType(enemyType newType)
-{
-	_type = newType;
-}
-
-void	Enemy::setPosition(float x, float y)
+void	Entity::setPosition(float x, float y)
 {
 	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
 	_destRect.y = y  - (PIXEL_SIZE / 2.0f);

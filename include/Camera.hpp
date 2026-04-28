@@ -14,10 +14,11 @@
 
 #pragma once
 
-#include "lite.hpp"
+#include "lite_common.hpp"
 
 #define VOID_TILES 2
 #define TARGET_HEIGHT 1080.0f
+#define TARGET_WIDTH 1920.0f
 
 class Camera
 {

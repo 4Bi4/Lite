@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "lite.hpp"
+#include "lite_common.hpp"
 
 //	Hold all the SDL-related data
 struct SdlData
@@ -23,6 +23,15 @@ struct SdlData
 	SDL_Renderer*	renderer = nullptr;
 	TTF_Font*		fontLarge = nullptr;
 	TTF_Font*		fontSmall = nullptr;
+};
+
+enum state
+{
+	LOADING,
+	MAIN_MENU,
+	IN_GAME,
+	POSTGAME,
+	CLOSING,
 };
 
 class Player;
@@ -47,6 +56,8 @@ public:
 	int		getFpsLimit() const;
 	bool	isFullscreen() const;
 	float	getTargetFrameTime() const;
+	
+	state	getState() const;
 
 	//	Setters
 
@@ -56,6 +67,8 @@ public:
 	void	setRunning(bool running);
 	void	setFpsLimit(int fpsLimit);
 	void	setFullscreen(bool fullscreen);
+
+	void	setState(state newState);
 
 	//	SDL Getters
 
@@ -93,5 +106,7 @@ private:
 	bool	_running;
 	bool	_fullscreen;
 
-	SdlData	_sdl;
+	state	_state;
+
+	SdlData	_sdl;		// Struct holding all the SDL stuff (like window, render, etc...)
 };

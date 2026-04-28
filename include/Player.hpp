@@ -14,11 +14,11 @@
 
 #pragma once
 
-#include "lite.hpp"
+#include "Entity.hpp"
 
 class Data;
 
-class Player
+class Player : public Entity
 {
 public:
 	Player(SDL_Texture* texture);
