@@ -16,45 +16,27 @@
 
 #include "lite_common.hpp"
 
-class Data;
-
-class Player : public Entity
+class Weapon
 {
 public:
-	Player(SDL_Texture* texture);
-	~Player();
+	Weapon(std::string name, int damage, int range, Uint64 cooldown);
+	~Weapon();
 
-	void	handleInput(Data& data);
-	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
+	void	attack(Entity* target);
 
-	void	attack() const;
+	void	setName(const std::string& name);
+	void	setDamage(int damage);
+	void	setRange(int range);
+	void	setCooldown(Uint64 cooldown);
 
-	const SDL_FRect&	getRect() const;
-	const SDL_Texture*	getTexture() const;
-	Enemy*				getTarget() const;
-	Weapon*				getWeapon() const;
-	Enemy*				getClosestEnemy(Data& data) const;
-
-	void	setPosition(float x, float y);
-	void	setTexture(SDL_Texture* texture);
-	void	setTarget(Enemy* enemy);
-	void	setWeapon(Weapon* weapon);
+	const std::string&	getName() const;
+	int					getDamage() const;
+	int					getRange() const;
+	Uint64				getCooldown() const;
 
 protected:
-	void	handleKeyboardMovement();
-	void	handleGamepadMovement(Data& data);
-
-	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FlipMode	_flip;	
-
-	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
-
-	Enemy*			_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
-	Weapon*			_weapon;		//	Pointer to the player's weapon (nullptr if none)
-
-	float		_speed;
-	float		_dirX;
-	float		_dirY;
+	std::string	_name;
+	int			_damage;
+	int			_range;
+	Uint64		_cooldown;
 };

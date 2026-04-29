@@ -12,49 +12,61 @@
 *                                                               *
 \***************************************************************/
 
-#pragma once
+#include "../include/lite.hpp"
 
-#include "lite_common.hpp"
+Weapon::Weapon(std::string name, int damage, int range, Uint64 cooldown) :
+_name(name), _damage(damage), _range(range), _cooldown(cooldown) {}
 
-class Data;
+Weapon::~Weapon() {}
 
-class Player : public Entity
+void	Weapon::attack(Entity* target)
 {
-public:
-	Player(SDL_Texture* texture);
-	~Player();
+	static Uint64 lastAttackTime = 0;
+	if (SDL_GetTicks() - lastAttackTime >= _cooldown)
+	{
+		//	Here you would implement the actual attack logic, like checking range, applying damage, etc.
+		if (Debug::state == true)
+			std::cout << "Attacking " << target << " with " << _name << " for " << _damage << " damage!\n";
+		lastAttackTime = SDL_GetTicks();
+	}
+}
 
-	void	handleInput(Data& data);
-	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
+void	Weapon::setName(const std::string& name)
+{
+	this->_name = name;
+}
 
-	void	attack() const;
+void	Weapon::setDamage(int damage)
+{
+	this->_damage = damage;
+}
 
-	const SDL_FRect&	getRect() const;
-	const SDL_Texture*	getTexture() const;
-	Enemy*				getTarget() const;
-	Weapon*				getWeapon() const;
-	Enemy*				getClosestEnemy(Data& data) const;
+void	Weapon::setRange(int range)
+{
+	this->_range = range;
+}
 
-	void	setPosition(float x, float y);
-	void	setTexture(SDL_Texture* texture);
-	void	setTarget(Enemy* enemy);
-	void	setWeapon(Weapon* weapon);
+void	Weapon::setCooldown(Uint64 cooldown)
+{
+	this->_cooldown = cooldown;
+}
 
-protected:
-	void	handleKeyboardMovement();
-	void	handleGamepadMovement(Data& data);
+const std::string&	Weapon::getName() const
+{
+	return (this->_name);
+}
 
-	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FlipMode	_flip;	
+int	Weapon::getDamage() const
+{
+	return (this->_damage);
+}
 
-	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
+int	Weapon::getRange() const
+{
+	return (this->_range);
+}
 
-	Enemy*			_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
-	Weapon*			_weapon;		//	Pointer to the player's weapon (nullptr if none)
-
-	float		_speed;
-	float		_dirX;
-	float		_dirY;
-};
+Uint64	Weapon::getCooldown() const
+{
+	return (this->_cooldown);
+}

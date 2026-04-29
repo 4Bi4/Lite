@@ -19,7 +19,7 @@ Enemy::Enemy(SDL_Texture* texture) :
 	_texture(texture), _flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_type(DEFAULT), _speed(200), _dirX(0), _dirY(0) {}
+	_type(DEFAULT), _speed(150), _dirX(0), _dirY(0) {}
 
 Enemy::~Enemy() {}
 

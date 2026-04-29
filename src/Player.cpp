@@ -20,7 +20,8 @@ Player::Player(SDL_Texture* texture) :
 	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_target(nullptr),
-	_speed(600.0f),
+	_weapon(nullptr),
+	_speed(300.0f),
 	_dirX(0.0f), _dirY(0.0f) {}
 
 Player::~Player() {}
@@ -71,15 +72,6 @@ void	Player::handleInput(Data& data)
 		handleGamepadMovement(data);
 }
 
-void	Player::render(Data& data)
-{
-	//	Get the player's position relative to the camera
-	SDL_FRect screenRect = data.camera->apply(_destRect);
-
-	//	Render the player to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
-}
-
 void	Player::update(float deltaTime, Data& data)
 {
 	//	read the input
@@ -124,6 +116,27 @@ void	Player::update(float deltaTime, Data& data)
 		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
 }
 
+void	Player::render(Data& data)
+{
+	//	Get the player's position relative to the camera
+	SDL_FRect screenRect = data.camera->apply(_destRect);
+
+	//	Render the player to the screen
+	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
+}
+
+//	Attacks the player's target with their weapon
+void	Player::attack() const
+{
+	if (!_weapon || !_target)
+		return;
+
+	//	TODO:
+	//	implement multiple weapons if desired
+	//  (for now the player can only have 1 weapon)
+	_weapon->attack(_target);
+}
+
 //	Returns 4 floats.
 //	"x" and "y" are position
 //	"h" and "w" are the size on screen
@@ -140,6 +153,11 @@ const SDL_Texture*	Player::getTexture() const
 Enemy*	Player::getTarget() const
 {
 	return (_target);
+}
+
+Weapon*	Player::getWeapon() const
+{
+	return (_weapon);
 }
 
 //	Returns a pointer to the closest enemy, or nullptr if there are no enemies
@@ -178,4 +196,9 @@ void	Player::setTarget(Enemy* enemy)
 void	Player::setTexture(SDL_Texture* texture)
 {
 	_texture = texture;
+}
+
+void	Player::setWeapon(Weapon* weapon)
+{
+	_weapon = weapon;
 }

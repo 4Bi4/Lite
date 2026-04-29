@@ -27,6 +27,7 @@
 #include "TextureManager.hpp"
 
 #include "Entity.hpp"
+#include "Weapon.hpp"
 #include "Enemy.hpp"
 #include "Player.hpp"
 
@@ -43,6 +44,8 @@ class Camera;
 class Entity;
 class Enemy;
 class Player;
+
+class Weapon;
 
 /*****************************/
 // 	---- GAME FUNCTIONS ---- //

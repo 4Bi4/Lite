@@ -52,12 +52,12 @@
 #define DEFAULT_HRES 1280
 #define DEFAULT_VRES 720
 
-#define VOID_TILES 2			//	Number of tiles from the edge of the map we want to render
+#define VOID_TILES 3	//	Number of tiles from the edge of the map we want to render
 #define TARGET_HEIGHT 1080.0f
 #define TARGET_WIDTH 1920.0f
 
 //	This is more like a zoom adjustment tbh
-#define FOV 1.4f
+#define FOV 20.0f
 
 //	Default FPS limit
 #define DEFAULT_FPS_LIMIT 144

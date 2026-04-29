@@ -24,6 +24,7 @@ int	gameLogic(Data& data, Uint64 deltaTime)
 		return (1);
 	}
 	data.player->update(deltaTime, data);
+	data.player->attack();
 
 	for (auto& Enemy : data.enemies)
 		Enemy.update(deltaTime, data);
@@ -162,6 +163,9 @@ int	main(int argc, char* argv[])
 	Player player(TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, data.getRenderer()));
 	data.player = &player;
 	
+	Weapon misBolas("Mis Bolas", 10, 100, 1000);
+	data.player->setWeapon(&misBolas);
+
 	//	TESTING:
 	//	Create an enemy and give it a random position
 	Enemy joe(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()));

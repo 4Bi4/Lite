@@ -56,6 +56,7 @@ SRC         = $(SRCDIR)/main.cpp \
 			  $(SRCDIR)/Entity.cpp \
 			  $(SRCDIR)/Player.cpp \
 			  $(SRCDIR)/Camera.cpp \
+			  $(SRCDIR)/Weapon.cpp \
               $(SRCDIR)/SDL_utils.cpp \
 			  $(SRCDIR)/graphicsUtils.cpp \
 			  $(SRCDIR)/TextureManager.cpp \

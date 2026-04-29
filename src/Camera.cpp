@@ -61,8 +61,9 @@ void	Camera::update(const SDL_FRect& target, int mapW, int mapH)
 //	Allows resizing the camera view (useful for window resizing)
 void	Camera::resizeView(float newWidth, float newHeight)
 {
-	float widthScale = newWidth / TARGET_WIDTH;
-	float heightScale = newHeight / TARGET_HEIGHT;
+	//	Calculate the new zoom level based on new resolution, target resolution and aspect ratio (considering FOV)
+	float widthScale = newWidth / TARGET_WIDTH / 9.0f;
+	float heightScale = newHeight / TARGET_HEIGHT / 16.0f;
 
 	this->_zoom = std::min(widthScale, heightScale) * FOV;
 
