@@ -24,7 +24,7 @@ public:
 	Player(SDL_Texture* texture);
 	~Player();
 
-	void	handleInput();
+	void	handleInput(Data& data);
 	void	update(float deltaTime, Data& data);
 	void	render(Data& data);
 
@@ -33,6 +33,9 @@ public:
 	void	setPosition(float x, float y);
 
 protected:
+	void	handleKeyboardMovement();
+	void	handleGamepadMovement(Data& data);
+
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
 	SDL_FlipMode	_flip;	
 

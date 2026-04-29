@@ -60,7 +60,7 @@ int	initSDLWindow(Data& data)
 //	RETURN: 0 on success, 1 on error
 int	initSDLCore(Data& data)
 {
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD))
 	{
 		std::cerr << "SDL_Init: " << SDL_GetError() << "\n";
 		return (1);

@@ -24,27 +24,56 @@ Player::Player(SDL_Texture* texture) :
 
 Player::~Player() {}
 
-void Player::handleInput()
+void	Player::handleGamepadMovement(Data& data)
 {
-	const bool*	keys = SDL_GetKeyboardState(NULL);
+	SDL_Gamepad* g = data.getGamepad();
+
+	if (!g)
+		return;
+
+	int rawX = SDL_GetGamepadAxis(g, SDL_GAMEPAD_AXIS_LEFTX);
+	int rawY = SDL_GetGamepadAxis(g, SDL_GAMEPAD_AXIS_LEFTY);
+
+	// Normalize the range to -1.0 a 1.0
+	if (std::abs(rawX) > DEADZONE)
+		_dirX += rawX / MAX_JOYSTICK_VALUE;
+	else
+		_dirX += 0;
+
+	if (std::abs(rawY) > DEADZONE)
+		_dirY += rawY / MAX_JOYSTICK_VALUE;
+	else
+		_dirY += 0;
+}
+
+void	Player::handleKeyboardMovement()
+{
+	const bool*     keys = SDL_GetKeyboardState(NULL);
 
 	_dirX = 0.0f;
 	_dirY = 0.0f;
 
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])
-		_dirY = -1.0f;
+			_dirY += -1.0f;
 	if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])
-		_dirY = 1.0f;
+			_dirY += 1.0f;
 	if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
-		_dirX = -1.0f;
+			_dirX += -1.0f;
 	if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
-		_dirX = 1.0f;
+			_dirX += 1.0f;
+}
+
+void	Player::handleInput(Data& data)
+{
+	handleKeyboardMovement();
+	if (data.getGamepad())
+		handleGamepadMovement(data);
 }
 
 void	Player::render(Data& data)
 {
 	//	Get the player's position relative to the camera
-	SDL_FRect screenRect = data._camera->apply(_destRect);
+	SDL_FRect screenRect = data.camera->apply(_destRect);
 
 	//	Render the player to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
@@ -53,7 +82,7 @@ void	Player::render(Data& data)
 void	Player::update(float deltaTime, Data& data)
 {
 	//	read the input
-	handleInput();
+	handleInput(data);
 
 	//	call special physics function HERE (if there is one)
 
@@ -77,8 +106,8 @@ void	Player::update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	float maxX = data._map->getWidth() * PIXEL_SIZE;
-    float maxY = data._map->getHeight() * PIXEL_SIZE;
+	float maxX = data.map->getWidth() * PIXEL_SIZE;
+	float maxY = data.map->getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;

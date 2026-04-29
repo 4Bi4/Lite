@@ -26,7 +26,7 @@
 #include "SDL3_mixer/SDL_mixer.h"
 #include "SDL3_image/SDL_image.h"
 
-//\tCOLOR DEFINITIONS
+//	Global COLOR DEFINITIONS
 
 #define RED			"\033[0;31m"
 #define GREEN		"\033[0;32m"
@@ -45,21 +45,31 @@
 #define NO_COLOR	"\033[0m"
 
 /******************************/
-//\t---- DEFAULT VALUES ----  //
+//---- DEFAULT VALUES ----  //
 /******************************/
 
-//\tDefault resolution
+//	Default resolution
 #define DEFAULT_HRES 1280
 #define DEFAULT_VRES 720
 
-//\tDefault FPS limit
+#define FOV 0.9f
+
+//	Default FPS limit
 #define DEFAULT_FPS_LIMIT 144
 
-//\tTile size in pixels
-#define PIXEL_SIZE 64
+//	Tile size in pixels
+#define PIXEL_SIZE 128
 
-//\tGlobal variable for debug mode
-//\tDebug Mode prints information on the console about the engine's state
+//	Default texture paths
+#define DEFAULT_PLAYER_TEXTURE "./resources/textures/player/error.png"
+#define DEFAULT_ENEMY_TEXTURE "./resources/textures/enemy/enemy.png"
+
+//	Gamepad management
+#define MAX_JOYSTICK_VALUE 32767.0f
+#define DEADZONE 8000
+
+//	Global variable for debug mode
+//	Debug Mode prints information on the console about the engine's state
 namespace Debug
 {
 	inline bool state = false;

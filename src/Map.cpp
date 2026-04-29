@@ -23,7 +23,7 @@ Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
 	_height = height;
 	_width = width;
 
-	_map = createMap(height, width);
+	map = createMap(height, width);
 }
 
 Map::~Map()
@@ -33,8 +33,8 @@ Map::~Map()
 
 	//	Free the map memory
 	for (unsigned int i = 0; i < _height; i++)
-		delete[] (_map[i]);
-	delete[] (_map);
+		delete[] (map[i]);
+	delete[] (map);
 }
 
 char**	Map::createMap(unsigned int height, unsigned int width)
@@ -77,7 +77,7 @@ void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 	{
 		for (int j = startCol; j < endCol; j++)
 		{
-			int type = _map[i][j];
+			int type = map[i][j];
 			
 			//	1. Calculate the world position of the tile
 			SDL_FRect worldDest = { 

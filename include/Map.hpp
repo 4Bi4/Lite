@@ -33,7 +33,7 @@ public:
 
 	//	Getters
 
-	char**			getMap() const { return (this->_map); }
+	char**			getMap() const { return (this->map); }
 	unsigned int	getWidth() const { return (this->_width); }
 	unsigned int	getHeight() const { return (this->_height); }
 
@@ -48,5 +48,5 @@ private:
 	unsigned int	_width;
 	unsigned int	_height;
 
-	char**			_map;
+	char**			map;
 };

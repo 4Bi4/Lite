@@ -16,6 +16,8 @@
 
 SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
 {
+	//	Check if the texture is already loaded
+	//	If it is, return the cached texture
 	if (textureCache.find(filePath) != textureCache.end())
 		return (textureCache[filePath]);
 

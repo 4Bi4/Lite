@@ -64,7 +64,7 @@ void	Camera::resizeView(float newWidth, float newHeight)
 	float widthScale = newWidth / TARGET_WIDTH;
 	float heightScale = newHeight / TARGET_HEIGHT;
 
-	this->_zoom = std::min(widthScale, heightScale);
+	this->_zoom = std::min(widthScale, heightScale) * FOV;
 
 	this->_view.w = newWidth / this->_zoom;
 	this->_view.h = newHeight / this->_zoom;

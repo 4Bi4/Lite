@@ -16,20 +16,20 @@
 
 int	gameLogic(Data& data, Uint64 deltaTime)
 {
-	if (!data._player)
+	if (!data.player)
 	{
 		std::cerr << B_RED << "Error: Player not initialized!" << NO_COLOR << std::endl;
 		return (1);
 	}
-	data._player->update(deltaTime, data);
+	data.player->update(deltaTime, data);
 
 	for (auto& Enemy : data.enemies)
 		Enemy.update(deltaTime, data);
 
-	data._camera->update(
-		data._player->getRect(), 
-		data._map->getWidth(), 
-		data._map->getHeight()
+	data.camera->update(
+		data.player->getRect(), 
+		data.map->getWidth(), 
+		data.map->getHeight()
 	);
 
 	return (0);
@@ -39,13 +39,13 @@ void	renderLogic(Data& data)
 {
 	//	--- Background ---
 	makeBGRainbow(data);
-	data._map->drawMap(data.getRenderer(), data._camera);
+	data.map->drawMap(data.getRenderer(), data.camera);
 
 	//	--- Foreground ---
-	data._player->render(data);
-
 	for (auto& Enemy : data.enemies)
 		Enemy.render(data);
+
+	data.player->render(data);
 }
 
 int handleEvents(Data& data, SDL_Event& event)
@@ -83,10 +83,36 @@ int handleEvents(Data& data, SDL_Event& event)
 			data.setHres(newW);
 			data.setVres(newH);
 
-			if (data._camera)
-				data._camera->resizeView((float)newW, (float)newH);
+			if (data.camera)
+				data.camera->resizeView((float)newW, (float)newH);
+		}
+
+		//	Gamepad/Controller management
+		if (event.type == SDL_EVENT_GAMEPAD_ADDED)
+		{
+			//	We support the first controller connected (for now)
+			if (!data.getGamepad())
+			{
+				// event.gdevice.which = new device ID
+				data.setGamepad(SDL_OpenGamepad(event.gdevice.which));
+				if (Debug::state == true)
+					std::cout << B_BLUE << "New controller connected!" << NO_COLOR << std::endl;
+			}
+		}
+
+		if (event.type == SDL_EVENT_GAMEPAD_REMOVED)
+		{
+			if (data.getGamepad())
+			{
+				//	Close gamepad (prevents memory leak)
+				SDL_CloseGamepad(data.getGamepad());
+				data.setGamepad(nullptr);
+				if (Debug::state == true)
+					std::cout << "Controller disconnected." << std::endl;
+			}
 		}
 	}
+
 	return (0);
 }
 
@@ -100,16 +126,16 @@ int	gameLoop(Data& data)
 	long long	totalTime = 0;
 
 	//	Check all the modules
-	if (!data._player || !data._map || !data._camera)
+	if (!data.player || !data.map || !data.camera)
 	{
 		std::cerr << B_RED << "Error: Not all game modules initialized!" << NO_COLOR << std::endl;
 		return (1);
 	}
 
 	//	Set the player's initial position to the center of the map
-	float initialX = ((data._map->getWidth() * PIXEL_SIZE) / 2.0f);
-	float initialY = ((data._map->getHeight() * PIXEL_SIZE) / 2.0f);
-	data._player->setPosition(initialX, initialY);
+	float initialX = ((data.map->getWidth() * PIXEL_SIZE) / 2.0f);
+	float initialY = ((data.map->getHeight() * PIXEL_SIZE) / 2.0f);
+	data.player->setPosition(initialX, initialY);
 
 	//	Update the State Machine
 	data.setState(IN_GAME);
@@ -178,33 +204,34 @@ int	main(int argc, char* argv[])
 	if (initSDL(data) != 0)
 		return (1);
 
-	Player player(TextureManager::loadTexture("./resources/textures/player/error.png", data.getRenderer()));
-	data._player = &player;
+	Player player(TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, data.getRenderer()));
+	data.player = &player;
 	
 	//	TESTING
 	//	Create an enemy and give it a random position
-	Enemy joe(TextureManager::loadTexture("./resources/textures/enemy/enemy.png", data.getRenderer()));
+	Enemy joe(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()));
 	joe.setPosition(1000.0f, 1000.0f);
 	data.enemies.push_back(joe);
 
-	Enemy joe2(TextureManager::loadTexture("./resources/textures/enemy/enemy.png", data.getRenderer()));
+	Enemy joe2(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()));
 	joe2.setPosition(100.0f, 100.0f);
 	data.enemies.push_back(joe2);
 
-	Enemy joe3(TextureManager::loadTexture("./resources/textures/enemy/enemy.png", data.getRenderer()));
+	Enemy joe3(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()));
 	joe3.setPosition(1500.0f, 100.0f);
 	data.enemies.push_back(joe3);
 
-	Enemy joe4(TextureManager::loadTexture("./resources/textures/player/error.png", data.getRenderer()));
+	Enemy joe4(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()));
 	joe4.setPosition(1500.0f, 1200.0f);
 	data.enemies.push_back(joe4);
 
 	Map map(data.getRenderer(), MAP_HEIGHT, MAP_WIDTH);
-	data._map = &map;
+	data.map = &map;
 
 	Camera camera(data.getHres(), data.getVres());
-	data._camera = &camera;
+	data.camera = &camera;
 
+	//	Start the game
 	gameLoop(data);
 
 	//	Close the program
