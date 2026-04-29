@@ -52,6 +52,7 @@ SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
 			  $(SRCDIR)/Enemy.cpp \
+			  $(SRCDIR)/events.cpp \
 			  $(SRCDIR)/Entity.cpp \
 			  $(SRCDIR)/Player.cpp \
 			  $(SRCDIR)/Camera.cpp \

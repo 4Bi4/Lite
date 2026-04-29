@@ -14,6 +14,8 @@
 
 #include "../include/lite.hpp"
 
+//	Runs the game logic (movement, entities, etc...)
+//	RETURN: 0 on success, 1 on error
 int	gameLogic(Data& data, Uint64 deltaTime)
 {
 	if (!data.player)
@@ -35,6 +37,7 @@ int	gameLogic(Data& data, Uint64 deltaTime)
 	return (0);
 }
 
+//	Renders the game (background, map, entities, etc...)
 void	renderLogic(Data& data)
 {
 	//	--- Background ---
@@ -46,74 +49,6 @@ void	renderLogic(Data& data)
 		Enemy.render(data);
 
 	data.player->render(data);
-}
-
-int handleEvents(Data& data, SDL_Event& event)
-{
-	//	Handle events
-	while (SDL_PollEvent(&event))
-	{
-		if (event.type == SDL_EVENT_QUIT)
-			data.setRunning(false);
-
-		if (event.type == SDL_EVENT_KEY_DOWN)
-		{
-			if (event.key.key == SDLK_F && !event.key.repeat)
-			{
-				bool	newState = !data.isFullscreen();
-
-				data.setFullscreen(newState);
-
-				if (SDL_SetWindowFullscreen(data.getWindow(), newState) != true)
-				{
-					std::cerr << "SDL_SetWindowFullscreen: " << SDL_GetError() << "\n";
-					data.setFullscreen(!newState); // Revert state on failure
-				}				
-			}
-		}
-
-		//	Handle window resize events to update camera view
-		if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED || event.type == SDL_EVENT_WINDOW_RESIZED) 
-		{
-			int	newW;
-			int	newH;
-
-			SDL_GetRenderOutputSize(data.getRenderer(), &newW, &newH);
-			
-			data.setHres(newW);
-			data.setVres(newH);
-
-			if (data.camera)
-				data.camera->resizeView((float)newW, (float)newH);
-		}
-
-		//	Gamepad/Controller management
-		if (event.type == SDL_EVENT_GAMEPAD_ADDED)
-		{
-			//	We support the first controller connected (for now)
-			if (!data.getGamepad())
-			{
-				// event.gdevice.which = new device ID
-				data.setGamepad(SDL_OpenGamepad(event.gdevice.which));
-				if (Debug::state == true)
-					std::cout << B_BLUE << "New controller connected!" << NO_COLOR << std::endl;
-			}
-		}
-
-		if (event.type == SDL_EVENT_GAMEPAD_REMOVED)
-		{
-			if (data.getGamepad())
-			{
-				//	Close gamepad (prevents memory leak)
-				SDL_CloseGamepad(data.getGamepad());
-				data.setGamepad(nullptr);
-				if (Debug::state == true)
-					std::cout << "Controller disconnected." << std::endl;
-			}
-		}
-	}
-
-	return (0);
 }
 
 //	Main loop of the engine
@@ -140,6 +75,11 @@ int	gameLoop(Data& data)
 	//	Update the State Machine
 	data.setState(IN_GAME);
 
+	//	TESTING:
+	//  Esto es cutrisimo hay que quitarlo despues!!!
+
+	SDL_Texture* targetTexture = TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, data.getRenderer());
+
 	while (data.isRunning())
 	{
 		Uint64	currentFrame = SDL_GetTicksNS();
@@ -156,10 +96,24 @@ int	gameLoop(Data& data)
 		if (handleEvents(data, event) != 0)
 			return (1);
 
-		//Move game logic to a separate function for better organization
+		//	Move game logic to a separate function for better organization
 		if (gameLogic(data, deltaTime) != 0)
 			return (1);
 	
+		//	TESTING:
+		if (Debug::state == true)
+		{
+			Enemy* newTarget = data.player->getClosestEnemy(data);
+			Enemy* oldTarget = data.player->getTarget();
+			if (newTarget != oldTarget)
+			{
+				data.player->setTarget(newTarget);
+				newTarget->setTexture(targetTexture);
+				if (oldTarget)
+					oldTarget->setTexture(TextureManager::getTexture(DEFAULT_ENEMY_TEXTURE));
+			}
+		}
+
 		//	Render stuff here
 		renderLogic(data);
 
@@ -204,10 +158,11 @@ int	main(int argc, char* argv[])
 	if (initSDL(data) != 0)
 		return (1);
 
+
 	Player player(TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, data.getRenderer()));
 	data.player = &player;
 	
-	//	TESTING
+	//	TESTING:
 	//	Create an enemy and give it a random position
 	Enemy joe(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()));
 	joe.setPosition(1000.0f, 1000.0f);

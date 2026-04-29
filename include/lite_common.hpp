@@ -52,17 +52,23 @@
 #define DEFAULT_HRES 1280
 #define DEFAULT_VRES 720
 
-#define FOV 0.9f
+#define VOID_TILES 2			//	Number of tiles from the edge of the map we want to render
+#define TARGET_HEIGHT 1080.0f
+#define TARGET_WIDTH 1920.0f
+
+//	This is more like a zoom adjustment tbh
+#define FOV 1.4f
 
 //	Default FPS limit
 #define DEFAULT_FPS_LIMIT 144
 
 //	Tile size in pixels
-#define PIXEL_SIZE 128
+#define PIXEL_SIZE 64
 
 //	Default texture paths
 #define DEFAULT_PLAYER_TEXTURE "./resources/textures/player/error.png"
 #define DEFAULT_ENEMY_TEXTURE "./resources/textures/enemy/enemy.png"
+#define DEBUG_ENEMY_TEXTURE "./resources/textures/enemy/targeted_enemy.png"
 
 //	Gamepad management
 #define MAX_JOYSTICK_VALUE 32767.0f

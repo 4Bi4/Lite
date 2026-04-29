@@ -35,8 +35,11 @@ public:
 
 	const SDL_FRect&	getRect() const;
 	enemyType			getType() const;
+	const SDL_Texture*	getTexture() const;
+
 
 	void	setType(enemyType type);
+	void	setTexture(SDL_Texture* texture);
 	void	setPosition(float x, float y);
 
 

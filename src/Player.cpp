@@ -19,6 +19,7 @@ Player::Player(SDL_Texture* texture) :
 	_texture(texture), _flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_target(nullptr),
 	_speed(600.0f),
 	_dirX(0.0f), _dirY(0.0f) {}
 
@@ -131,8 +132,50 @@ const SDL_FRect&	Player::getRect() const
 	return (_destRect);
 }
 
+const SDL_Texture*	Player::getTexture() const
+{
+	return (_texture);
+}
+
+Enemy*	Player::getTarget() const
+{
+	return (_target);
+}
+
+//	Returns a pointer to the closest enemy, or nullptr if there are no enemies
+Enemy*	Player::getClosestEnemy(Data& data) const
+{
+	Enemy* closest = nullptr;
+	float closestDist = MAXFLOAT;
+
+	for (auto& enemy : data.enemies)
+	{
+		float dx = (enemy.getRect().x + enemy.getRect().w / 2.0f) - (_destRect.x + _destRect.w / 2.0f);
+		float dy = (enemy.getRect().y + enemy.getRect().h / 2.0f) - (_destRect.y + _destRect.h / 2.0f);
+		float dist = std::sqrt(dx * dx + dy * dy);
+
+		if (dist < closestDist)
+		{
+			closestDist = dist;
+			closest = &enemy;
+		}
+	}
+
+	return (closest);
+}
+
 void	Player::setPosition(float x, float y)
 {
 	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
 	_destRect.y = y  - (PIXEL_SIZE / 2.0f);
+}
+
+void	Player::setTarget(Enemy* enemy)
+{
+	_target = enemy;
+}
+
+void	Player::setTexture(SDL_Texture* texture)
+{
+	_texture = texture;
 }

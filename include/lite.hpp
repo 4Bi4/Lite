@@ -44,11 +44,11 @@ class Entity;
 class Enemy;
 class Player;
 
-/******************************/
-// 	---- UTILS FUNCTIONS ---- //
-/******************************/
+/*****************************/
+// 	---- GAME FUNCTIONS ---- //
+/*****************************/
 
-int			checkArgs(char* argv[], Data& data);
+int			handleEvents(Data& data, SDL_Event& event);
 
 /*******************************/
 // 	---- RENDER FUNCTIONS ---- //
@@ -56,6 +56,12 @@ int			checkArgs(char* argv[], Data& data);
 
 void		makeBGRainbow(Data& data);
 void		renderBackground(Data& data, SDL_Color color);
+
+/******************************/
+// 	---- UTILS FUNCTIONS ---- //
+/******************************/
+
+int			checkArgs(char* argv[], Data& data);
 
 /**********************************/
 // 	---- SDL UTILS FUNCTIONS ---- //

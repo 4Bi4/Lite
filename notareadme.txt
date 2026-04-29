@@ -38,4 +38,4 @@ TO DO LIST:
 	[ ] Sistema de Disparo Automático: Un temporizador que busque al enemigo más cercano y cree un objeto Projectile que se mueva hacia él.
 
 BONUS:
-	[x] Suporte para mandos
+	[x] Soporte para mandos (tested on a PS5 controller)

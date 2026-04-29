@@ -103,6 +103,11 @@ enemyType	Enemy::getType() const
 
 //	SETTERS
 
+const SDL_Texture*	Enemy::getTexture() const
+{
+	return (_texture);
+}
+
 void	Enemy::setType(enemyType newType)
 {
 	_type = newType;
@@ -112,4 +117,9 @@ void	Enemy::setPosition(float x, float y)
 {
 	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
 	_destRect.y = y  - (PIXEL_SIZE / 2.0f);
+}
+
+void	Enemy::setTexture(SDL_Texture* texture)
+{
+	_texture = texture;
 }

@@ -33,6 +33,14 @@ SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Render
 	return (tex);
 }
 
+SDL_Texture*	TextureManager::getTexture(const std::string& filePath)
+{
+	if (textureCache.find(filePath) != textureCache.end())
+		return (textureCache[filePath]);
+	else
+		return (nullptr);
+}
+
 void	TextureManager::Clean()
 {
 	for (auto& pair : textureCache)

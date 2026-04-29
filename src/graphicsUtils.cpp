@@ -21,10 +21,11 @@ void	renderBackground(Data& data, SDL_Color color)
 	SDL_RenderClear(data.getRenderer());
 }
 
+//	Fills the back of the screen with a rainbow effect
 void	makeBGRainbow(Data& data)
 {
 	static float	hue = 0.0f;
-	const float		step = 1.0f;
+	const float		step = 0.1f;
 
 	float	c = 1.0f;
 	float	x = c * (1.0f - std::fabs(std::fmod(hue / 60.0f, 2.0f) - 1.0f));
