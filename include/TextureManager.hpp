@@ -12,9 +12,9 @@
 *                                                               *
 \***************************************************************/
 
-#include "lite_common.hpp"
-
 #pragma once
+
+#include "lite_common.hpp"
 
 class TextureManager
 {
@@ -22,7 +22,6 @@ public:
 	TextureManager() = delete; // Non-instantiable class
 
 	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
-	static SDL_Texture* getTexture(const std::string& filePath);
 
 	static void Clean();
 

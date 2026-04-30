@@ -51,12 +51,14 @@ endif
 SRC         = $(SRCDIR)/main.cpp \
               $(SRCDIR)/Data.cpp \
               $(SRCDIR)/utils.cpp \
+			  $(SRCDIR)/Game.cpp \
 			  $(SRCDIR)/Enemy.cpp \
 			  $(SRCDIR)/events.cpp \
 			  $(SRCDIR)/Entity.cpp \
 			  $(SRCDIR)/Player.cpp \
 			  $(SRCDIR)/Camera.cpp \
 			  $(SRCDIR)/Weapon.cpp \
+			  $(SRCDIR)/EnemyManager.cpp \
               $(SRCDIR)/SDL_utils.cpp \
 			  $(SRCDIR)/graphicsUtils.cpp \
 			  $(SRCDIR)/TextureManager.cpp \

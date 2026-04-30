@@ -15,10 +15,6 @@
 #include "../include/lite.hpp"
 
 Data::Data(void) :
-	player(nullptr),
-	camera(nullptr),
-	map(nullptr),
-	enemies(),
 	_hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
 	_fpsLimit(DEFAULT_FPS_LIMIT),
 	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT),
@@ -127,6 +123,11 @@ void	Data::setFullscreen(bool fullscreen)
 	this->_fullscreen = fullscreen;
 }
 
+void	Data::setGame(Game* newGame)
+{
+	this->game = newGame;
+}
+
 void	Data::setState(state newState)
 {
 	this->_state = newState;
@@ -136,10 +137,3 @@ void	Data::setGamepad(SDL_Gamepad* newGamepad)
 {
 	this->_gamepad = newGamepad;
 }
-
-// THIS IS FOR THE TEXTURE MANAGER
-//	|	|	|	|	|	|	|	|
-//	V	V	V	V	V	V	V	V
-
-// Static member initialization
-std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;

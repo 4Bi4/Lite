@@ -12,40 +12,40 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include "lite_common.hpp"
+
+class Game
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	Game(Data& data);
+	~Game();
 
-	if (!renderer)
-		return (nullptr);
+	void	update(float deltaTimeNS, Data& data);
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	void	render(Data& data);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	void	nextRound();
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+	void	togglePause();
 
-	textureCache.clear();
-}
+	void	gameOver();
+
+	bool	isPaused() const;
+	bool	isGameOver() const;
+	float	getRemainingTime() const;
+	int		getRound() const;
+
+	EnemyManager	enemyManager;
+	Player			player;
+	Camera			camera;
+	Map				map;
+
+private:
+	float	_roundTimer;
+	float	_roundDuration;
+	int		_currentRound;
+	bool	_isPaused;
+	bool	_isGameOver;
+};

@@ -21,7 +21,8 @@ Player::Player(SDL_Texture* texture) :
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_target(nullptr),
 	_weapon(nullptr),
-	_speed(300.0f),
+	_hp(100), _maxHp(100),
+	_speed(400.0f),
 	_dirX(0.0f), _dirY(0.0f) {}
 
 Player::~Player() {}
@@ -99,8 +100,8 @@ void	Player::update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	float maxX = data.map->getWidth() * PIXEL_SIZE;
-	float maxY = data.map->getHeight() * PIXEL_SIZE;
+	float maxX = data.game->map.getWidth() * PIXEL_SIZE;
+	float maxY = data.game->map.getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;
@@ -111,6 +112,9 @@ void	Player::update(float deltaTime, Data& data)
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
 
+	//	Update the player's target
+	setTarget(getClosestEnemy(data));
+
 	//	Debug player info
 	if (Debug::state == true)
 		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
@@ -119,7 +123,7 @@ void	Player::update(float deltaTime, Data& data)
 void	Player::render(Data& data)
 {
 	//	Get the player's position relative to the camera
-	SDL_FRect screenRect = data.camera->apply(_destRect);
+	SDL_FRect screenRect = data.game->camera.apply(_destRect);
 
 	//	Render the player to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
@@ -131,10 +135,13 @@ void	Player::attack() const
 	if (!_weapon || !_target)
 		return;
 
+	float	distToTarget = Entity::distanceTo(*this, *this->getTarget());
+
 	//	TODO:
 	//	implement multiple weapons if desired
 	//  (for now the player can only have 1 weapon)
-	_weapon->attack(_target);
+	if (distToTarget <= _weapon->getRange())
+		_weapon->attack(_target);
 }
 
 //	Returns 4 floats.
@@ -166,11 +173,9 @@ Enemy*	Player::getClosestEnemy(Data& data) const
 	Enemy* closest = nullptr;
 	float closestDist = MAXFLOAT;
 
-	for (auto& enemy : data.enemies)
+	for (auto& enemy : data.game->enemyManager.getEnemies())
 	{
-		float dx = (enemy.getRect().x + enemy.getRect().w / 2.0f) - (_destRect.x + _destRect.w / 2.0f);
-		float dy = (enemy.getRect().y + enemy.getRect().h / 2.0f) - (_destRect.y + _destRect.h / 2.0f);
-		float dist = std::sqrt(dx * dx + dy * dy);
+		float dist = Entity::distanceTo(*this, enemy);
 
 		if (dist < closestDist)
 		{
@@ -178,8 +183,17 @@ Enemy*	Player::getClosestEnemy(Data& data) const
 			closest = &enemy;
 		}
 	}
-
 	return (closest);
+}
+
+int	Player::getHp() const
+{
+	return (_hp);
+}
+
+int	Player::getMaxHp() const
+{
+	return (_maxHp);
 }
 
 void	Player::setPosition(float x, float y)
@@ -190,6 +204,16 @@ void	Player::setPosition(float x, float y)
 
 void	Player::setTarget(Enemy* enemy)
 {
+	if (!enemy || enemy == _target)
+		return;
+
+	//	Shiny enemy outline for debug mode
+	if (Debug::state == true)
+	{
+		enemy->setTexture(TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, nullptr));
+		if (_target)
+			_target->setTexture(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, nullptr));
+	}
 	_target = enemy;
 }
 
@@ -201,4 +225,25 @@ void	Player::setTexture(SDL_Texture* texture)
 void	Player::setWeapon(Weapon* weapon)
 {
 	_weapon = weapon;
+}
+
+void	Player::takeDamage(int damage)
+{
+	_hp -= damage;
+	if (_hp < 0)
+		_hp = 0;
+}
+
+void	Player::heal(int amount)
+{
+	_hp += amount;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
+}
+
+void	Player::setMaxHp(int hp)
+{
+	_maxHp = hp;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
 }

@@ -19,15 +19,23 @@ _name(name), _damage(damage), _range(range), _cooldown(cooldown) {}
 
 Weapon::~Weapon() {}
 
+//	TODO:
+//	For now we assume this is a fireball
+//	but this will be the main weapon class and we will
+//	different types of attack methods
+//	(either making children classes or using an enum to call different methods)
 void	Weapon::attack(Entity* target)
 {
 	static Uint64 lastAttackTime = 0;
-	if (SDL_GetTicks() - lastAttackTime >= _cooldown)
+	Uint64 currentTime = SDL_GetTicks();
+
+	//	Check if the weapon is off cooldown
+	if (currentTime - lastAttackTime >= _cooldown)
 	{
-		//	Here you would implement the actual attack logic, like checking range, applying damage, etc.
+		target->takeDamage(_damage);
 		if (Debug::state == true)
 			std::cout << "Attacking " << target << " with " << _name << " for " << _damage << " damage!\n";
-		lastAttackTime = SDL_GetTicks();
+		lastAttackTime = currentTime;
 	}
 }
 

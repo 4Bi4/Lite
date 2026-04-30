@@ -16,8 +16,6 @@
 
 #include "lite_common.hpp"
 
-class Data;
-
 class Player : public Entity
 {
 public:
@@ -35,11 +33,16 @@ public:
 	Enemy*				getTarget() const;
 	Weapon*				getWeapon() const;
 	Enemy*				getClosestEnemy(Data& data) const;
+	int					getHp() const;
+	int					getMaxHp() const;
 
 	void	setPosition(float x, float y);
 	void	setTexture(SDL_Texture* texture);
 	void	setTarget(Enemy* enemy);
 	void	setWeapon(Weapon* weapon);
+	void	takeDamage(int damage);
+	void	heal(int amount);
+	void	setMaxHp(int hp);
 
 protected:
 	void	handleKeyboardMovement();
@@ -54,7 +57,9 @@ protected:
 	Enemy*			_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
 	Weapon*			_weapon;		//	Pointer to the player's weapon (nullptr if none)
 
-	float		_speed;
-	float		_dirX;
-	float		_dirY;
+	int				_hp;
+	int				_maxHp;
+	float			_speed;
+	float			_dirX;
+	float			_dirY;
 };

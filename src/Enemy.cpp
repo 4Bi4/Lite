@@ -14,19 +14,23 @@
 
 #include "../include/lite.hpp"
 
-Enemy::Enemy(SDL_Texture* texture) :
+Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
 	Entity(texture),
 	_texture(texture), _flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_type(DEFAULT), _speed(150), _dirX(0), _dirY(0) {}
+	_manager(manager),
+	_type(DEFAULT),
+	_hp(30), _maxHp(30),
+	_speed(150),
+	_dirX(0), _dirY(0) {}
 
 Enemy::~Enemy() {}
 
 void	Enemy::render(Data& data)
 {
 	//	Get the enemy's position relative to the camera
-	SDL_FRect screenRect = data.camera->apply(_destRect);
+	SDL_FRect screenRect = data.game->camera.apply(_destRect);
 
 	//	Render the enemy to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
@@ -38,7 +42,7 @@ void	Enemy::calcNextMove(Data& data)
 {
 	//	for now we assume only 1 player
 	//	and this player is allways going to be the target
-	SDL_FRect target = data.player->getRect();
+	SDL_FRect target = data.game->player.getRect();
 
 	_dirX = target.x - _destRect.x;
 	_dirY = target.y - _destRect.y;
@@ -46,6 +50,9 @@ void	Enemy::calcNextMove(Data& data)
 
 void	Enemy::update(float deltaTime, Data& data)
 {
+	if (_hp <= 0)
+		return;
+	
 	//	!!!!!!!!  IMPORTANT !!!!!!!!
 	//	TODO:
 	//	Call the enemy AI to update _dirX and _dirY
@@ -73,8 +80,8 @@ void	Enemy::update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	float maxX = data.map->getWidth() * PIXEL_SIZE;
-    float maxY = data.map->getHeight() * PIXEL_SIZE;
+	float maxX = data.game->map.getWidth() * PIXEL_SIZE;
+    float maxY = data.game->map.getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;
@@ -108,6 +115,16 @@ const SDL_Texture*	Enemy::getTexture() const
 	return (_texture);
 }
 
+int	Enemy::getHp() const
+{
+	return (_hp);
+}
+
+int	Enemy::getMaxHp() const
+{
+	return (_maxHp);
+}
+
 void	Enemy::setType(enemyType newType)
 {
 	_type = newType;
@@ -122,4 +139,25 @@ void	Enemy::setPosition(float x, float y)
 void	Enemy::setTexture(SDL_Texture* texture)
 {
 	_texture = texture;
+}
+
+void	Enemy::takeDamage(int damage)
+{
+	_hp -= damage;
+	if (_hp < 0)
+		_hp = 0;
+}
+
+void	Enemy::heal(int amount)
+{
+	_hp += amount;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
+}
+
+void	Enemy::setMaxHp(int hp)
+{
+	_maxHp = hp;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
 }

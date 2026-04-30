@@ -38,5 +38,5 @@ protected:
 	std::string	_name;
 	int			_damage;
 	int			_range;
-	Uint64		_cooldown;
+	Uint64		_cooldown;//	Cooldown in milliseconds
 };

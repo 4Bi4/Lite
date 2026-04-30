@@ -12,40 +12,33 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include <deque>
+
+#include "lite_common.hpp"
+
+class EnemyManager
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	EnemyManager();
+	~EnemyManager();
 
-	if (!renderer)
-		return (nullptr);
+	void	update(float dt, Data& data, int round);
+	void	render(Data& data);
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	void	spawnEnemy(Data& data);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	void	setSpawnTimer(float timer);
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+	std::deque<Enemy>&			getEnemies();
+	const std::deque<Enemy>&	getEnemies() const;
 
-	textureCache.clear();
-}
+private:
+	//	Using a deque because we will be adding and removing enemies frequently
+	//	and deques dont move elements in memory
+	//	so we can safely store pointers to enemies
+	std::deque<Enemy>	_enemies;
+
+	float _spawnTimer;
+};

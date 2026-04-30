@@ -57,6 +57,7 @@ public:
 	bool			isFullscreen() const;
 	float			getTargetFrameTime() const;
 
+	Game*			getGame() const;
 	state			getState() const;
 	SDL_Gamepad*	getGamepad() const;
 
@@ -69,6 +70,7 @@ public:
 	void			setFpsLimit(int fpsLimit);
 	void			setFullscreen(bool fullscreen);
 
+	void			setGame(Game* newGame);
 	void			setState(state newState);
 	void			setGamepad(SDL_Gamepad* newGamepad);
 
@@ -86,17 +88,7 @@ public:
 	void			setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
 	void			setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
 
-	//	TODO:
-	//	store this variables in a new class
-	//	called game or whatever (la partida actual)
-	//	|  |  |  |  |  |  |  |  |  |
-	//	V  V  V  V  V  V  V  V  V  V
-
-	Player*				player;
-	Camera*				camera;
-	Map*				map;
-	
-	std::vector<Enemy>	enemies;
+	Game*				game;
 
 private:
 	int					_hRes;

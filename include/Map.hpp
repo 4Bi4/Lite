@@ -16,12 +16,6 @@
 
 #include "lite_common.hpp"
 
-#define MAP_WIDTH 30
-#define MAP_HEIGHT 20
-
-class Map;
-class Camera;
-
 class Map
 {
 public:

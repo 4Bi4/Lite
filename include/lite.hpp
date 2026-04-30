@@ -20,16 +20,19 @@
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
-#include "Data.hpp"
-
-#include "Map.hpp"
 #include "Camera.hpp"
+#include "Map.hpp"
 #include "TextureManager.hpp"
 
 #include "Entity.hpp"
 #include "Weapon.hpp"
 #include "Enemy.hpp"
 #include "Player.hpp"
+#include "EnemyManager.hpp"
+
+#include "Game.hpp"
+
+#include "Data.hpp"
 
 /******************************/
 // --- CLASS DECLARATIONS --- //
@@ -42,10 +45,12 @@ class TextureManager;
 class Camera;
 
 class Entity;
+class Weapon;
 class Enemy;
 class Player;
+class EnemyManager;
+class Game;
 
-class Weapon;
 
 /*****************************/
 // 	---- GAME FUNCTIONS ---- //

@@ -44,9 +44,9 @@
 
 #define NO_COLOR	"\033[0m"
 
-/******************************/
+/****************************/
 //---- DEFAULT VALUES ----  //
-/******************************/
+/****************************/
 
 //	Default resolution
 #define DEFAULT_HRES 1280
@@ -65,6 +65,10 @@
 //	Tile size in pixels
 #define PIXEL_SIZE 64
 
+//	Map size in tiles
+#define DEFAULT_MAP_WIDTH 35
+#define DEFAULT_MAP_HEIGHT 25
+
 //	Default texture paths
 #define DEFAULT_PLAYER_TEXTURE "./resources/textures/player/error.png"
 #define DEFAULT_ENEMY_TEXTURE "./resources/textures/enemy/enemy.png"
@@ -73,6 +77,12 @@
 //	Gamepad management
 #define MAX_JOYSTICK_VALUE 32767.0f
 #define DEADZONE 8000
+
+/****************************/
+//---- GAME CONSTANTS ----  //
+/****************************/
+
+#define ROUND_TIME 60.0f	// In seconds
 
 //	Global variable for debug mode
 //	Debug Mode prints information on the console about the engine's state
