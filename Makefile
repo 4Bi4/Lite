@@ -24,6 +24,9 @@ COMPILER    = g++
 
 CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror #-fsanitize=address
 
+# Use all available CPU cores for compilation
+MAKEFLAGS	+= -j$(shell nproc)
+
 OBJDIR      = obj
 
 SRCDIR      = src
@@ -93,6 +96,8 @@ fclean: clean
 	@printf "%b""$(RED)removed executables$(NC)\n"
 	@printf "%b""-> $(BLUE)[all clean]$(NC)\n"
 
-re: fclean all
+re:
+	$(MAKE) fclean
+	$(MAKE) all
 
 .PHONY: all clean fclean re test
