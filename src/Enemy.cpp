@@ -30,7 +30,7 @@ Enemy::~Enemy() {}
 void	Enemy::render(Data& data)
 {
 	//	Get the enemy's position relative to the camera
-	SDL_FRect screenRect = data.game->camera.apply(_destRect);
+	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
 	//	Render the enemy to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
@@ -42,7 +42,7 @@ void	Enemy::calcNextMove(Data& data)
 {
 	//	for now we assume only 1 player
 	//	and this player is allways going to be the target
-	SDL_FRect target = data.game->player.getRect();
+	SDL_FRect target = data.getGame()->getPlayer()->getRect();
 
 	_dirX = target.x - _destRect.x;
 	_dirY = target.y - _destRect.y;
@@ -80,8 +80,8 @@ void	Enemy::update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	float maxX = data.game->map.getWidth() * PIXEL_SIZE;
-    float maxY = data.game->map.getHeight() * PIXEL_SIZE;
+	float maxX = data.getGame()->getMap()->getWidth() * PIXEL_SIZE;
+    float maxY = data.getGame()->getMap()->getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;

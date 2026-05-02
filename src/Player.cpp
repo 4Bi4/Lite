@@ -100,8 +100,8 @@ void	Player::update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	float maxX = data.game->map.getWidth() * PIXEL_SIZE;
-	float maxY = data.game->map.getHeight() * PIXEL_SIZE;
+	float maxX = data.getGame()->getMap()->getWidth() * PIXEL_SIZE;
+	float maxY = data.getGame()->getMap()->getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;
@@ -123,7 +123,7 @@ void	Player::update(float deltaTime, Data& data)
 void	Player::render(Data& data)
 {
 	//	Get the player's position relative to the camera
-	SDL_FRect screenRect = data.game->camera.apply(_destRect);
+	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
 	//	Render the player to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
@@ -170,10 +170,11 @@ Weapon*	Player::getWeapon() const
 //	Returns a pointer to the closest enemy, or nullptr if there are no enemies
 Enemy*	Player::getClosestEnemy(Data& data) const
 {
-	Enemy* closest = nullptr;
-	float closestDist = MAXFLOAT;
-
-	for (auto& enemy : data.game->enemyManager.getEnemies())
+	EnemyManager*	enemyManager = data.getGame()->getEnemyManager();
+	Enemy*	closest = nullptr;
+	float	closestDist = MAXFLOAT;
+	
+	for (auto& enemy : enemyManager->getEnemies())
 	{
 		float dist = Entity::distanceTo(*this, enemy);
 

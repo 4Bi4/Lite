@@ -82,7 +82,7 @@
 //---- GAME CONSTANTS ----  //
 /****************************/
 
-#define ROUND_TIME 60.0f	// In seconds
+#define ROUND_TIME 10.0f	// In seconds
 
 //	Global variable for debug mode
 //	Debug Mode prints information on the console about the engine's state

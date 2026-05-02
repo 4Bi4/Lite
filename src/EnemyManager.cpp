@@ -51,8 +51,8 @@ void	EnemyManager::spawnEnemy(Data& data)
 	//	Get a random spawn position on the map
 	float	spawnX, spawnY;
 
-    spawnX = (rand() % (data.game->map.getWidth() * PIXEL_SIZE));
-    spawnY = (rand() % (data.game->map.getHeight() * PIXEL_SIZE));
+    spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
+    spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
 
 	newEnemy.setPosition(spawnX, spawnY);
 

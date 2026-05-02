@@ -22,6 +22,8 @@ public:
 	Game(Data& data);
 	~Game();
 
+	int		gameLoop(Data& data);
+
 	void	update(float deltaTimeNS, Data& data);
 
 	void	render(Data& data);
@@ -32,20 +34,32 @@ public:
 
 	void	gameOver();
 
-	bool	isPaused() const;
-	bool	isGameOver() const;
-	float	getRemainingTime() const;
-	int		getRound() const;
+	bool			isPaused() const;
+	bool			isGameOver() const;
+	float			getRemainingTime() const;
+	unsigned int	getRound() const;
 
-	EnemyManager	enemyManager;
-	Player			player;
-	Camera			camera;
-	Map				map;
+	//	Getters
+	EnemyManager*	getEnemyManager();
+	Player*			getPlayer();
+	Camera*			getCamera();
+	Map*			getMap();
+
+	//	Setters
+	void			setEnemyManager(const EnemyManager& enemyManager);
+	void			setPlayer(const Player& player);
+	void			setCamera(const Camera& camera);
+	void			setMap(const Map& map);
 
 private:
-	float	_roundTimer;
-	float	_roundDuration;
-	int		_currentRound;
-	bool	_isPaused;
-	bool	_isGameOver;
+	EnemyManager	_enemyManager;
+	Player			_player;
+	Camera			_camera;
+	Map				_map;
+
+	float			_roundTimer;
+	float			_roundDuration;
+	unsigned int	_currentRound;
+	bool			_isPaused;
+	bool			_isGameOver;
 };

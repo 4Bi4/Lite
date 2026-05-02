@@ -27,7 +27,7 @@ Entity::~Entity() {}
 void	Entity::render(Data& data)
 {
 	//	Get the Entity's position relative to the camera
-	SDL_FRect screenRect = data.game->camera.apply(_destRect);
+	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
 	//	Render the Entity to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
@@ -57,8 +57,8 @@ void	Entity::update(float deltaTime, Data& data)
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
 	//	Out of bounds check
-	float maxX = data.game->map.getWidth() * PIXEL_SIZE;
-    float maxY = data.game->map.getHeight() * PIXEL_SIZE;
+	float maxX = data.getGame()->getMap()->getWidth() * PIXEL_SIZE;
+    float maxY = data.getGame()->getMap()->getHeight() * PIXEL_SIZE;
 
 	if (_destRect.x < 0)
 		_destRect.x = 0;

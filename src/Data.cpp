@@ -15,12 +15,13 @@
 #include "../include/lite.hpp"
 
 Data::Data(void) :
+	_game(nullptr),
+	_gamepad(nullptr),
 	_hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
 	_fpsLimit(DEFAULT_FPS_LIMIT),
 	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT),
 	_vSync(true), _running(true), _fullscreen(false),
 	_state(LOADING),
-	_gamepad(nullptr),
 	_sdl() {}
 
 Data::~Data(void)
@@ -77,6 +78,11 @@ bool	Data::isFullscreen() const
 	return (this->_fullscreen);
 }
 
+Game*	Data::getGame() const
+{
+	return (this->_game);
+}
+
 state	Data::getState() const
 {
 	return(this->_state);
@@ -125,7 +131,7 @@ void	Data::setFullscreen(bool fullscreen)
 
 void	Data::setGame(Game* newGame)
 {
-	this->game = newGame;
+	this->_game = newGame;
 }
 
 void	Data::setState(state newState)

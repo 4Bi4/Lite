@@ -61,7 +61,7 @@ public:
 	state			getState() const;
 	SDL_Gamepad*	getGamepad() const;
 
-	//	Sett		ers
+	//	Setters
 
 	void			setHres(int hres);
 	void			setVres(int vres);
@@ -88,9 +88,10 @@ public:
 	void			setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
 	void			setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
 
-	Game*				game;
-
 private:
+	Game*				_game;
+	SDL_Gamepad*		_gamepad;		//	Pointer to the gamepad/Gamepad (if connected)
+
 	int					_hRes;
 	int					_vRes;
 	int					_fpsLimit;
@@ -101,8 +102,6 @@ private:
 	bool				_fullscreen;
 
 	state				_state;		//	[STATE MACHINE] Current state of the game
-
-	SDL_Gamepad*		_gamepad;		//	Pointer to the gamepad/Gamepad (if connected)
 
 	SdlData				_sdl;		//	Struct holding all the SDL stuff (like window, render, etc...)
 };

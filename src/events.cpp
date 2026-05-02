@@ -39,7 +39,7 @@ void	handleWindowResizeEvent(Data& data)
 	data.setHres(newW);
 	data.setVres(newH);
 
-	data.game->camera.resizeView((float)newW, (float)newH);
+	data.getGame()->getCamera()->resizeView((float)newW, (float)newH);
 }
 
 //	Handles gamepad connection and disconnection events
@@ -87,7 +87,7 @@ int handleEvents(Data& data, SDL_Event& event)
 		if (event.type == SDL_EVENT_QUIT)
 		{
 			data.setRunning(false);
-			data.game->gameOver();
+			data.getGame()->gameOver();
 		}
 
 		if (event.type == SDL_EVENT_KEY_DOWN)
