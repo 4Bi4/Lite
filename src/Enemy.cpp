@@ -22,7 +22,7 @@ Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
 	_manager(manager),
 	_type(DEFAULT),
 	_hp(30), _maxHp(30),
-	_speed(150),
+	_speed(100),
 	_dirX(0), _dirY(0) {}
 
 Enemy::~Enemy() {}
@@ -112,6 +112,7 @@ void	Enemy::spawn(EntityID id, float x, float y)
 void	Enemy::die()
 {
 	_active = false;
+	
 }
 
 //	GETTERS

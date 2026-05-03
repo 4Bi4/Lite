@@ -18,11 +18,11 @@
 
 struct EntityID
 {
-    int32_t index = -1;
-    uint32_t gen = 0;
+	int32_t index = -1;
+	uint32_t gen = 0;
 
-    bool isValid() const;
-    bool operator==(const EntityID& other);
+	bool isValid() const;
+	bool operator==(const EntityID& other);
 };
 
 inline bool EntityID::isValid() const
@@ -32,5 +32,5 @@ inline bool EntityID::isValid() const
 
 inline bool EntityID::operator==(const EntityID& other)
 {
-    return ((this->index == other.index) && (this->gen == other.gen));
+	return ((this->index == other.index) && (this->gen == other.gen));
 }

@@ -65,7 +65,7 @@ int	Game::gameLoop(Data& data)
 			{ 0, 0, 0, 0},
 			data.getHres() / 2, 40);
 
-		//	FPS counter
+		//	FPS + Enemy counter
 		if (Debug::state == true)
 		{
 			// update only every 10 frames
@@ -77,6 +77,11 @@ int	Game::gameLoop(Data& data)
 				"FPS: " + std::to_string(fps),
 				{ 255, 255, 255 , 255},
 				45, 10);
+			drawText(data.getRenderer(),
+				data.getFontSmall(),
+				"E: " + std::to_string(_enemyManager.getEnemyCount()),
+				{ 255, 255, 255 , 255},
+				45, 70);
 		}
 
 		//	Frame limiting (if vsync is disabled)
@@ -114,7 +119,7 @@ void	Game::update(float deltaTimeNS, Data& data)
 	_roundTimer += deltaTimeNS / 1000000000.0f;
 
 	//	Update enemies
-	_enemyManager.update(deltaTimeNS, data, _currentRound);
+	_enemyManager.update(deltaTimeNS, data);
 	//	Update player
 	_player.update(deltaTimeNS, data);
 	//	Handle player attacks
@@ -153,8 +158,12 @@ void	Game::nextRound()
 
 	//	Increase the wave duration
 	_roundDuration += 2.0f;
-	_enemyManager.setSpawnTimer(std::abs((ROUND_TIME - _currentRound * 5.0f) / 6.0f));
-	std::cout << B_YELLOW << "¡RONDA " << _currentRound << " INICIADA!\n" << NO_COLOR << std::endl;
+
+	//	TODO:
+	//	Look into this formula ↓ ↓ ↓
+	float rate = std::max(0.2f, 1.5f - (_currentRound * 0.1f));
+	_enemyManager.setSpawnRate(rate);
+	std::cout << B_YELLOW << "¡ROUND " << _currentRound << ", GO!\n" << NO_COLOR << std::endl;
 }
 
 void	Game::togglePause()
@@ -163,9 +172,9 @@ void	Game::togglePause()
 	if (Debug::state == true)
 	{
 		if (_isPaused)
-			std::cout << "Juego pausado." << std::endl;
+			std::cout << "Game paused." << std::endl;
 		else
-			std::cout << "Juego reanudado." << std::endl;
+			std::cout << "Game resumed." << std::endl;
 	}
 }
 

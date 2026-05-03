@@ -13,9 +13,11 @@
 \***************************************************************/
 
 #include "../include/lite.hpp"
-#include "../include/EnemyManager.hpp"
 
-EnemyManager::EnemyManager() : _maxEnemies(MAX_ENEMIES), _spawnTimer(0.0f)
+EnemyManager::EnemyManager() : _maxEnemies(MAX_ENEMIES),
+	_spawnTimer(0.0f),
+	_spawnRate(2.0f),
+	_enemyCount(0)
 {
 	_enemies.resize(_maxEnemies, Enemy(nullptr, this));
 	_generations.resize(_maxEnemies, 0);
@@ -27,16 +29,16 @@ EnemyManager::~EnemyManager()
 	this->_generations.clear();
 }
 
-void	EnemyManager::update(float deltaTimeNS, Data& data, int round)
+void	EnemyManager::update(float deltaTimeNS, Data& data)
 {
-	//	Spawnrate
-	float spawnInterval = std::max(0.2f, 1.5f - (round * 0.1f));
-
 	//	Spawn
 	this->_spawnTimer += deltaTimeNS / 1000000000.0f;
-	if (this->_spawnTimer >= spawnInterval)
+	if (this->_spawnTimer >= _spawnRate)
 	{
-		spawnEnemy(data, DEFAULT);
+		//	The amount of enemies to spawn
+		Uint16 count = (_spawnTimer / _spawnRate);
+		for (int i = 0; i < count; i++)
+			spawnEnemy(data, DEFAULT);
 		this->_spawnTimer = 0.0f;
 	}
 
@@ -53,6 +55,7 @@ void	EnemyManager::update(float deltaTimeNS, Data& data, int round)
 		{
 			_enemies[i].die();
 			_generations[i]++; //	Increment generation to invalidate old EntityIDs
+			_enemyCount--;
 		}
 	}
 
@@ -104,13 +107,21 @@ void	EnemyManager::spawnEnemy(Data& data, enemyType type)
 	//	Get a random spawn position on the map
 	float	spawnX, spawnY;
 
-    spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
-    spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
+	spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
+	spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
+
+	while (Entity::distanceTo(*data.getGame()->getPlayer(), Enemy(texture, this)) < 600.0f)
+	{
+		//	If the spawn point is too close to the player, try again
+		spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
+		spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
+	}
 
 	//	Spawn the new enemy
 	_enemies[index].setTexture(texture);
 	_enemies[index].setType(type);
 	_enemies[index].spawn(newID, spawnX, spawnY);
+	_enemyCount++;
 }
 
 //	Retuns the index of the first available spot
@@ -138,11 +149,12 @@ void	EnemyManager::clearEnemies()
 			this->_generations[i]++;
 		}
 	}
+	_enemyCount = 0;
 }
 
-void	EnemyManager::setSpawnTimer(float timer)
+void	EnemyManager::setSpawnRate(float rate)
 {
-	this->_spawnTimer = timer;
+	this->_spawnRate = rate;
 }
 
 std::vector<Enemy>&	EnemyManager::getEnemies()
@@ -152,10 +164,7 @@ std::vector<Enemy>&	EnemyManager::getEnemies()
 
 Enemy*	EnemyManager::getEnemy(EntityID id, Game& game)
 {
-	if (!id.isValid())
-		return (nullptr);
-
-	if (id.index < 0 || id.index >= MAX_ENEMIES)
+	if (!id.isValid() || id.index >= MAX_ENEMIES)
 		return (nullptr);
 
 	EnemyManager* manager = game.getEnemyManager();
@@ -165,4 +174,9 @@ Enemy*	EnemyManager::getEnemy(EntityID id, Game& game)
 		return (nullptr);
 
 	return (&enemy);
+}
+
+Uint16	EnemyManager::getEnemyCount() const
+{
+	return (_enemyCount);
 }
