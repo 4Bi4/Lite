@@ -48,6 +48,9 @@
 //---- DEFAULT VALUES ----  //
 /****************************/
 
+//	Max float
+#define MAXFLOAT	3.40282347e+38F
+
 //	Default resolution
 #define DEFAULT_HRES 1280
 #define DEFAULT_VRES 720
