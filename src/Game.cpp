@@ -58,6 +58,13 @@ int	Game::gameLoop(Data& data)
 		//	Render stuff here
 		this->render(data);
 
+		//	Round timer
+		drawText(data.getRenderer(),
+			data.getFontLarge(),
+			std::to_string((int)this->getRemainingTime()),
+			{ 0, 0, 0, 0},
+			data.getHres() / 2, 40);
+
 		//	FPS counter
 		if (Debug::state == true)
 		{
@@ -145,8 +152,8 @@ void	Game::nextRound()
 	_roundTimer = 0.0f;
 
 	//	Increase the wave duration
-	_roundDuration += 5.0f;
-	_enemyManager.setSpawnTimer((ROUND_TIME - _currentRound * 5.0f) / 6.0f);
+	_roundDuration += 2.0f;
+	_enemyManager.setSpawnTimer(std::abs((ROUND_TIME - _currentRound * 5.0f) / 6.0f));
 	std::cout << B_YELLOW << "¡RONDA " << _currentRound << " INICIADA!\n" << NO_COLOR << std::endl;
 }
 

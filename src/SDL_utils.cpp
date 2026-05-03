@@ -91,7 +91,7 @@ int	initSDLCore(Data& data)
 int	initSDLText(Data& data)
 {
 	//	Load fonts
-	data.setFontLarge(TTF_OpenFont("resources/fonts/TlwgTypo/TlwgTypo-Bold.ttf", 72));
+	data.setFontLarge(TTF_OpenFont("resources/fonts/comic_sans/comicbd.ttf", 62));
 	if (!data.getFontLarge())
 	{
 		std::cerr << "TTF_OpenFont: " << SDL_GetError() << "\n";
