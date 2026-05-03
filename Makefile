@@ -22,7 +22,7 @@ TEST_NAME   = test
 
 COMPILER    = g++
 
-CFLAGS      = -O3 -std=c++20 -Wall -Wextra -Werror #-fsanitize=address
+CFLAGS      = -O3 -std=c++17 -Wall -Wextra -Werror -fsanitize=address
 
 # Use all available CPU cores for compilation
 #MAKEFLAGS	+= -j$(shell nproc 2>/dev/null || echo 4) --no-print-directory

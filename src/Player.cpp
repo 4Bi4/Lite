@@ -19,7 +19,7 @@ Player::Player(SDL_Texture* texture) :
 	_texture(texture), _flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_target(nullptr),
+	_target{ -1, 0 },
 	_weapon(nullptr),
 	_hp(100), _maxHp(100),
 	_speed(400.0f),
@@ -113,7 +113,7 @@ void	Player::update(float deltaTime, Data& data)
 		_destRect.y = maxY - _destRect.h;
 
 	//	Update the player's target
-	setTarget(getClosestEnemy(data));
+	setTarget(getClosestEnemy(data), *data.getGame());
 
 	//	Debug player info
 	if (Debug::state == true)
@@ -130,18 +130,22 @@ void	Player::render(Data& data)
 }
 
 //	Attacks the player's target with their weapon
-void	Player::attack() const
+void	Player::attack(Game& game) const
 {
-	if (!_weapon || !_target)
+	if (!_weapon || !_target.isValid())
 		return;
 
-	float	distToTarget = Entity::distanceTo(*this, *this->getTarget());
+	Enemy* target = EnemyManager::getEnemy(_target, game);
+	if (!target)
+		return;
+
+	float	distToTarget = Entity::distanceTo(*this, *target);
 
 	//	TODO:
 	//	implement multiple weapons if desired
 	//  (for now the player can only have 1 weapon)
 	if (distToTarget <= _weapon->getRange())
-		_weapon->attack(_target);
+		_weapon->attack(target);
 }
 
 //	Returns 4 floats.
@@ -157,7 +161,7 @@ const SDL_Texture*	Player::getTexture() const
 	return (_texture);
 }
 
-Enemy*	Player::getTarget() const
+EntityID	Player::getTarget() const
 {
 	return (_target);
 }
@@ -167,21 +171,27 @@ Weapon*	Player::getWeapon() const
 	return (_weapon);
 }
 
-//	Returns a pointer to the closest enemy, or nullptr if there are no enemies
-Enemy*	Player::getClosestEnemy(Data& data) const
+//	Returns the index of the closest enemy, or nullptr if there are no enemies
+EntityID	Player::getClosestEnemy(Data& data) const
 {
 	EnemyManager*	enemyManager = data.getGame()->getEnemyManager();
-	Enemy*	closest = nullptr;
+	const std::vector<Enemy>& enemies = enemyManager->getEnemies();	
+
+	EntityID closest = { -1, 0 };
 	float	closestDist = MAXFLOAT;
 	
-	for (auto& enemy : enemyManager->getEnemies())
+	for (size_t i = 0; i < enemyManager->getEnemies().size(); i++)
 	{
-		float dist = Entity::distanceTo(*this, enemy);
+		//	Skip the non used enemies
+		if (!enemies[i].isActive())
+			continue;
+
+		float dist = Entity::distanceTo(*this, enemies[i]);
 
 		if (dist < closestDist)
 		{
 			closestDist = dist;
-			closest = &enemy;
+			closest = enemies[i].getID();
 		}
 	}
 	return (closest);
@@ -203,17 +213,21 @@ void	Player::setPosition(float x, float y)
 	_destRect.y = y  - (PIXEL_SIZE / 2.0f);
 }
 
-void	Player::setTarget(Enemy* enemy)
+void	Player::setTarget(EntityID enemy, Game& game)
 {
-	if (!enemy || enemy == _target)
+	if (!enemy.isValid() || enemy == _target)
 		return;
-
+	
 	//	Shiny enemy outline for debug mode
 	if (Debug::state == true)
 	{
-		enemy->setTexture(TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, nullptr));
-		if (_target)
-			_target->setTexture(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, nullptr));
+		//enemy->setTexture(TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, nullptr));
+		Enemy *oldTarget = EnemyManager::getEnemy(_target, game);
+		if (oldTarget)
+			oldTarget->setTexture(TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, nullptr));
+		Enemy* newTarget = EnemyManager::getEnemy(enemy, game);
+		if (newTarget)
+			newTarget->setTexture(TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, nullptr));
 	}
 	_target = enemy;
 }

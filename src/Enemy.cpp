@@ -32,6 +32,8 @@ void	Enemy::render(Data& data)
 	//	Get the enemy's position relative to the camera
 	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
+	if (!_texture)
+		std::cerr << B_RED << "Enemy [" << _id.index << "] doesn't have a texture!!" << NO_COLOR << std::endl;
 	//	Render the enemy to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
 }
@@ -93,7 +95,36 @@ void	Enemy::update(float deltaTime, Data& data)
 		_destRect.y = maxY - _destRect.h;
 }
 
+void	Enemy::setUp(enemyType type, SDL_Texture* texture)
+{
+	this->_type = type;
+	this->_texture = texture;
+}
+
+void	Enemy::spawn(EntityID id, float x, float y)
+{
+	_id = id;
+	_hp = _maxHp; //	Reset HP to max
+	_active = true;
+	this->setPosition(x, y);
+}
+
+void	Enemy::die()
+{
+	_active = false;
+}
+
 //	GETTERS
+
+int	Enemy::getHp() const
+{
+	return (_hp);
+}
+
+EntityID	Enemy::getID() const
+{
+	return (_id);
+}
 
 //	Returns 4 floats.
 //	"x" and "y" are position
@@ -108,21 +139,42 @@ enemyType	Enemy::getType() const
 	return (_type);
 }
 
-//	SETTERS
+bool	Enemy::isActive() const
+{
+	return (_active);
+}
+
+int	Enemy::getMaxHp() const
+{
+	return (_maxHp);
+}
 
 const SDL_Texture*	Enemy::getTexture() const
 {
 	return (_texture);
 }
 
-int	Enemy::getHp() const
+//	SETTERS
+
+void	Enemy::heal(int amount)
 {
-	return (_hp);
+	_hp += amount;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
 }
 
-int	Enemy::getMaxHp() const
+void	Enemy::setMaxHp(int hp)
 {
-	return (_maxHp);
+	_maxHp = hp;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
+}
+
+void	Enemy::takeDamage(int damage)
+{
+	_hp -= damage;
+	if (_hp < 0)
+		_hp = 0;
 }
 
 void	Enemy::setType(enemyType newType)
@@ -139,25 +191,4 @@ void	Enemy::setPosition(float x, float y)
 void	Enemy::setTexture(SDL_Texture* texture)
 {
 	_texture = texture;
-}
-
-void	Enemy::takeDamage(int damage)
-{
-	_hp -= damage;
-	if (_hp < 0)
-		_hp = 0;
-}
-
-void	Enemy::heal(int amount)
-{
-	_hp += amount;
-	if (_hp > _maxHp)
-		_hp = _maxHp;
-}
-
-void	Enemy::setMaxHp(int hp)
-{
-	_maxHp = hp;
-	if (_hp > _maxHp)
-		_hp = _maxHp;
 }

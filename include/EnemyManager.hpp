@@ -14,8 +14,6 @@
 
 #pragma once
 
-#include <deque>
-
 #include "lite_common.hpp"
 
 class EnemyManager
@@ -27,18 +25,20 @@ public:
 	void	update(float dt, Data& data, int round);
 	void	render(Data& data);
 
-	void	spawnEnemy(Data& data);
+	void	clearEnemies();
+	void	spawnEnemy(Data& data, enemyType type);
 
 	void	setSpawnTimer(float timer);
 
-	std::deque<Enemy>&			getEnemies();
-	const std::deque<Enemy>&	getEnemies() const;
+	int						findAvailableSlot();
+	std::vector<Enemy>&		getEnemies();	
+	static Enemy*			getEnemy(EntityID id, Game& game);
 
 private:
-	//	Using a deque because we will be adding and removing enemies frequently
-	//	and deques dont move elements in memory
-	//	so we can safely store pointers to enemies
-	std::deque<Enemy>	_enemies;
 
-	float _spawnTimer;
+	std::vector<Enemy>	_enemies;
+	std::vector<Uint32>	_generations;	//	Used to track generations for EntityIDs
+
+	const int		_maxEnemies;
+	float 			_spawnTimer;
 };

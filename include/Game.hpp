@@ -25,13 +25,10 @@ public:
 	int		gameLoop(Data& data);
 
 	void	update(float deltaTimeNS, Data& data);
-
 	void	render(Data& data);
 
 	void	nextRound();
-
 	void	togglePause();
-
 	void	gameOver();
 
 	bool			isPaused() const;
@@ -46,7 +43,6 @@ public:
 	Map*			getMap();
 
 	//	Setters
-	void			setEnemyManager(const EnemyManager& enemyManager);
 	void			setPlayer(const Player& player);
 	void			setCamera(const Camera& camera);
 	void			setMap(const Map& map);

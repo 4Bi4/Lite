@@ -111,7 +111,7 @@ void	Game::update(float deltaTimeNS, Data& data)
 	//	Update player
 	_player.update(deltaTimeNS, data);
 	//	Handle player attacks
-	_player.attack();
+	_player.attack(*data.getGame());
 
 	//	End of round check
 	if (_roundTimer >= _roundDuration)
@@ -140,13 +140,14 @@ void	Game::render(Data& data)
 
 void	Game::nextRound()
 {
+	_enemyManager.clearEnemies();
 	_currentRound++;
 	_roundTimer = 0.0f;
 
 	//	Increase the wave duration
 	_roundDuration += 5.0f;
 	_enemyManager.setSpawnTimer((ROUND_TIME - _currentRound * 5.0f) / 6.0f);
-	std::cout << "¡RONDA " << _currentRound << " INICIADA!" << std::endl;
+	std::cout << B_YELLOW << "¡RONDA " << _currentRound << " INICIADA!\n" << NO_COLOR << std::endl;
 }
 
 void	Game::togglePause()
@@ -210,11 +211,6 @@ Map*	Game::getMap()
 }
 
 //	Setters
-
-void	Game::setEnemyManager(const EnemyManager& enemyManager)
-{
-	_enemyManager = enemyManager;
-}
 
 void	Game::setPlayer(const Player& player)
 {

@@ -16,6 +16,8 @@
 
 #include "lite_common.hpp"
 
+class Game;
+
 class Player : public Entity
 {
 public:
@@ -26,19 +28,19 @@ public:
 	void	update(float deltaTime, Data& data);
 	void	render(Data& data);
 
-	void	attack() const;
+	void	attack(Game& game) const;
 
 	const SDL_FRect&	getRect() const;
 	const SDL_Texture*	getTexture() const;
-	Enemy*				getTarget() const;
+	EntityID			getTarget() const;
 	Weapon*				getWeapon() const;
-	Enemy*				getClosestEnemy(Data& data) const;
+	EntityID			getClosestEnemy(Data& data) const;
 	int					getHp() const;
 	int					getMaxHp() const;
 
 	void	setPosition(float x, float y);
 	void	setTexture(SDL_Texture* texture);
-	void	setTarget(Enemy* enemy);
+	void	setTarget(EntityID enemy, Game& game);
 	void	setWeapon(Weapon* weapon);
 	void	takeDamage(int damage);
 	void	heal(int amount);
@@ -54,7 +56,7 @@ protected:
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
 	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
 
-	Enemy*			_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
+	EntityID		_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
 	Weapon*			_weapon;		//	Pointer to the player's weapon (nullptr if none)
 
 	int				_hp;

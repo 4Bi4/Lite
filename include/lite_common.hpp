@@ -82,7 +82,9 @@
 //---- GAME CONSTANTS ----  //
 /****************************/
 
-#define ROUND_TIME 10.0f	// In seconds
+#define ROUND_TIME 20.0f	// In seconds
+
+#define MAX_ENEMIES 2000
 
 //	Global variable for debug mode
 //	Debug Mode prints information on the console about the engine's state

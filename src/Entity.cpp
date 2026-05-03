@@ -69,6 +69,8 @@ void	Entity::update(float deltaTime, Data& data)
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
 }
+//	Default behavior: do nothing
+void	Entity::die() {}
 
 //	Returns 4 floats.
 //	"x" and "y" are position
@@ -105,7 +107,7 @@ void	Entity::setTexture(SDL_Texture* texture)
 }
 
 //	Returns the distance between two entities
-float	Entity::distanceTo(const Entity& a, const Entity& b) const
+float	Entity::distanceTo(const Entity& a, const Entity& b)
 {
 	const float distanceX = a.getRect().x - b.getRect().x;
 	const float distanceY = a.getRect().y - b.getRect().y;

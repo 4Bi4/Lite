@@ -20,6 +20,8 @@
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
+#include "Types.hpp"
+
 #include "Camera.hpp"
 #include "Map.hpp"
 #include "TextureManager.hpp"
@@ -50,7 +52,6 @@ class Enemy;
 class Player;
 class EnemyManager;
 class Game;
-
 
 /*****************************/
 // 	---- GAME FUNCTIONS ---- //
