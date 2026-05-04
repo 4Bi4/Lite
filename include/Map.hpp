@@ -14,18 +14,12 @@
 
 #pragma once
 
-#include "lite.hpp"
-
-#define MAP_WIDTH 30
-#define MAP_HEIGHT 20
-
-class Map;
-class Camera;
+#include "lite_common.hpp"
 
 class Map
 {
 public:
-	Map(SDL_Renderer* renderer, unsigned int height, unsigned int width);
+	Map(unsigned int height, unsigned int width);
 	~Map();
 
 	void	drawMap(SDL_Renderer* renderer, Camera* camera);
@@ -33,7 +27,7 @@ public:
 
 	//	Getters
 
-	char**			getMap() const { return (this->_map); }
+	char**			getMap() const { return (this->map); }
 	unsigned int	getWidth() const { return (this->_width); }
 	unsigned int	getHeight() const { return (this->_height); }
 
@@ -48,5 +42,5 @@ private:
 	unsigned int	_width;
 	unsigned int	_height;
 
-	char**			_map;
+	char**			map;
 };

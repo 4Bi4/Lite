@@ -12,40 +12,31 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include "lite_common.hpp"
+
+class Projectile;
+
+class ProjectileManager
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	ProjectileManager();
+	~ProjectileManager();
 
-	if (!renderer)
-		return (nullptr);
+	void	update(float deltaTimeNS, Data& data);
+	void	render(Data& data);
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	void	clearProjectiles();
+	void	spawnProjectile(ProjectileType type, ProjectileStats stats, EntityID target, float x, float y);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	int					findAvailableSlot();
+	std::vector<Projectile>&	getProjectiles();
+	static Projectile*			getProjectile(ProjectileID id, Game& game);
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+private:
+	std::vector<Projectile>	_projectiles;
+	std::vector<Uint32>		_generations;//	Used to track generations for ProjectileIDs
 
-	textureCache.clear();
-}
+	const int				_maxProjectiles;
+};

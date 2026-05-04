@@ -12,40 +12,55 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include "lite_common.hpp"
+
+class Game
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	Game(Data& data);
+	~Game();
 
-	if (!renderer)
-		return (nullptr);
+	int		gameLoop(Data& data);
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	void	update(float deltaTimeNS, Data& data);
+	void	render(Data& data);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	void	nextRound();
+	void	togglePause();
+	void	gameOver();
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+	bool			isPaused() const;
+	bool			isGameOver() const;
+	float			getRemainingTime() const;
+	unsigned int	getRound() const;
 
-	textureCache.clear();
-}
+	//	Getters
+	ProjectileManager*	getProjectileManager();
+	EnemyManager*		getEnemyManager();
+	Player*				getPlayer();
+	Camera*				getCamera();
+	Map*				getMap();
+
+	//	Setters
+	void			setPlayer(const Player& player);
+	void			setCamera(const Camera& camera);
+	void			setMap(const Map& map);
+
+	//	Debug
+	bool			displaySignalDebugInfo(long long frameCount, long long totalTime, Uint64 deltaTime);
+
+private:
+	ProjectileManager	_projectileManager;
+	EnemyManager		_enemyManager;
+	Player				_player;
+	Camera				_camera;
+	Map					_map;
+
+	float			_roundTimer;
+	float			_roundDuration;
+	unsigned int	_currentRound;
+	bool			_isPaused;
+	bool			_isGameOver;
+};

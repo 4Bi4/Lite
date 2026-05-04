@@ -12,19 +12,18 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Map.hpp"
 #include "../include/lite.hpp"
 
-Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
+Map::Map(unsigned int height, unsigned int width)
 {
-	_wall = TextureManager::loadTexture("./resources/textures/map/wall.png", renderer);
-	_grass = TextureManager::loadTexture("./resources/textures/map/grass.png", renderer);
+	_wall = TextureManager::loadTexture(DIRT_TEXTURE, nullptr);
+	_grass = TextureManager::loadTexture(GRASS_TEXTURE, nullptr);
 	_src = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_dest = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_height = height;
 	_width = width;
 
-	_map = createMap(height, width);
+	map = createMap(height, width);
 }
 
 Map::~Map()
@@ -34,8 +33,8 @@ Map::~Map()
 
 	//	Free the map memory
 	for (unsigned int i = 0; i < _height; i++)
-		delete[] (_map[i]);
-	delete[] (_map);
+		delete[] (map[i]);
+	delete[] (map);
 }
 
 char**	Map::createMap(unsigned int height, unsigned int width)
@@ -63,6 +62,12 @@ void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 {
 	if (!camera)
 		return;
+	if (!_wall || !_grass)
+	{
+		if (Debug::state == true)
+			std::cerr << B_RED << "[ ERROR ] map texture missing (wall/grass)" << NO_COLOR << std::endl;
+		return;
+	}
 
 	const SDL_FRect& view = camera->getView();
 
@@ -78,7 +83,7 @@ void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 	{
 		for (int j = startCol; j < endCol; j++)
 		{
-			int type = _map[i][j];
+			int type = map[i][j];
 			
 			//	1. Calculate the world position of the tile
 			SDL_FRect worldDest = { 

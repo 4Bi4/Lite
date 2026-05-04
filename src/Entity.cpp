@@ -14,59 +14,39 @@
 
 #include "../include/lite.hpp"
 
-Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
-	Entity(texture),
-	_texture(texture),
-	_flip(SDL_FLIP_NONE),
-	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+//	Default entity constructor
+Entity::Entity(SDL_Texture* texture) :
+	_texture(texture), _flip(SDL_FLIP_NONE),
+	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
-	_manager(manager),
-	_type(DEFAULT),
-	_id{ -1, 0 },
-	_active(false),
-	_hp(30), _maxHp(30),
-	_speed(100),
+	_hp(100), _maxHp(100),
+	_speed(600.0f),
+	_dirX(0.0f), _dirY(0.0f) {}
+
+//	Dummy Entity
+//	Just to calculate with it
+//	Not printable/usable
+Entity::Entity(float x, float y) :
+	_texture(nullptr), _flip(SDL_FLIP_NONE),
+	_destRect{ x, y, 0.0f, 0.0f },
+	_srcRect{ 0.0f, 0.0f, 0.0f, 0.0f },
+	_hp(0), _maxHp(0),
+	_speed(0),
 	_dirX(0), _dirY(0) {}
 
-Enemy::~Enemy() {}
+Entity::~Entity() {}
 
-void	Enemy::render(Data& data)
+void	Entity::render(Data& data)
 {
-	//	Get the enemy's position relative to the camera
+	//	Get the Entity's position relative to the camera
 	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
-	if (!_texture)
-	{
-		if (Debug::state == true)
-			std::cerr << B_RED << "[ ERROR ] enemy without texture!" << NO_COLOR << std::endl;
-		return ;
-	}
-	//	Render the enemy to the screen
+	//	Render the Entity to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
 }
 
-//	(Movement "AI") updates dirX and dirY with the next
-//	desired position
-void	Enemy::calcNextMove(Data& data)
+void	Entity::update(float deltaTime, Data& data)
 {
-	//	for now we assume only 1 player
-	//	and this player is allways going to be the target
-	SDL_FRect target = data.getGame()->getPlayer()->getRect();
-
-	_dirX = target.x - _destRect.x;
-	_dirY = target.y - _destRect.y;
-}
-
-void	Enemy::update(float deltaTime, Data& data)
-{
-	if (_hp <= 0)
-		return;
-	
-	//	!!!!!!!!  IMPORTANT !!!!!!!!
-	//	TODO:
-	//	Call the enemy AI to update _dirX and _dirY
-	calcNextMove(data);
-
 	//	call special physics function HERE (if there is one)
 
 	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
@@ -84,7 +64,7 @@ void	Enemy::update(float deltaTime, Data& data)
 	else if (_dirX > 0)
 		_flip = SDL_FLIP_HORIZONTAL;
 
-	//	Move the enemy based on direction, speed and delta time (in seconds)
+	//	Move the Entity based on direction, speed and delta time (in seconds)
 	_destRect.x += _dirX * _speed * deltaTime / 1000000000.0f;
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
@@ -101,102 +81,71 @@ void	Enemy::update(float deltaTime, Data& data)
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
 }
-
-void	Enemy::setUp(EnemyType type, SDL_Texture* texture)
-{
-	this->_type = type;
-	this->_texture = texture;
-}
-
-void	Enemy::spawn(EntityID id, float x, float y)
-{
-	_id = id;
-	_hp = _maxHp; //	Reset HP to max
-	_active = true;
-	this->setPosition(x, y);
-}
-
-void	Enemy::die()
-{
-	_active = false;
-	
-}
-
-//	GETTERS
-
-int	Enemy::getHp() const
-{
-	return (_hp);
-}
-
-EntityID	Enemy::getID() const
-{
-	return (_id);
-}
+//	Default behavior: do nothing
+void	Entity::die() {}
 
 //	Returns 4 floats.
 //	"x" and "y" are position
 //	"h" and "w" are the size on screen
-const SDL_FRect&	Enemy::getRect() const
+const SDL_FRect&	Entity::getRect() const
 {
 	return (_destRect);
 }
 
-EnemyType	Enemy::getType() const
-{
-	return (_type);
-}
-
-bool	Enemy::isActive() const
-{
-	return (_active);
-}
-
-int	Enemy::getMaxHp() const
-{
-	return (_maxHp);
-}
-
-const SDL_Texture*	Enemy::getTexture() const
+const SDL_Texture*	Entity::getTexture() const
 {
 	return (_texture);
 }
 
-//	SETTERS
-
-void	Enemy::heal(int amount)
+int	Entity::getHp() const
 {
-	_hp += amount;
-	if (_hp > _maxHp)
-		_hp = _maxHp;
+	return (_hp);
 }
 
-void	Enemy::setMaxHp(int hp)
+int	Entity::getMaxHp() const
 {
-	_maxHp = hp;
-	if (_hp > _maxHp)
-		_hp = _maxHp;
+	return (_maxHp);
 }
 
-void	Enemy::takeDamage(int damage)
+void	Entity::setPosition(float x, float y)
+{
+	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
+	_destRect.y = y  - (PIXEL_SIZE / 2.0f);
+}
+
+void	Entity::setTexture(SDL_Texture* texture)
+{
+	_texture = texture;
+}
+
+//	Returns the distance between two entities
+float	Entity::distanceTo(const Entity& a, const Entity& b)
+{
+	const float distanceX = a.getRect().x - b.getRect().x;
+	const float distanceY = a.getRect().y - b.getRect().y;
+
+	const float distance = std::sqrt((distanceX * distanceX) + (distanceY * distanceY));
+
+	return (distance);
+}
+
+void	Entity::takeDamage(int damage)
 {
 	_hp -= damage;
 	if (_hp < 0)
 		_hp = 0;
 }
 
-void	Enemy::setType(EnemyType newType)
+void	Entity::heal(int amount)
 {
-	_type = newType;
+	_hp += amount;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
 }
 
-void	Enemy::setPosition(float x, float y)
+void	Entity::setMaxHp(int hp)
 {
-	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
-	_destRect.y = y  - (PIXEL_SIZE / 2.0f);
-}
-
-void	Enemy::setTexture(SDL_Texture* texture)
-{
-	_texture = texture;
+	_maxHp = hp;
+	if (_hp > _maxHp)
+		_hp = _maxHp;
 }

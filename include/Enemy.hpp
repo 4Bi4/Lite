@@ -14,31 +14,46 @@
 
 #pragma once
 
-#include "lite.hpp"
+#include "lite_common.hpp"
 
 //	Here we will list the type of enemies so
 //	they can be easily identified
-enum enemyType
+enum EnemyType
 {
 	DEFAULT
 };
 
-class Enemy
+class EnemyManager;
+
+class Enemy : public Entity
 {
 public:
-	Enemy(SDL_Texture* texture);
+	Enemy(SDL_Texture* texture, EnemyManager* manager);
 	~Enemy();
 
+	void	setUp(EnemyType type, SDL_Texture* texture);
+
+	void	spawn(EntityID id, float x, float y);
+	void	die();
+
 	void	calcNextMove(Data& data);
-	void	update(float deltaTime, Data& data);
 	void	render(Data& data);
+	void	update(float deltaTime, Data& data);
 
+	int					getHp() const;
+	EntityID			getID() const;
 	const SDL_FRect&	getRect() const;
-	enemyType			getType() const;
+	EnemyType			getType() const;
+	bool				isActive() const;
+	int					getMaxHp() const;
+	const SDL_Texture*	getTexture() const;
 
-	void	setType(enemyType type);
+	void	heal(int amount);
+	void	setMaxHp(int hp);
+	void	takeDamage(int damage);
+	void	setType(EnemyType type);
 	void	setPosition(float x, float y);
-
+	void	setTexture(SDL_Texture* texture);
 
 protected:
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
@@ -47,8 +62,14 @@ protected:
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
 	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
 
-	enemyType		_type;
+	EnemyManager*	_manager;
 
+	EnemyType		_type;
+	EntityID		_id;
+
+	bool			_active;
+	int				_hp;
+	int				_maxHp;
 	float			_speed;
 	float			_dirX;
 	float			_dirY;

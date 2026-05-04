@@ -12,11 +12,9 @@
 *                                                               *
 \***************************************************************/
 
-#include "lite.hpp"
-
 #pragma once
 
-#define PIXEL_SIZE 64
+#include "lite_common.hpp"
 
 class TextureManager
 {
@@ -28,5 +26,6 @@ public:
 	static void Clean();
 
 private:
+	//	↓ ↓ Initialized in Data.cpp ↓ ↓
 	static std::unordered_map<std::string, SDL_Texture*> textureCache;
 };

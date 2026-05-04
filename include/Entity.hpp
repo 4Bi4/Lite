@@ -12,40 +12,45 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include "lite_common.hpp"
+
+class Data;
+
+class Entity
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	Entity(SDL_Texture* texture);
+	Entity(float x, float y);
+	virtual ~Entity();
 
-	if (!renderer)
-		return (nullptr);
+	virtual void		update(float deltaTime, Data& data);
+	virtual void		render(Data& data);
+	virtual void		die();
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	virtual const SDL_FRect&	getRect() const;
+	virtual const SDL_Texture*	getTexture() const;
+	virtual int					getHp() const;
+	virtual int					getMaxHp() const;
+	static float				distanceTo(const Entity& a, const Entity& b);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	virtual void		setTexture(SDL_Texture* texture);
+	virtual void		setPosition(float x, float y);
+	virtual void		takeDamage(int damage);
+	virtual void		heal(int amount);
+	virtual void		setMaxHp(int hp);
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+protected:
+	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
+	SDL_FlipMode	_flip;	
 
-	textureCache.clear();
-}
+	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
+	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
+
+	int			_hp;
+	int			_maxHp;
+	float		_speed;
+	float		_dirX;
+	float		_dirY;
+};

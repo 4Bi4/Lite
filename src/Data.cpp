@@ -14,11 +14,14 @@
 
 #include "../include/lite.hpp"
 
-Data::Data(void)
-	: _player(nullptr), _map(nullptr), _hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
+Data::Data(void) :
+	_game(nullptr),
+	_gamepad(nullptr),
+	_hRes(DEFAULT_HRES), _vRes(DEFAULT_VRES),
 	_fpsLimit(DEFAULT_FPS_LIMIT),
 	_targetFrameTime(1000 / DEFAULT_FPS_LIMIT),
 	_vSync(true), _running(true), _fullscreen(false),
+	_state(LOADING),
 	_sdl() {}
 
 Data::~Data(void)
@@ -31,6 +34,9 @@ Data::~Data(void)
 		SDL_DestroyRenderer(this->_sdl.renderer);
 	if (this->_sdl.window)
 		SDL_DestroyWindow(this->_sdl.window);
+
+	if (this->_gamepad)
+		SDL_CloseGamepad(this->_gamepad);
 	TTF_Quit();
 	SDL_Quit();
 }
@@ -72,6 +78,21 @@ bool	Data::isFullscreen() const
 	return (this->_fullscreen);
 }
 
+Game*	Data::getGame() const
+{
+	return (this->_game);
+}
+
+state	Data::getState() const
+{
+	return(this->_state);
+}
+
+SDL_Gamepad*	Data::getGamepad() const
+{
+	return (this->_gamepad);
+}
+
 //	Setters
 
 void	Data::setHres(int hRes)
@@ -108,5 +129,17 @@ void	Data::setFullscreen(bool fullscreen)
 	this->_fullscreen = fullscreen;
 }
 
-// Static member initialization
-std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;
+void	Data::setGame(Game* newGame)
+{
+	this->_game = newGame;
+}
+
+void	Data::setState(state newState)
+{
+	this->_state = newState;
+}
+
+void	Data::setGamepad(SDL_Gamepad* newGamepad)
+{
+	this->_gamepad = newGamepad;
+}

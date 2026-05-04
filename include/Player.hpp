@@ -14,32 +14,54 @@
 
 #pragma once
 
-#include "lite.hpp"
+#include "lite_common.hpp"
 
-class Data;
+class Game;
 
-class Player
+class Player : public Entity
 {
 public:
 	Player(SDL_Texture* texture);
 	~Player();
 
-	void	handleInput();
+	void	handleInput(Data& data);
 	void	update(float deltaTime, Data& data);
 	void	render(Data& data);
 
-	const SDL_FRect& getRect() const;
+	void	attack(Game& game) const;
+
+	const SDL_FRect&	getRect() const;
+	const SDL_Texture*	getTexture() const;
+	EntityID			getTarget() const;
+	Weapon*				getWeapon() const;
+	EntityID			getClosestEnemy(Data& data) const;
+	int					getHp() const;
+	int					getMaxHp() const;
 
 	void	setPosition(float x, float y);
+	void	setTexture(SDL_Texture* texture);
+	void	setTarget(EntityID enemy, Game& game);
+	void	setWeapon(Weapon* weapon);
+	void	takeDamage(int damage);
+	void	heal(int amount);
+	void	setMaxHp(int hp);
 
 protected:
+	void	handleKeyboardMovement();
+	void	handleGamepadMovement(Data& data);
+
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
 	SDL_FlipMode	_flip;	
 
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
 	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
 
-	float		_speed;
-	float		_dirX;
-	float		_dirY;
+	EntityID		_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
+	Weapon*			_weapon;		//	Pointer to the player's weapon (nullptr if none)
+
+	int				_hp;
+	int				_maxHp;
+	float			_speed;
+	float			_dirX;
+	float			_dirY;
 };

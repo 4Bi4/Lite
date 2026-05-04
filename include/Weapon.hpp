@@ -12,40 +12,45 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include "lite_common.hpp"
+
+#include "Projectile.hpp"
+
+class Game;
+class Enemy;
+
+class Weapon
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	Weapon(WeaponType type, Entity* holder);
+	~Weapon();
 
-	if (!renderer)
-		return (nullptr);
+	void	attack(Enemy* target, Game& game);
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	void	setName(const std::string& name);
+	void	setRange(int range);
+	void	setDamage(int damage);
+	void	setCooldown(Uint64 cooldown);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	const std::string&	getName() const;
+	int					getRange() const;
+	int					getDamage() const;
+	int					getCooldown() const;
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+private:
+	ProjectileStats	getProjectileStats(Entity* holder, ProjectileType type);
 
-	textureCache.clear();
-}
+	void	shootFireball(Game& game, Enemy* target, ProjectileStats stats) const;
+
+	std::string		_name;
+	WeaponType		_type;
+	int				_range;
+	int				_damage;
+	int				_cooldown;//	Cooldown in milliseconds
+	ProjectileType	_projectile;
+	Uint64			_lastAttackTime;
+
+	Entity*			_holder;
+};

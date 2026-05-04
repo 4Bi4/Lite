@@ -12,7 +12,7 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Camera.hpp"
+#include "../include/lite.hpp"
 
 Camera::Camera(int width, int height) :
 	_view{0, 0, (float)width, (float)height},
@@ -61,7 +61,11 @@ void	Camera::update(const SDL_FRect& target, int mapW, int mapH)
 //	Allows resizing the camera view (useful for window resizing)
 void	Camera::resizeView(float newWidth, float newHeight)
 {
-	this->_zoom = newHeight / TARGET_HEIGHT;
+	//	Calculate the new zoom level based on new resolution, target resolution and aspect ratio (considering FOV)
+	float widthScale = newWidth / TARGET_WIDTH / 9.0f;
+	float heightScale = newHeight / TARGET_HEIGHT / 16.0f;
+
+	this->_zoom = std::min(widthScale, heightScale) * FOV;
 
 	this->_view.w = newWidth / this->_zoom;
 	this->_view.h = newHeight / this->_zoom;

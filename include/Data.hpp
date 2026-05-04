@@ -14,16 +14,7 @@
 
 #pragma once
 
-#include "lite.hpp"
-
-//	Hold all the SDL-related data
-struct SdlData
-{
-	SDL_Window*		window = nullptr;
-	SDL_Renderer*	renderer = nullptr;
-	TTF_Font*		fontLarge = nullptr;
-	TTF_Font*		fontSmall = nullptr;
-};
+#include "lite_common.hpp"
 
 class Player;
 class Enemy;
@@ -40,22 +31,30 @@ public:
 
 	//	Getters
 
-	int		getHres() const;
-	int		getVres() const;
-	bool	getVsync() const;
-	bool	isRunning() const;
-	int		getFpsLimit() const;
-	bool	isFullscreen() const;
-	float	getTargetFrameTime() const;
+	int				getHres() const;
+	int				getVres() const;
+	bool			getVsync() const;
+	bool			isRunning() const;
+	int				getFpsLimit() const;
+	bool			isFullscreen() const;
+	float			getTargetFrameTime() const;
+
+	Game*			getGame() const;
+	state			getState() const;
+	SDL_Gamepad*	getGamepad() const;
 
 	//	Setters
 
-	void	setHres(int hres);
-	void	setVres(int vres);
-	void	setVsync(bool vsync);
-	void	setRunning(bool running);
-	void	setFpsLimit(int fpsLimit);
-	void	setFullscreen(bool fullscreen);
+	void			setHres(int hres);
+	void			setVres(int vres);
+	void			setVsync(bool vsync);
+	void			setRunning(bool running);
+	void			setFpsLimit(int fpsLimit);
+	void			setFullscreen(bool fullscreen);
+
+	void			setGame(Game* newGame);
+	void			setState(state newState);
+	void			setGamepad(SDL_Gamepad* newGamepad);
 
 	//	SDL Getters
 
@@ -66,32 +65,25 @@ public:
 
 	//	SDL Setters
 
-	void	setWindow(SDL_Window* window) { this->_sdl.window = window; }
-	void	setRenderer(SDL_Renderer* renderer) { this->_sdl.renderer = renderer; }
-	void	setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
-	void	setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
-
-	//	TODO:
-	//	store this variables in a new class
-	//	called game or whatever (la partida actual)
-	//	|  |  |  |  |  |  |  |  |  |
-	//	V  V  V  V  V  V  V  V  V  V
-
-	Player*	_player;
-	Camera*	_camera;
-	Map*	_map;
-	
-	std::vector<Enemy>	enemies;
+	void			setWindow(SDL_Window* window) { this->_sdl.window = window; }
+	void			setRenderer(SDL_Renderer* renderer) { this->_sdl.renderer = renderer; }
+	void			setFontLarge(TTF_Font* fontLarge) { this->_sdl.fontLarge = fontLarge; }
+	void			setFontSmall(TTF_Font* fontSmall) { this->_sdl.fontSmall = fontSmall; }
 
 private:
-	int		_hRes;
-	int		_vRes;
-	int		_fpsLimit;
-	float	_targetFrameTime;
+	Game*				_game;
+	SDL_Gamepad*		_gamepad;		//	Pointer to the gamepad/Gamepad (if connected)
 
-	bool	_vSync;
-	bool	_running;
-	bool	_fullscreen;
+	int					_hRes;
+	int					_vRes;
+	int					_fpsLimit;
+	float				_targetFrameTime;
 
-	SdlData	_sdl;
+	bool				_vSync;
+	bool				_running;
+	bool				_fullscreen;
+
+	state				_state;		//	[STATE MACHINE] Current state of the game
+
+	SdlData				_sdl;		//	Struct holding all the SDL stuff (like window, render, etc...)
 };

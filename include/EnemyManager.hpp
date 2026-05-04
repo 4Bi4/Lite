@@ -12,40 +12,35 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/lite.hpp"
+#pragma once
 
-//	Returns a pointer to the loaded texture
-//	If the texture was already loaded, it returns the cached texture
-//	\returns
-//	A pointer to the loaded texture,
-//	or nullptr if the texture failed to load 
-SDL_Texture*	TextureManager::loadTexture(const std::string& filePath, SDL_Renderer* renderer)
+#include "lite_common.hpp"
+
+class EnemyManager
 {
-	//	Check if the texture is already loaded
-	//	If it is, return the cached texture
-	if (textureCache.find(filePath) != textureCache.end())
-		return (textureCache[filePath]);
+public:
+	EnemyManager();
+	~EnemyManager();
 
-	if (!renderer)
-		return (nullptr);
+	void	update(float dt, Data& data);
+	void	render(Data& data);
 
-	SDL_Texture* tex = IMG_LoadTexture(renderer, filePath.c_str());
-	if (!tex)
-		SDL_Log("Error loading texture: %s", SDL_GetError());
-	else
-		textureCache[filePath] = tex;
+	void	clearEnemies();
+	void	spawnEnemy(Data& data, EnemyType type);
 
-	//	Set the scale mode for pixel art (SDL_SCALEMODE_NEAREST)
-	//	for non pixel art it would be (SDL_SCALEMODE_LINEAR)
-	SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
-	return (tex);
-}
+	void	setSpawnRate(float rate);
 
-//	Cleans up all loaded textures from memory
-void	TextureManager::Clean()
-{
-	for (auto& pair : textureCache)
-		SDL_DestroyTexture(pair.second);
+	int						findAvailableSlot();
+	std::vector<Enemy>&		getEnemies();	
+	static Enemy*			getEnemy(EntityID id, Game& game);
+	Uint16					getEnemyCount()	const;
 
-	textureCache.clear();
-}
+private:
+	std::vector<Enemy>	_enemies;
+	std::vector<Uint32>	_generations;//	Used to track generations for EntityIDs
+
+	const int		_maxEnemies;
+	float 			_spawnTimer;
+	float			_spawnRate;
+	Uint16			_enemyCount;
+};
