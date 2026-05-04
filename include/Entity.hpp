@@ -22,7 +22,8 @@ class Entity
 {
 public:
 	Entity(SDL_Texture* texture);
-	virtual ~Entity() = 0;
+	Entity(float x, float y);
+	virtual ~Entity();
 
 	virtual void		update(float deltaTime, Data& data);
 	virtual void		render(Data& data);

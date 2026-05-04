@@ -14,6 +14,17 @@
 
 #include "../include/lite.hpp"
 
+// Signal tracking (volatile and atomic for async-signal-safe access)
+volatile sig_atomic_t g_signalReceived = 0;
+volatile sig_atomic_t g_signalNumber = 0;
+
+void handle_signal(int sig)
+{
+	// These are async-signal-safe operations
+	g_signalNumber = sig;
+	g_signalReceived = 1;
+}
+
 // THIS IS FOR THE TEXTURE MANAGER
 //	|	|	|	|	|	|	|	|
 //	V	V	V	V	V	V	V	V
@@ -37,7 +48,7 @@ int	initGame(Data& data)
 
 	//	TESTING:
 	//	Equip the player with a test weapon
-	Weapon testWeapon("Fireball!!", 10, 150, 1000);
+	Weapon testWeapon(FIREBALL, player);
 	player->setWeapon(&testWeapon);
 
 	//	Call the main game loop
@@ -60,18 +71,18 @@ int	main(int argc, char* argv[])
 	if (Debug::state == true)
 		std::cout << BLUE << "debug mode" << NO_COLOR << " is" << B_GREEN << " on" << NO_COLOR << std::endl;
 
+	//	Signal Handler (Ctrl+C)
+	signal(SIGINT,  handle_signal);
+	signal(SIGTERM, handle_signal);
+
 	//	Initialize SDL and its subsystems
 	if (Debug::state == true)
 		std::cout << "initializing SDL..." << std::endl;
 	if (initSDL(data) != 0)
 		return (1);
+	loadTextures(data);
 	if (initSDLText(data) != 0)
 		return (1);
-
-	//	TODO:
-	//	Make a proper loading screen and load assets there
-	//	for now we just load a texture to test the Texture Manager
-	TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, data.getRenderer());
 
 	//	Start the game
 	if (initGame(data) != 0)

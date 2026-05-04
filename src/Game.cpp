@@ -16,9 +16,9 @@
 
 Game::Game(Data& data) :
 	_enemyManager(),
-	_player(TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, data.getRenderer())),
+	_player(TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, nullptr)),
 	_camera(data.getHres(), data.getVres()),
-	_map(data.getRenderer(), DEFAULT_MAP_HEIGHT, DEFAULT_MAP_WIDTH),
+	_map(DEFAULT_MAP_HEIGHT, DEFAULT_MAP_WIDTH),
 	_roundTimer(0.0f),
 	_roundDuration(ROUND_TIME),
 	_currentRound(1),
@@ -81,7 +81,7 @@ int	Game::gameLoop(Data& data)
 				data.getFontSmall(),
 				"E: " + std::to_string(_enemyManager.getEnemyCount()),
 				{ 255, 255, 255 , 255},
-				45, 70);
+				25, 30);
 		}
 
 		//	Frame limiting (if vsync is disabled)
@@ -93,6 +93,10 @@ int	Game::gameLoop(Data& data)
 			SDL_DelayNS(targetNS - frameWorkTime);
 		}
 		SDL_RenderPresent(data.getRenderer());
+
+		// Check for signal and display debug info if caught
+		if (this->displaySignalDebugInfo(frameCount, totalTime, deltaTime))
+			break; // Exit the game loop
 	}
 
 	// DEBUG OUTPUT
@@ -118,11 +122,14 @@ void	Game::update(float deltaTimeNS, Data& data)
 	//	Convert nanoseconds to seconds
 	_roundTimer += deltaTimeNS / 1000000000.0f;
 
-	//	Update enemies
+	//	Update managers
 	_enemyManager.update(deltaTimeNS, data);
-	//	Update player
 	_player.update(deltaTimeNS, data);
-	//	Handle player attacks
+	_projectileManager.update(deltaTimeNS, data);
+
+	//	Attack
+	//	TODO:
+	//	Add enemy attacks here 
 	_player.attack(*data.getGame());
 
 	//	End of round check
@@ -148,6 +155,45 @@ void	Game::render(Data& data)
 	//	--- Foreground ---
 	_enemyManager.render(data);
 	_player.render(data);
+	_projectileManager.render(data);
+}
+
+//	Display comprehensive debug info when signal is caught
+bool	Game::displaySignalDebugInfo(long long frameCount, long long totalTime, Uint64 deltaTime)
+{
+	extern volatile sig_atomic_t g_signalReceived;
+	extern volatile sig_atomic_t g_signalNumber;
+	
+	if (!g_signalReceived)
+		return false;
+
+	// Signal information
+	std::string sigName = (g_signalNumber == SIGINT) ? "SIGINT (Ctrl+C)" : 
+						(g_signalNumber == SIGTERM) ? "SIGTERM" : "UNKNOWN";
+	
+	std::cout << B_RED << "\n====== SIGNAL CAUGHT: " << sigName << " ======" << NO_COLOR << std::endl;
+
+	// Game state information
+	std::cout << B_YELLOW << "Round: " << NO_COLOR << this->getRound() << std::endl;
+	std::cout << B_YELLOW << "Enemies: " << NO_COLOR << _enemyManager.getEnemyCount() << std::endl;
+	std::cout << B_YELLOW << "Time Remaining: " << NO_COLOR << (int)this->getRemainingTime() << "s" << std::endl;
+
+	// Player information
+	SDL_FRect playerRect = _player.getRect();
+	std::cout << B_YELLOW << "Player Position: " << NO_COLOR << "(" << (int)playerRect.x << ", " 
+		<< (int)playerRect.y << ")" << std::endl;
+
+	// Frame information
+	int currentFps = (frameCount > 0) ? (int)(1.0 / ((double)deltaTime / 1000000000.0)) : 0;
+	std::cout << B_YELLOW << "FPS: " << NO_COLOR << currentFps << std::endl;
+	std::cout << B_YELLOW << "Total Frames: " << NO_COLOR << frameCount << std::endl;
+	std::cout << B_YELLOW << "Avg FrameTime: " << NO_COLOR << (int)((double)totalTime / frameCount) << " ns" << std::endl;
+
+	// Game status
+	std::cout << B_YELLOW << "Game Status: " << NO_COLOR << (_isPaused ? "PAUSED" : "RUNNING") << std::endl;
+	std::cout << B_RED << "Exiting...\n" << NO_COLOR << std::endl;
+
+	return true; // Signal handled
 }
 
 void	Game::nextRound()
@@ -205,6 +251,11 @@ unsigned int	Game::getRound() const
 }
 
 //	Getters
+
+ProjectileManager*	Game::getProjectileManager()
+{
+	return (&_projectileManager);
+}
 
 EnemyManager*	Game::getEnemyManager()
 {

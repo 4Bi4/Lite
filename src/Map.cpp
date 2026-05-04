@@ -14,10 +14,10 @@
 
 #include "../include/lite.hpp"
 
-Map::Map(SDL_Renderer* renderer, unsigned int height, unsigned int width)
+Map::Map(unsigned int height, unsigned int width)
 {
-	_wall = TextureManager::loadTexture("./resources/textures/map/wall.png", renderer);
-	_grass = TextureManager::loadTexture("./resources/textures/map/grass.png", renderer);
+	_wall = TextureManager::loadTexture(DIRT_TEXTURE, nullptr);
+	_grass = TextureManager::loadTexture(GRASS_TEXTURE, nullptr);
 	_src = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_dest = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
 	_height = height;
@@ -62,6 +62,12 @@ void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 {
 	if (!camera)
 		return;
+	if (!_wall || !_grass)
+	{
+		if (Debug::state == true)
+			std::cerr << B_RED << "[ ERROR ] map texture missing (wall/grass)" << NO_COLOR << std::endl;
+		return;
+	}
 
 	const SDL_FRect& view = camera->getView();
 

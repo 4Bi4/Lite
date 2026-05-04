@@ -14,8 +14,30 @@
 
 #include "../include/lite.hpp"
 
-Weapon::Weapon(std::string name, int damage, int range, Uint64 cooldown) :
-_name(name), _damage(damage), _range(range), _cooldown(cooldown) {}
+Weapon::Weapon(WeaponType type, Entity* holder) :
+	_type(type), _lastAttackTime(0), _holder(holder)
+{
+	switch (type)
+	{
+		case (FIREBALL) :
+		{
+			_name = std::string("Fireball!!");
+			_range = 300;
+			_damage = 10;
+			_cooldown = 1000;
+			_projectile = FIRE;
+			break ;
+		}
+		default :
+		{
+			_name = std::string("Unknown");
+			_range = 300;
+			_damage = 10;
+			_cooldown = 1000;
+			_projectile = BULLET_SMALL;
+		}
+	}
+}
 
 Weapon::~Weapon() {}
 
@@ -24,19 +46,52 @@ Weapon::~Weapon() {}
 //	but this will be the main weapon class and we will
 //	different types of attack methods
 //	(either making children classes or using an enum to call different methods)
-void	Weapon::attack(Entity* target)
+void	Weapon::attack(Enemy* target, Game& game)
 {
-	static Uint64 lastAttackTime = 0;
 	Uint64 currentTime = SDL_GetTicks();
 
 	//	Check if the weapon is off cooldown
-	if (currentTime - lastAttackTime >= _cooldown)
+	if (currentTime - _lastAttackTime >= (Uint64)_cooldown)
 	{
-		target->takeDamage(_damage);
+		ProjectileStats stats = getProjectileStats(_holder, _projectile);
+		switch (_type)
+		{
+			case (FIREBALL) :
+				shootFireball(game, target, stats);
+				break ;
+			default :
+				std::cerr << RED << "No weapon type! impossible to attack " << NO_COLOR << _name << std::endl;
+		}
 		if (Debug::state == true)
 			std::cout << "Attacking " << target << " with " << _name << " for " << _damage << " damage!\n";
-		lastAttackTime = currentTime;
+		_lastAttackTime = currentTime;
 	}
+}
+
+ProjectileStats	Weapon::getProjectileStats(Entity* holder, ProjectileType type)
+{
+	(void)holder;
+	(void)type;
+	//	TODO:
+	//	Get the holders properties
+	//	(buffs and debuffs)
+
+	//	TESTING:
+	//	For now we hardcode the values
+	ProjectileStats stats = { _damage, 400, 1, 0 };
+	return (stats);
+}
+
+void	Weapon::shootFireball(Game& game, Enemy* target, ProjectileStats stats) const
+{
+	if (!_holder || !target)
+		return;
+
+	const SDL_FRect& holderRect = _holder->getRect();
+	const float spawnX = holderRect.x + (holderRect.w * 0.5f);
+	const float spawnY = holderRect.y + (holderRect.h * 0.5f);
+
+	game.getProjectileManager()->spawnProjectile(_projectile, stats, target->getID(), spawnX, spawnY);
 }
 
 void	Weapon::setName(const std::string& name)
@@ -74,7 +129,7 @@ int	Weapon::getRange() const
 	return (this->_range);
 }
 
-Uint64	Weapon::getCooldown() const
+int	Weapon::getCooldown() const
 {
 	return (this->_cooldown);
 }

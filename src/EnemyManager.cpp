@@ -16,7 +16,7 @@
 
 EnemyManager::EnemyManager() : _maxEnemies(MAX_ENEMIES),
 	_spawnTimer(0.0f),
-	_spawnRate(2.0f),
+	_spawnRate(1.0f),
 	_enemyCount(0)
 {
 	_enemies.resize(_maxEnemies, Enemy(nullptr, this));
@@ -61,7 +61,10 @@ void	EnemyManager::update(float deltaTimeNS, Data& data)
 
 	//	Update all enemies
 	for (size_t i = 0; i < _enemies.size(); i++)
-		_enemies[i].update(deltaTimeNS, data);
+	{
+		if (_enemies[i].isActive())
+			_enemies[i].update(deltaTimeNS, data);
+	}
 }
 
 void	EnemyManager::render(Data& data)
@@ -73,7 +76,7 @@ void	EnemyManager::render(Data& data)
 	}
 }
 
-void	EnemyManager::spawnEnemy(Data& data, enemyType type)
+void	EnemyManager::spawnEnemy(Data& data, EnemyType type)
 {
 	int	index = findAvailableSlot();
 
@@ -102,7 +105,7 @@ void	EnemyManager::spawnEnemy(Data& data, enemyType type)
 	}
 
 	//	Load the texture (or get it from the cache if it's already loaded)
-	texture = TextureManager::loadTexture(path, data.getRenderer());
+	texture = TextureManager::loadTexture(path, nullptr);
 
 	//	Get a random spawn position on the map
 	float	spawnX, spawnY;
@@ -110,11 +113,13 @@ void	EnemyManager::spawnEnemy(Data& data, enemyType type)
 	spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
 	spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
 
-	while (Entity::distanceTo(*data.getGame()->getPlayer(), Enemy(texture, this)) < 600.0f)
+	float distanceToPlayer = Entity::distanceTo(*data.getGame()->getPlayer(), Entity(spawnX, spawnY));
+	while (distanceToPlayer < 600.0f)
 	{
 		//	If the spawn point is too close to the player, try again
 		spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
 		spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
+		distanceToPlayer = Entity::distanceTo(*data.getGame()->getPlayer(), Entity(spawnX, spawnY));
 	}
 
 	//	Spawn the new enemy

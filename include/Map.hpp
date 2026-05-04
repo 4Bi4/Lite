@@ -19,7 +19,7 @@
 class Map
 {
 public:
-	Map(SDL_Renderer* renderer, unsigned int height, unsigned int width);
+	Map(unsigned int height, unsigned int width);
 	~Map();
 
 	void	drawMap(SDL_Renderer* renderer, Camera* camera);

@@ -16,24 +16,6 @@
 
 #include "lite_common.hpp"
 
-//	Holds all the SDL-related data
-struct SdlData
-{
-	SDL_Window*		window = nullptr;
-	SDL_Renderer*	renderer = nullptr;
-	TTF_Font*		fontLarge = nullptr;
-	TTF_Font*		fontSmall = nullptr;
-};
-
-enum state
-{
-	LOADING,
-	MAIN_MENU,
-	IN_GAME,
-	POSTGAME,
-	CLOSING,
-};
-
 class Player;
 class Enemy;
 class Camera;

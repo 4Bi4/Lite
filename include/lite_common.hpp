@@ -17,7 +17,10 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <atomic>
+#include <cstdlib>
 #include <iomanip>
+#include <csignal>
 #include <iostream>
 #include <unordered_map>
 
@@ -25,6 +28,10 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "SDL3_mixer/SDL_mixer.h"
 #include "SDL3_image/SDL_image.h"
+
+//	Homemade definitions
+
+#include "Types.hpp"
 
 //	Global COLOR DEFINITIONS
 
@@ -73,9 +80,14 @@
 #define DEFAULT_MAP_HEIGHT 25
 
 //	Default texture paths
-#define DEFAULT_PLAYER_TEXTURE "./resources/textures/player/error.png"
-#define DEFAULT_ENEMY_TEXTURE "./resources/textures/enemy/enemy.png"
+#define DIRT_TEXTURE "./resources/textures/map/wall.png"
+#define GRASS_TEXTURE "./resources/textures/map/grass.png"
+
 #define DEBUG_ENEMY_TEXTURE "./resources/textures/enemy/targeted_enemy.png"
+#define DEFAULT_ENEMY_TEXTURE "./resources/textures/enemy/enemy.png"
+#define DEFAULT_PLAYER_TEXTURE "./resources/textures/player/error.png"
+
+#define FIREBALL_TEXTURE "./resources/textures/fireball.png"
 
 //	Gamepad management
 #define MAX_JOYSTICK_VALUE 32767.0f
@@ -88,6 +100,7 @@
 #define ROUND_TIME 20.0f	// In seconds
 
 #define MAX_ENEMIES 2000
+#define MAX_PROJECTILES 2000
 
 //	Global variable for debug mode
 //	Debug Mode prints information on the console about the engine's state

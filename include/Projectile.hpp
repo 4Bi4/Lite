@@ -16,51 +16,43 @@
 
 #include "lite_common.hpp"
 
-class Game
+class ProjectileManager;
+
+class Projectile
 {
 public:
-	Game(Data& data);
-	~Game();
+	Projectile(ProjectileType type, ProjectileStats stats, EntityID target, ProjectileManager* manager);
+	~Projectile();
 
-	int		gameLoop(Data& data);
+	void	spawn(ProjectileID id, ProjectileType type, ProjectileStats stats, EntityID target, float x, float y);
+	void	despawn();
 
-	void	update(float deltaTimeNS, Data& data);
 	void	render(Data& data);
+	void	update(float deltaTimeNS, Data& data);
 
-	void	nextRound();
-	void	togglePause();
-	void	gameOver();
+	SDL_FRect					getRect() const;
+	ProjectileID				getID() const;
+	ProjectileType				getType() const;
+	ProjectileStats				getStats() const;
+	const EntityID				getTarget() const;
+	const ProjectileManager*	getManager() const;
+	SDL_Texture*				getTexture() const;
+	int						getPierceCount() const;
 
-	bool			isPaused() const;
-	bool			isGameOver() const;
-	float			getRemainingTime() const;
-	unsigned int	getRound() const;
+	bool	isActive() const;
+	void	setTexture(SDL_Texture* texture);
+	void	consumePierce();
 
-	//	Getters
-	ProjectileManager*	getProjectileManager();
-	EnemyManager*		getEnemyManager();
-	Player*				getPlayer();
-	Camera*				getCamera();
-	Map*				getMap();
+protected:
+	bool						_active;
+	ProjectileID				_id;
+	SDL_FlipMode				_flip;
+	SDL_Texture*				_texture;
+	SDL_FRect					_srcRect;
+	SDL_FRect					_destRect;
 
-	//	Setters
-	void			setPlayer(const Player& player);
-	void			setCamera(const Camera& camera);
-	void			setMap(const Map& map);
-
-	//	Debug
-	bool			displaySignalDebugInfo(long long frameCount, long long totalTime, Uint64 deltaTime);
-
-private:
-	ProjectileManager	_projectileManager;
-	EnemyManager		_enemyManager;
-	Player				_player;
-	Camera				_camera;
-	Map					_map;
-
-	float			_roundTimer;
-	float			_roundDuration;
-	unsigned int	_currentRound;
-	bool			_isPaused;
-	bool			_isGameOver;
+	ProjectileType				_type;
+	ProjectileStats				_stats;
+	EntityID					_target;//	Enemy target
+	const ProjectileManager*	_manager;
 };

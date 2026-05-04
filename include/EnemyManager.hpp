@@ -26,7 +26,7 @@ public:
 	void	render(Data& data);
 
 	void	clearEnemies();
-	void	spawnEnemy(Data& data, enemyType type);
+	void	spawnEnemy(Data& data, EnemyType type);
 
 	void	setSpawnRate(float rate);
 
@@ -37,7 +37,7 @@ public:
 
 private:
 	std::vector<Enemy>	_enemies;
-	std::vector<Uint32>	_generations;	//	Used to track generations for EntityIDs
+	std::vector<Uint32>	_generations;//	Used to track generations for EntityIDs
 
 	const int		_maxEnemies;
 	float 			_spawnTimer;

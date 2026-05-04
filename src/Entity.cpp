@@ -14,6 +14,7 @@
 
 #include "../include/lite.hpp"
 
+//	Default entity constructor
 Entity::Entity(SDL_Texture* texture) :
 	_texture(texture), _flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f , 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
@@ -21,6 +22,17 @@ Entity::Entity(SDL_Texture* texture) :
 	_hp(100), _maxHp(100),
 	_speed(600.0f),
 	_dirX(0.0f), _dirY(0.0f) {}
+
+//	Dummy Entity
+//	Just to calculate with it
+//	Not printable/usable
+Entity::Entity(float x, float y) :
+	_texture(nullptr), _flip(SDL_FLIP_NONE),
+	_destRect{ x, y, 0.0f, 0.0f },
+	_srcRect{ 0.0f, 0.0f, 0.0f, 0.0f },
+	_hp(0), _maxHp(0),
+	_speed(0),
+	_dirX(0), _dirY(0) {}
 
 Entity::~Entity() {}
 

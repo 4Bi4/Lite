@@ -20,8 +20,6 @@
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
-#include "Types.hpp"
-
 #include "Camera.hpp"
 #include "Map.hpp"
 #include "TextureManager.hpp"
@@ -31,6 +29,9 @@
 #include "Enemy.hpp"
 #include "Player.hpp"
 #include "EnemyManager.hpp"
+
+#include "Projectile.hpp"
+#include "ProjectileManager.hpp"
 
 #include "Game.hpp"
 
@@ -78,5 +79,6 @@ int			checkArgs(char* argv[], Data& data);
 
 int				initSDL(Data &data);
 int				initSDLText(Data& data);
+void			loadTextures(Data& data);
 void			drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy);
 SDL_Texture*	loadTexture(SDL_Renderer* ren, const std::string& path);

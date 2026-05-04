@@ -16,11 +16,14 @@
 
 Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
 	Entity(texture),
-	_texture(texture), _flip(SDL_FLIP_NONE),
+	_texture(texture),
+	_flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_manager(manager),
 	_type(DEFAULT),
+	_id{ -1, 0 },
+	_active(false),
 	_hp(30), _maxHp(30),
 	_speed(100),
 	_dirX(0), _dirY(0) {}
@@ -33,7 +36,11 @@ void	Enemy::render(Data& data)
 	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
 	if (!_texture)
-		std::cerr << B_RED << "Enemy [" << _id.index << "] doesn't have a texture!!" << NO_COLOR << std::endl;
+	{
+		if (Debug::state == true)
+			std::cerr << B_RED << "[ ERROR ] enemy without texture!" << NO_COLOR << std::endl;
+		return ;
+	}
 	//	Render the enemy to the screen
 	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
 }
@@ -95,7 +102,7 @@ void	Enemy::update(float deltaTime, Data& data)
 		_destRect.y = maxY - _destRect.h;
 }
 
-void	Enemy::setUp(enemyType type, SDL_Texture* texture)
+void	Enemy::setUp(EnemyType type, SDL_Texture* texture)
 {
 	this->_type = type;
 	this->_texture = texture;
@@ -135,7 +142,7 @@ const SDL_FRect&	Enemy::getRect() const
 	return (_destRect);
 }
 
-enemyType	Enemy::getType() const
+EnemyType	Enemy::getType() const
 {
 	return (_type);
 }
@@ -178,7 +185,7 @@ void	Enemy::takeDamage(int damage)
 		_hp = 0;
 }
 
-void	Enemy::setType(enemyType newType)
+void	Enemy::setType(EnemyType newType)
 {
 	_type = newType;
 }

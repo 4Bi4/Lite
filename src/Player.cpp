@@ -145,7 +145,7 @@ void	Player::attack(Game& game) const
 	//	implement multiple weapons if desired
 	//  (for now the player can only have 1 weapon)
 	if (distToTarget <= _weapon->getRange())
-		_weapon->attack(target);
+		_weapon->attack(target, game);
 }
 
 //	Returns 4 floats.

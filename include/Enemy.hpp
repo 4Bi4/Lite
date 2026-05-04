@@ -18,7 +18,7 @@
 
 //	Here we will list the type of enemies so
 //	they can be easily identified
-enum enemyType
+enum EnemyType
 {
 	DEFAULT
 };
@@ -31,7 +31,7 @@ public:
 	Enemy(SDL_Texture* texture, EnemyManager* manager);
 	~Enemy();
 
-	void	setUp(enemyType type, SDL_Texture* texture);
+	void	setUp(EnemyType type, SDL_Texture* texture);
 
 	void	spawn(EntityID id, float x, float y);
 	void	die();
@@ -39,19 +39,19 @@ public:
 	void	calcNextMove(Data& data);
 	void	render(Data& data);
 	void	update(float deltaTime, Data& data);
-	
+
 	int					getHp() const;
 	EntityID			getID() const;
 	const SDL_FRect&	getRect() const;
-	enemyType			getType() const;
+	EnemyType			getType() const;
 	bool				isActive() const;
 	int					getMaxHp() const;
 	const SDL_Texture*	getTexture() const;
-	
+
 	void	heal(int amount);
 	void	setMaxHp(int hp);
 	void	takeDamage(int damage);
-	void	setType(enemyType type);
+	void	setType(EnemyType type);
 	void	setPosition(float x, float y);
 	void	setTexture(SDL_Texture* texture);
 
@@ -64,7 +64,7 @@ protected:
 
 	EnemyManager*	_manager;
 
-	enemyType		_type;
+	EnemyType		_type;
 	EntityID		_id;
 
 	bool			_active;
