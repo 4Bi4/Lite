@@ -16,16 +16,41 @@
 
 #include "lite_common.hpp"
 
-class TextureManager
+class Data;
+
+class Entity
 {
 public:
-	TextureManager() = delete; // Non-instantiable class
+	Entity(SDL_Texture* texture);
+	Entity(float x, float y);
+	virtual ~Entity();
 
-	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	virtual void		update(float deltaTime, Data& data);
+	virtual void		render(Data& data);
+	virtual void		die();
 
-	static void Clean();
+	virtual const SDL_FRect&	getRect() const;
+	virtual const SDL_Texture*	getTexture() const;
+	virtual int					getHp() const;
+	virtual int					getMaxHp() const;
+	static float				distanceTo(const Entity& a, const Entity& b);
 
-private:
-	//	↓ ↓ Initialized in Data.cpp ↓ ↓
-	static std::unordered_map<std::string, SDL_Texture*> textureCache;
+	virtual void		setTexture(SDL_Texture* texture);
+	virtual void		setPosition(float x, float y);
+	virtual void		takeDamage(int damage);
+	virtual void		heal(int amount);
+	virtual void		setMaxHp(int hp);
+
+protected:
+	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
+	SDL_FlipMode	_flip;	
+
+	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
+	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
+
+	int			_hp;
+	int			_maxHp;
+	float		_speed;
+	float		_dirX;
+	float		_dirY;
 };

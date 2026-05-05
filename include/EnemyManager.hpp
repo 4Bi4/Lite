@@ -16,16 +16,31 @@
 
 #include "lite_common.hpp"
 
-class TextureManager
+class EnemyManager
 {
 public:
-	TextureManager() = delete; // Non-instantiable class
+	EnemyManager();
+	~EnemyManager();
 
-	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	void	update(float dt, Data& data);
+	void	render(Data& data);
 
-	static void Clean();
+	void	clearEnemies();
+	void	spawnEnemy(Data& data, EnemyType type);
+
+	void	setSpawnRate(float rate);
+
+	int						findAvailableSlot();
+	std::vector<Enemy>&		getEnemies();	
+	static Enemy*			getEnemy(EntityID id, Game& game);
+	Uint16					getEnemyCount()	const;
 
 private:
-	//	↓ ↓ Initialized in Data.cpp ↓ ↓
-	static std::unordered_map<std::string, SDL_Texture*> textureCache;
+	std::vector<Enemy>	_enemies;
+	std::vector<Uint32>	_generations;//	Used to track generations for EntityIDs
+
+	const int		_maxEnemies;
+	float 			_spawnTimer;
+	float			_spawnRate;
+	Uint16			_enemyCount;
 };

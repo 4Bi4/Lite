@@ -16,16 +16,51 @@
 
 #include "lite_common.hpp"
 
-class TextureManager
+class Game
 {
 public:
-	TextureManager() = delete; // Non-instantiable class
+	Game(Data& data);
+	~Game();
 
-	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	int		gameLoop(Data& data);
 
-	static void Clean();
+	void	update(float deltaTimeNS, Data& data);
+	void	render(Data& data);
+
+	void	nextRound();
+	void	togglePause();
+	void	gameOver();
+
+	bool			isPaused() const;
+	bool			isGameOver() const;
+	float			getRemainingTime() const;
+	unsigned int	getRound() const;
+
+	//	Getters
+	ProjectileManager*	getProjectileManager();
+	EnemyManager*		getEnemyManager();
+	Player*				getPlayer();
+	Camera*				getCamera();
+	Map*				getMap();
+
+	//	Setters
+	void			setPlayer(const Player& player);
+	void			setCamera(const Camera& camera);
+	void			setMap(const Map& map);
+
+	//	Debug
+	bool			displaySignalDebugInfo(long long frameCount, long long totalTime, Uint64 deltaTime);
 
 private:
-	//	↓ ↓ Initialized in Data.cpp ↓ ↓
-	static std::unordered_map<std::string, SDL_Texture*> textureCache;
+	ProjectileManager	_projectileManager;
+	EnemyManager		_enemyManager;
+	Player				_player;
+	Camera				_camera;
+	Map					_map;
+
+	float			_roundTimer;
+	float			_roundDuration;
+	unsigned int	_currentRound;
+	bool			_isPaused;
+	bool			_isGameOver;
 };

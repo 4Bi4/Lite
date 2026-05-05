@@ -12,90 +12,106 @@
 *                                                               *
 \***************************************************************/
 
-#include "../include/Map.hpp"
 #include "../include/lite.hpp"
 
-int map1[20][25] = {
-
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-
-};
-
-Map::Map(SDL_Renderer* renderer)
+Map::Map(unsigned int height, unsigned int width)
 {
-    _grass = TextureManager::LoadTexture("./resources/textures/map/grass.png", renderer);
-    _wall = TextureManager::LoadTexture("./resources/textures/map/wall.png", renderer);
-    _src = {0, 0, 64, 64};
-    _dest = {0, 0, 64, 64};
+	_wall = TextureManager::loadTexture(DIRT_TEXTURE, nullptr);
+	_grass = TextureManager::loadTexture(GRASS_TEXTURE, nullptr);
+	_src = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
+	_dest = {0, 0, PIXEL_SIZE, PIXEL_SIZE};
+	_height = height;
+	_width = width;
 
-    LoadMap(map1);
-    DrawMap(renderer);
+	map = createMap(height, width);
 }
 
 Map::~Map()
 {
-    if(_grass)
-        SDL_DestroyTexture(_grass);
-    if(_wall)
-        SDL_DestroyTexture(_wall);
+	//	No need to destroy textures here
+	//	TextureManager handles that :p
+
+	//	Free the map memory
+	for (unsigned int i = 0; i < _height; i++)
+		delete[] (map[i]);
+	delete[] (map);
 }
 
-
-void Map::LoadMap(int array[20][25])
+char**	Map::createMap(unsigned int height, unsigned int width)
 {
-    for (int i = 0; i < 20; i++)
-    {
-        for (int j = 0; j < 25; j++)
-        {
-            map[i][j] = array[i][j];
-        }
-    }
+	char** newMap = new char*[height];
+	for (unsigned int i = 0; i < height; i++)
+		newMap[i] = new char[width];
+
+	//	Fill the map with grass (0) and walls (1)
+	for (unsigned int i = 0; i < height; i++)
+	{
+		for (unsigned int j = 0; j < width; j++)
+		{
+			if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
+				newMap[i][j] = 1; // Wall
+			else
+				newMap[i][j] = 0; // Grass
+		}
+	}
+
+	return (newMap);
 }
 
-void Map::DrawMap(SDL_Renderer* renderer)
+void	Map::drawMap(SDL_Renderer* renderer, Camera* camera)
 {
-    int type = 0;
+	if (!camera)
+		return;
+	if (!_wall || !_grass)
+	{
+		if (Debug::state == true)
+			std::cerr << B_RED << "[ ERROR ] map texture missing (wall/grass)" << NO_COLOR << std::endl;
+		return;
+	}
 
-    for (int i = 0; i < 20; i++)
-    {
-        for (int j = 0; j < 25; j++)
-        {
-            type = map[i][j];
-            
-            SDL_FRect dest = { j * 64.0f, i * 64.0f, 64.0f, 64.0f };
+	const SDL_FRect& view = camera->getView();
 
-            switch (type)
-            {
-                case 0:
-                    SDL_RenderTexture(renderer, _grass, &_src, &dest);
-                    break;
-                case 1:
-                    SDL_RenderTexture(renderer, _wall, &_src, &dest);
-                    break;
-                default:
-                    SDL_RenderTexture(renderer, _grass, &_src, &dest);
-                    break;
-            }
-        }
-    }
+	//	Calculate visible tile range based on camera position and size
+	//	(Add -1 and +1 to include partially visible tiles at the edges)
+	int startCol = std::max(0, (int)(view.x / PIXEL_SIZE));
+	int startRow = std::max(0, (int)(view.y / PIXEL_SIZE));
 
+	int endCol   = std::min((int)this->getWidth(), (int)((view.x + view.w) / PIXEL_SIZE) + 1);
+	int endRow   = std::min((int)this->getHeight(), (int)((view.y + view.h) / PIXEL_SIZE) + 1);
+
+	for (int i = startRow; i < endRow; i++)
+	{
+		for (int j = startCol; j < endCol; j++)
+		{
+			int type = map[i][j];
+			
+			//	1. Calculate the world position of the tile
+			SDL_FRect worldDest = { 
+				j * (float)PIXEL_SIZE, 
+				i * (float)PIXEL_SIZE, 
+				(float)PIXEL_SIZE, 
+				(float)PIXEL_SIZE 
+			};
+
+			//	2. Transform to screen position using the camera
+			SDL_FRect screenDest = camera->apply(worldDest);
+
+			//	3. Render based on the tile type
+			switch (type)
+			{
+				case (0): // Grass
+				{
+					SDL_RenderTexture(renderer, _grass, &_src, &screenDest);
+					break;
+				}
+				case (1): // Wall
+				{
+					SDL_RenderTexture(renderer, _wall, &_src, &screenDest);
+					break;
+				}
+				default:
+					break;
+			}
+		}
+	}
 }

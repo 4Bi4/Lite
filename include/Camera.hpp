@@ -16,16 +16,19 @@
 
 #include "lite_common.hpp"
 
-class TextureManager
+class Camera
 {
 public:
-	TextureManager() = delete; // Non-instantiable class
+	Camera(int width, int height);
 
-	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	SDL_FRect	apply(const SDL_FRect& worldRect) const;
+	void		resizeView(float newWidth, float newHeight);
+	void		update(const SDL_FRect& target, int mapW, int mapH);
 
-	static void Clean();
+	const SDL_FRect& getView() const { return _view; }
 
 private:
-	//	↓ ↓ Initialized in Data.cpp ↓ ↓
-	static std::unordered_map<std::string, SDL_Texture*> textureCache;
+	SDL_FRect	_view;
+
+	float		_zoom;
 };

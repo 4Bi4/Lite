@@ -14,27 +14,33 @@
 
 #pragma once
 
-#include "lite.hpp"
-
-class Map;
+#include "lite_common.hpp"
 
 class Map
 {
-public: 
+public:
+	Map(unsigned int height, unsigned int width);
+	~Map();
 
-    Map(SDL_Renderer* renderer);
-    ~Map();
+	void	drawMap(SDL_Renderer* renderer, Camera* camera);
+	char**	createMap(unsigned int height, unsigned int width);
 
-    void LoadMap(int array[20][25]);
-    void DrawMap(SDL_Renderer* renderer);
-    void MapBoundary();
+	//	Getters
+
+	char**			getMap() const { return (this->map); }
+	unsigned int	getWidth() const { return (this->_width); }
+	unsigned int	getHeight() const { return (this->_height); }
 
 private:
 
-    SDL_Texture* _grass;
-    SDL_Texture* _wall;
+	SDL_Texture*	_wall;
+	SDL_Texture*	_grass;
 
-    SDL_FRect _src, _dest;
+	SDL_FRect		_src;
+	SDL_FRect		_dest;
 
-    int map[20][25];
+	unsigned int	_width;
+	unsigned int	_height;
+
+	char**			map;
 };

@@ -1,0 +1,295 @@
+/***************************************************************\
+*                                                               *
+*   ▓██▓    ▓██▓▄▄▄█████▓▓█████                                 *
+*   ▓██▒    ▓██▒▓  ██▒ ▓▒▓█   ▀           Lite Engine           *
+*   ▒██░    ▒██▒▒ ▓██░ ▒░▒███                                   *
+*   ▒██░    ░██░░ ▓██▓ ░ ▒█   ▄            written by:          *
+*   ░██████▒░██░  ▒██▒ ░ ░▒████▒       4Bi4 aka labia-fe        *
+*   ░ ▒░▓  ░░▓    ▒ ░░   ░░ ▒░ ░              and               *
+*   ░ ░ ▒  ░ ▒ ░    ░     ░ ░  ░          monocleduck           *
+*     ░ ░    ▒ ░  ░         ░                                   *
+*       ░  ░ ░              ░  ░      created: 07/04/2026       *
+*                                                               *
+\***************************************************************/
+
+#include "../include/lite.hpp"
+
+Game::Game(Data& data) :
+	_enemyManager(),
+	_player(TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, nullptr)),
+	_camera(data.getHres(), data.getVres()),
+	_map(DEFAULT_MAP_HEIGHT, DEFAULT_MAP_WIDTH),
+	_roundTimer(0.0f),
+	_roundDuration(ROUND_TIME),
+	_currentRound(1),
+	_isPaused(false),
+	_isGameOver(false) {}
+
+Game::~Game() {}
+
+int	Game::gameLoop(Data& data)
+{
+	SDL_Event	event;
+	Uint64		lastFrame = SDL_GetTicksNS();
+	long long	frameCount = 0;
+	long long	totalTime = 0;
+	int			fps = 0;
+
+	while (!this->isGameOver())
+	{
+		Uint64	currentFrame = SDL_GetTicksNS();
+		//	Time since last frame in nanoseconds
+		Uint64	deltaTime = currentFrame - lastFrame;
+
+		lastFrame = currentFrame;
+		totalTime += deltaTime;
+		frameCount++;
+
+		//	Clear the screen before rendering
+		SDL_RenderClear(data.getRenderer());
+	
+		//	Handle events
+		if (handleEvents(data, event) != 0)
+			return (1);
+
+		//	Move game logic to a separate function for better organization
+		this->update(deltaTime, data);
+
+		//	Render stuff here
+		this->render(data);
+
+		//	Round timer
+		drawText(data.getRenderer(),
+			data.getFontLarge(),
+			std::to_string((int)this->getRemainingTime()),
+			{ 0, 0, 0, 0},
+			data.getHres() / 2, 40);
+
+		//	FPS + Enemy counter
+		if (Debug::state == true)
+		{
+			// update only every 10 frames
+			if (frameCount % 10 == 0)
+				fps = (1.0 / ((double)deltaTime / 1000000000.0));
+
+			drawText(data.getRenderer(),
+				data.getFontSmall(),
+				"FPS: " + std::to_string(fps),
+				{ 255, 255, 255 , 255},
+				45, 10);
+			drawText(data.getRenderer(),
+				data.getFontSmall(),
+				"E: " + std::to_string(_enemyManager.getEnemyCount()),
+				{ 255, 255, 255 , 255},
+				25, 30);
+		}
+
+		//	Frame limiting (if vsync is disabled)
+		Uint64	targetNS = (Uint64)data.getTargetFrameTime() * 1000000;
+		Uint64	frameWorkTime = SDL_GetTicksNS() - currentFrame;
+	
+		if (data.getFpsLimit() > 0 && frameWorkTime < targetNS)
+		{
+			SDL_DelayNS(targetNS - frameWorkTime);
+		}
+		SDL_RenderPresent(data.getRenderer());
+
+		// Check for signal and display debug info if caught
+		if (this->displaySignalDebugInfo(frameCount, totalTime, deltaTime))
+			break; // Exit the game loop
+	}
+
+	// DEBUG OUTPUT
+	if (Debug::state == true && frameCount > 0)
+	{
+		std::cout << "\nvsync is: " << (data.getVsync() ? "enabled" : "disabled") << std::endl;
+		std::cout << std::fixed << std::setprecision(0);
+		std::cout << "\ntotal frames counted: " << frameCount << "\n";
+		std::cout << "average frameTime is: " << (double)totalTime / frameCount  << " ns\n";
+		std::cout << "target frametime is:  " << (double)data.getTargetFrameTime() * 1000000.0 << " ns" << std::endl;
+	}
+
+	return(0);
+}
+
+//	Runs the game logic (movement, entities, etc...)
+void	Game::update(float deltaTimeNS, Data& data)
+{
+	if (_isPaused)
+		return;
+
+	//	Update the round timer
+	//	Convert nanoseconds to seconds
+	_roundTimer += deltaTimeNS / 1000000000.0f;
+
+	//	Update managers
+	_enemyManager.update(deltaTimeNS, data);
+	_player.update(deltaTimeNS, data);
+	_projectileManager.update(deltaTimeNS, data);
+
+	//	Attack
+	//	TODO:
+	//	Add enemy attacks here 
+	_player.attack(*data.getGame());
+
+	//	End of round check
+	if (_roundTimer >= _roundDuration)
+	{
+		//	TODO:
+		//  Make some kind of mid round pause
+		//	for now we just go next
+		nextRound();
+	}
+}
+
+//	Render logic and camera control
+void	Game::render(Data& data)
+{
+	//	Update camera to follow the player
+	_camera.update(_player.getRect(), _map.getWidth(), _map.getHeight());
+
+	//	--- Background ---
+	makeBGRainbow(data);
+	_map.drawMap(data.getRenderer(), &_camera);
+
+	//	--- Foreground ---
+	_enemyManager.render(data);
+	_player.render(data);
+	_projectileManager.render(data);
+}
+
+//	Display comprehensive debug info when signal is caught
+bool	Game::displaySignalDebugInfo(long long frameCount, long long totalTime, Uint64 deltaTime)
+{
+	extern volatile sig_atomic_t g_signalReceived;
+	extern volatile sig_atomic_t g_signalNumber;
+	
+	if (!g_signalReceived)
+		return false;
+
+	// Signal information
+	std::string sigName = (g_signalNumber == SIGINT) ? "SIGINT (Ctrl+C)" : 
+						(g_signalNumber == SIGTERM) ? "SIGTERM" : "UNKNOWN";
+	
+	std::cout << B_RED << "\n====== SIGNAL CAUGHT: " << sigName << " ======" << NO_COLOR << std::endl;
+
+	// Game state information
+	std::cout << B_YELLOW << "Round: " << NO_COLOR << this->getRound() << std::endl;
+	std::cout << B_YELLOW << "Enemies: " << NO_COLOR << _enemyManager.getEnemyCount() << std::endl;
+	std::cout << B_YELLOW << "Time Remaining: " << NO_COLOR << (int)this->getRemainingTime() << "s" << std::endl;
+
+	// Player information
+	SDL_FRect playerRect = _player.getRect();
+	std::cout << B_YELLOW << "Player Position: " << NO_COLOR << "(" << (int)playerRect.x << ", " 
+		<< (int)playerRect.y << ")" << std::endl;
+
+	// Frame information
+	int currentFps = (frameCount > 0) ? (int)(1.0 / ((double)deltaTime / 1000000000.0)) : 0;
+	std::cout << B_YELLOW << "FPS: " << NO_COLOR << currentFps << std::endl;
+	std::cout << B_YELLOW << "Total Frames: " << NO_COLOR << frameCount << std::endl;
+	std::cout << B_YELLOW << "Avg FrameTime: " << NO_COLOR << (int)((double)totalTime / frameCount) << " ns" << std::endl;
+
+	// Game status
+	std::cout << B_YELLOW << "Game Status: " << NO_COLOR << (_isPaused ? "PAUSED" : "RUNNING") << std::endl;
+	std::cout << B_RED << "Exiting...\n" << NO_COLOR << std::endl;
+
+	return true; // Signal handled
+}
+
+void	Game::nextRound()
+{
+	_enemyManager.clearEnemies();
+	_currentRound++;
+	_roundTimer = 0.0f;
+
+	//	Increase the wave duration
+	_roundDuration += 2.0f;
+
+	//	TODO:
+	//	Look into this formula ↓ ↓ ↓
+	float rate = std::max(0.2f, 1.5f - (_currentRound * 0.1f));
+	_enemyManager.setSpawnRate(rate);
+	std::cout << B_YELLOW << "¡ROUND " << _currentRound << ", GO!\n" << NO_COLOR << std::endl;
+}
+
+void	Game::togglePause()
+{
+	_isPaused = !_isPaused;
+	if (Debug::state == true)
+	{
+		if (_isPaused)
+			std::cout << "Game paused." << std::endl;
+		else
+			std::cout << "Game resumed." << std::endl;
+	}
+}
+
+void	Game::gameOver()
+{
+	_isGameOver = true;
+	std::cout << B_RED << "¡GAME OVER!" << NO_COLOR << std::endl;
+}
+
+bool	Game::isPaused() const
+{
+	return (_isPaused);
+}
+
+bool	Game::isGameOver() const
+{
+	return (_isGameOver);
+}
+
+float	Game::getRemainingTime() const
+{
+	return (_roundDuration - _roundTimer);
+}
+
+unsigned int	Game::getRound() const
+{
+	return (_currentRound);
+}
+
+//	Getters
+
+ProjectileManager*	Game::getProjectileManager()
+{
+	return (&_projectileManager);
+}
+
+EnemyManager*	Game::getEnemyManager()
+{
+	return (&_enemyManager);
+}
+
+Player*	Game::getPlayer()
+{
+	return (&_player);
+}
+
+Camera*	Game::getCamera()
+{
+	return (&_camera);
+}
+
+Map*	Game::getMap()
+{
+	return (&_map);
+}
+
+//	Setters
+
+void	Game::setPlayer(const Player& player)
+{
+	_player = player;
+}
+
+void	Game::setCamera(const Camera& camera)
+{
+	_camera = camera;
+}
+
+void	Game::setMap(const Map& map)
+{
+	_map = map;
+}

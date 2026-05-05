@@ -16,49 +16,60 @@
 
 #include "lite_common.hpp"
 
-class Game;
+//	Here we will list the type of enemies so
+//	they can be easily identified
+enum EnemyType
+{
+	DEFAULT
+};
 
-class Player : public Entity
+class EnemyManager;
+
+class Enemy : public Entity
 {
 public:
-	Player(SDL_Texture* texture);
-	~Player();
+	Enemy(SDL_Texture* texture, EnemyManager* manager);
+	~Enemy();
 
-	void	handleInput(Data& data);
-	void	update(float deltaTime, Data& data);
+	void	setUp(EnemyType type, SDL_Texture* texture);
+
+	void	spawn(EntityID id, float x, float y);
+	void	die();
+
+	void	calcNextMove(Data& data);
 	void	render(Data& data);
+	void	update(float deltaTime, Data& data);
 
-	void	attack(Game& game) const;
-
-	const SDL_FRect&	getRect() const;
-	const SDL_Texture*	getTexture() const;
-	EntityID			getTarget() const;
-	Weapon*				getWeapon() const;
-	EntityID			getClosestEnemy(Data& data) const;
 	int					getHp() const;
+	EntityID			getID() const;
+	const SDL_FRect&	getRect() const;
+	const SDL_FRect&	getHitbox() const;
+	EnemyType			getType() const;
+	bool				isActive() const;
 	int					getMaxHp() const;
+	const SDL_Texture*	getTexture() const;
 
-	void	setPosition(float x, float y);
-	void	setTexture(SDL_Texture* texture);
-	void	setTarget(EntityID enemy, Game& game);
-	void	setWeapon(Weapon* weapon);
-	void	takeDamage(int damage);
 	void	heal(int amount);
 	void	setMaxHp(int hp);
+	void	takeDamage(int damage);
+	void	setType(EnemyType type);
+	void	setPosition(float x, float y);
+	void	setTexture(SDL_Texture* texture);
 
 protected:
-	void	handleKeyboardMovement();
-	void	handleGamepadMovement(Data& data);
-
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
-	SDL_FlipMode	_flip;	
+	SDL_FlipMode	_flip;
 
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
+	SDL_FRect		_srcRect;
+	SDL_FRect		_hitbox;		// The hitbox for collision detection (x,y,w,h)
 
-	EntityID		_target;		//	Pointer to the enemy we're currently targeting (nullptr if none)
-	Weapon*			_weapon;		//	Pointer to the player's weapon (nullptr if none)
+	EnemyManager*	_manager;
 
+	EnemyType		_type;
+	EntityID		_id;
+
+	bool			_active;
 	int				_hp;
 	int				_maxHp;
 	float			_speed;

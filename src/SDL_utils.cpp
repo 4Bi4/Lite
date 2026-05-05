@@ -15,7 +15,8 @@
 #include "../include/lite.hpp"
 
 //	Initializes SDL window and renderer (windowed and fullscreen)
-//	RETURN: 0 on success, 1 on error
+//	\returns
+//	0 on success, 1 on error
 int	initSDLWindow(Data& data)
 {
 	//	Create window
@@ -25,7 +26,15 @@ int	initSDLWindow(Data& data)
 		std::cerr << "SDL_CreateWindow: " << SDL_GetError() << "\n";
 		return (1);
 	}
-	IMG_LoadTexture(data.getRenderer(), "assets/icon.png");
+	//	Set fullscreen if needed
+	if (data.isFullscreen())
+	{
+		if (SDL_SetWindowFullscreen(data.getWindow(), SDL_WINDOW_FULLSCREEN) != true)
+		{
+			std::cerr << "SDL_SetWindowFullscreen: " << SDL_GetError() << "\n";
+			data.setFullscreen(false); // Revert state on failure
+		}
+	}
 
 	//	Create renderer
 	data.setRenderer(SDL_CreateRenderer(data.getWindow(), nullptr));
@@ -34,8 +43,6 @@ int	initSDLWindow(Data& data)
 		std::cerr << "SDL_CreateRenderer: " << SDL_GetError() << "\n";
 		return (1);
 	}
-	SDL_SetRenderLogicalPresentation(data.getRenderer(), data.getHres(), data.getVres(), SDL_LOGICAL_PRESENTATION_LETTERBOX);
-
 	//	Set vsync
 	if (data.getVsync() == false)
 	{
@@ -51,10 +58,11 @@ int	initSDLWindow(Data& data)
 }
 
 //	Initializes SDL and its subsystems (SDL_ttf, SDL_image, SDL_mixer)
-//	RETURN: 0 on success, 1 on error
+//	\returns
+//	0 on success, 1 on error
 int	initSDLCore(Data& data)
 {
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD))
 	{
 		std::cerr << "SDL_Init: " << SDL_GetError() << "\n";
 		return (1);
@@ -77,14 +85,38 @@ int	initSDLCore(Data& data)
 	return (0);
 }
 
+//	Initializes SDL_ttf and loads fonts
+//	\returns
+//	0 on success, 1 on error
+int	initSDLText(Data& data)
+{
+	//	Load fonts
+	data.setFontLarge(TTF_OpenFont("resources/fonts/comic_sans/comicbd.ttf", 62));
+	if (!data.getFontLarge())
+	{
+		std::cerr << "TTF_OpenFont: " << SDL_GetError() << "\n";
+		return (1);
+	}
+
+	data.setFontSmall(TTF_OpenFont("resources/fonts/TlwgTypo/TlwgTypo-Bold.ttf", 16));
+	if (!data.getFontSmall())
+	{
+		std::cerr << "TTF_OpenFont: " << SDL_GetError() << "\n";
+		return (1);
+	}
+	return (0);
+}
+
 //	Initializes SDL (core + window)
-//	RETURN: 0 on success, 1 on error
+//	\returns
+//	0 on success, 1 on error
 int	initSDL(Data& data)
 {
 	if (initSDLCore(data) != 0)
 		return (1);
 	if (initSDLWindow(data) != 0)
 		return (1);
+	
 	if (Debug::state == true)
 		std::cout << B_GREEN << " SDL " << GREEN "initialized successfully!" << NO_COLOR << std::endl;
 	return (0);

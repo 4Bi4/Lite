@@ -14,74 +14,50 @@
 
 #include "../include/lite.hpp"
 
-int	gameLogic(Data& data);
+// Signal tracking (volatile and atomic for async-signal-safe access)
+volatile sig_atomic_t g_signalReceived = 0;
+volatile sig_atomic_t g_signalNumber = 0;
 
-int renderLogic(Data& data);
-
-//	Main loop of the engine
-//	RETURN: 0 on success, 1 on error
-int	mainLoop(Data& data)
+void handle_signal(int sig)
 {
-	SDL_Event	event;
-	Uint64		lastFrame = SDL_GetTicksNS();
-	long long	frameCount = 0;
-	long long	totalTime = 0;
+	// These are async-signal-safe operations
+	g_signalNumber = sig;
+	g_signalReceived = 1;
+}
 
-	Map map(data.getRenderer());
+// THIS IS FOR THE TEXTURE MANAGER
+//	|	|	|	|	|	|	|	|
+//	V	V	V	V	V	V	V	V
+std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;
 
-	while (data.isRunning())
-	{
-		Uint64	currentFrame = SDL_GetTicksNS();
-		Uint64	deltaTime = currentFrame - lastFrame;
+//	Starts a new game
+//	\returns
+//	0 on success, 1 on error
+int	initGame(Data& data)
+{
+	Game	game(data);
+	data.setGame(&game);
 
-		lastFrame = currentFrame;
+	Map*	map	= game.getMap();
+	Player*	player = game.getPlayer();
 
-		if (Debug::state == true)
-		{
-			totalTime += deltaTime;
-			frameCount++;
-		}
+	//	Set the player's initial position to the center of the map
+	float initialX = ((map->getWidth() * PIXEL_SIZE) / 2.0f);
+	float initialY = ((map->getHeight() * PIXEL_SIZE) / 2.0f);
+	player->setPosition(initialX, initialY);
 
-		SDL_RenderClear(data.getRenderer());
-		map.DrawMap(data.getRenderer());
-		//makeBGRainbow(data);
-		
-		while (SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_EVENT_QUIT)
-				data.setRunning(false);
+	//	TESTING:
+	//	Equip the player with a test weapon
+	Weapon testWeapon(FIREBALL, player);
+	player->setWeapon(&testWeapon);
 
-			// Future: Handle keyboard/mouse events here
-		}
+	//	Call the main game loop
+	data.setState(IN_GAME);
+	if (game.gameLoop(data) != 0)
+		return (1);
 
-		// Future: Update game state and render here
-		if (data._player)
-		{
-			data._player->Update(deltaTime, data); // Convert ns to seconds
-			data._player->Render(data.getRenderer());
-		}
-		else
-			std::cerr << RED << "Error: No player object found!" << NO_COLOR << std::endl;
-	
-		Uint64	targetNS = (Uint64)data.getTargetFrameTime() * 1000000;
-		Uint64	frameWorkTime = SDL_GetTicksNS() - currentFrame;
-
-		if (data.getFpsLimit() > 0 && frameWorkTime < targetNS)
-		{
-			SDL_DelayNS(targetNS - frameWorkTime);
-		}
-		SDL_RenderPresent(data.getRenderer());
-	}
-
-	// DEBUG OUTPUT
-	if (Debug::state == true && frameCount > 0)
-	{
-		std::cout << "\nvsync is: " << (data.getVsync() ? "enabled" : "disabled") << std::endl;
-		std::cout << std::fixed << std::setprecision(0);
-		std::cout << "\ntotal frames counted: " << frameCount << "\n";
-		std::cout << "average frameTime is: " << (double)totalTime / frameCount  << " ns\n";
-		std::cout << "target frametime is:  " << (double)data.getTargetFrameTime() * 1000000.0 << " ns" << std::endl;
-	}
+	//	Invalidate the pointer after the game
+	data.setGame(nullptr);
 
 	return (0);
 }
@@ -95,16 +71,26 @@ int	main(int argc, char* argv[])
 	if (Debug::state == true)
 		std::cout << BLUE << "debug mode" << NO_COLOR << " is" << B_GREEN << " on" << NO_COLOR << std::endl;
 
+	//	Signal Handler (Ctrl+C)
+	signal(SIGINT,  handle_signal);
+	signal(SIGTERM, handle_signal);
+
+	//	Initialize SDL and its subsystems
 	if (Debug::state == true)
 		std::cout << "initializing SDL..." << std::endl;
-
 	if (initSDL(data) != 0)
 		return (1);
+	loadTextures(data);
+	if (initSDLText(data) != 0)
+		return (1);
 
-	Player player(TextureManager::LoadTexture("./resources/textures/player/error.png", data.getRenderer()));
-	data._player = &player;
-	
-	mainLoop(data);
+	//	Start the game
+	if (initGame(data) != 0)
+		return (1);
+
+	//	Close the program
+	data.setState(CLOSING);
+	TextureManager::Clean();
 
 	return (0);
 }

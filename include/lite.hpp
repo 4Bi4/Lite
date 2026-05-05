@@ -14,77 +14,51 @@
 
 #pragma once
 
-#include <cmath>
-#include <string>
-#include <iomanip>
-#include <iostream>
-#include <unordered_map>
-
-#include "SDL3/SDL.h"
-#include "SDL3_ttf/SDL_ttf.h"
-#include "SDL3_mixer/SDL_mixer.h"
-#include "SDL3_image/SDL_image.h"
-
-//	COLOR DEFINITIONS
-
-#define RED			"\033[0;31m"
-#define GREEN		"\033[0;32m"
-#define YELLOW		"\033[0;33m"
-#define BLUE		"\033[0;34m"
-#define MAGENTA		"\033[0;35m"
-#define CYAN		"\033[0;36m"
-
-#define B_RED		"\033[1;31m"
-#define B_GREEN		"\033[1;32m"
-#define B_YELLOW	"\033[1;33m"
-#define B_BLUE		"\033[1;34m"
-#define B_MAGENTA	"\033[1;35m"
-#define B_CYAN		"\033[1;36m"
-
-#define NO_COLOR	"\033[0m"
-
-/******************************/
-//	---- DEFAULT VALUES ----  //
-/******************************/
-
-//	Default  horizontal resolution
-#define DEFAULT_HRES 1280
-//	Default vertical resolution
-#define DEFAULT_VRES 720
-
-//	Default FPS limit
-#define DEFAULT_FPS_LIMIT 60
-
-//	Global variable for debug mode
-//	Debug Mode prints information on the console about the engine's state
-namespace Debug
-{
-	inline bool state = false;
-}
+#include "lite_common.hpp"
 
 /******************************/
 //	 ---- CLASS HEADERS ----  //
 /******************************/
 
-#include "Player.hpp"
-#include "Data.hpp"
-#include "TextureManager.hpp"
+#include "Camera.hpp"
 #include "Map.hpp"
+#include "TextureManager.hpp"
+
+#include "Entity.hpp"
+#include "Weapon.hpp"
+#include "Enemy.hpp"
+#include "Player.hpp"
+#include "EnemyManager.hpp"
+
+#include "Projectile.hpp"
+#include "ProjectileManager.hpp"
+
+#include "Game.hpp"
+
+#include "Data.hpp"
 
 /******************************/
 // --- CLASS DECLARATIONS --- //
 /******************************/
 
-class Data;
-class Player;
-class TextureManager;
 class Map;
 
-/******************************/
-// 	---- UTILS FUNCTIONS ---- //
-/******************************/
+class Data;
+class TextureManager;
+class Camera;
 
-int			checkArgs(char* argv[], Data& data);
+class Entity;
+class Weapon;
+class Enemy;
+class Player;
+class EnemyManager;
+class Game;
+
+/*****************************/
+// 	---- GAME FUNCTIONS ---- //
+/*****************************/
+
+int			handleEvents(Data& data, SDL_Event& event);
 
 /*******************************/
 // 	---- RENDER FUNCTIONS ---- //
@@ -93,10 +67,18 @@ int			checkArgs(char* argv[], Data& data);
 void		makeBGRainbow(Data& data);
 void		renderBackground(Data& data, SDL_Color color);
 
+/******************************/
+// 	---- UTILS FUNCTIONS ---- //
+/******************************/
+
+int			checkArgs(char* argv[], Data& data);
+
 /**********************************/
 // 	---- SDL UTILS FUNCTIONS ---- //
 /**********************************/
 
 int				initSDL(Data &data);
+int				initSDLText(Data& data);
+void			loadTextures(Data& data);
 void			drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy);
 SDL_Texture*	loadTexture(SDL_Renderer* ren, const std::string& path);

@@ -16,16 +16,41 @@
 
 #include "lite_common.hpp"
 
-class TextureManager
+#include "Projectile.hpp"
+
+class Game;
+class Enemy;
+
+class Weapon
 {
 public:
-	TextureManager() = delete; // Non-instantiable class
+	Weapon(WeaponType type, Entity* holder);
+	~Weapon();
 
-	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	void	attack(Enemy* target, Game& game);
 
-	static void Clean();
+	void	setName(const std::string& name);
+	void	setRange(int range);
+	void	setDamage(int damage);
+	void	setCooldown(Uint64 cooldown);
+
+	const std::string&	getName() const;
+	int					getRange() const;
+	int					getDamage() const;
+	int					getCooldown() const;
 
 private:
-	//	↓ ↓ Initialized in Data.cpp ↓ ↓
-	static std::unordered_map<std::string, SDL_Texture*> textureCache;
+	ProjectileStats	getProjectileStats(Entity* holder, ProjectileType type);
+
+	void	shootFireball(Game& game, Enemy* target, ProjectileStats stats) const;
+
+	std::string		_name;
+	WeaponType		_type;
+	int				_range;
+	int				_damage;
+	int				_cooldown;//	Cooldown in milliseconds
+	ProjectileType	_projectile;
+	Uint64			_lastAttackTime;
+
+	Entity*			_holder;
 };

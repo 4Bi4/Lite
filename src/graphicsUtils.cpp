@@ -21,10 +21,11 @@ void	renderBackground(Data& data, SDL_Color color)
 	SDL_RenderClear(data.getRenderer());
 }
 
+//	Fills the back of the screen with a rainbow effect
 void	makeBGRainbow(Data& data)
 {
 	static float	hue = 0.0f;
-	const float		step = 1.0f;
+	const float		step = 0.1f;
 
 	float	c = 1.0f;
 	float	x = c * (1.0f - std::fabs(std::fmod(hue / 60.0f, 2.0f) - 1.0f));
@@ -56,4 +57,20 @@ void	makeBGRainbow(Data& data)
 	hue += step;
 	if (hue >= 360.0f)
 		hue -= 360.0f;
+}
+
+void	loadTextures(Data& data)
+{
+	if (!TextureManager::loadTexture(DIRT_TEXTURE, data.getRenderer()))
+		std::cerr << B_RED << "[ERROR] loading texture: map wall" << NO_COLOR << std::endl;
+	if (!TextureManager::loadTexture(GRASS_TEXTURE, data.getRenderer()))
+		std::cerr << B_RED << "[ERROR] loading texture: map grass" << NO_COLOR << std::endl;
+	if (!TextureManager::loadTexture(DEFAULT_ENEMY_TEXTURE, data.getRenderer()))
+		std::cerr << B_RED << "[ERROR] LOADING TEXTURE!: default enemy" << NO_COLOR << std::endl;
+	if (!TextureManager::loadTexture(DEBUG_ENEMY_TEXTURE, data.getRenderer()))
+		std::cerr << B_RED << "[ERROR] LOADING TEXTURE!: debug enemy" << NO_COLOR << std::endl;
+	if (!TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, data.getRenderer()))
+		std::cerr << B_RED << "[ERROR] LOADING TEXTURE!: default player" << NO_COLOR << std::endl;
+	if (!TextureManager::loadTexture(FIREBALL_TEXTURE, data.getRenderer()))
+		std::cerr << B_RED << "[ERROR] LOADING TEXTURE!: projectile fireball" << NO_COLOR << std::endl;
 }

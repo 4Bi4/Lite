@@ -16,16 +16,27 @@
 
 #include "lite_common.hpp"
 
-class TextureManager
+class Projectile;
+
+class ProjectileManager
 {
 public:
-	TextureManager() = delete; // Non-instantiable class
+	ProjectileManager();
+	~ProjectileManager();
 
-	static SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	void	update(float deltaTimeNS, Data& data);
+	void	render(Data& data);
 
-	static void Clean();
+	void	clearProjectiles();
+	void	spawnProjectile(ProjectileType type, ProjectileStats stats, EntityID target, float x, float y);
+
+	int					findAvailableSlot();
+	std::vector<Projectile>&	getProjectiles();
+	static Projectile*			getProjectile(ProjectileID id, Game& game);
 
 private:
-	//	↓ ↓ Initialized in Data.cpp ↓ ↓
-	static std::unordered_map<std::string, SDL_Texture*> textureCache;
+	std::vector<Projectile>	_projectiles;
+	std::vector<Uint32>		_generations;//	Used to track generations for ProjectileIDs
+
+	const int				_maxProjectiles;
 };
