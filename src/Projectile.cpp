@@ -38,7 +38,7 @@ Projectile::Projectile(ProjectileType type, ProjectileStats stats, EntityID targ
 
 Projectile::~Projectile() {}
 
-void	Projectile::spawn(ProjectileID id, ProjectileType type, ProjectileStats stats, EntityID target, float x, float y) 
+void	Projectile::spawn(ProjectileID id, ProjectileType type, ProjectileStats stats, EntityID target, float x, float y)
 {
 	_id = id;
 	_type = type;
@@ -69,7 +69,6 @@ void	Projectile::spawn(ProjectileID id, ProjectileType type, ProjectileStats sta
 			_texture = TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, nullptr);
 	}
 }
-
 
 void	Projectile::despawn()
 {
@@ -141,10 +140,8 @@ void	Projectile::render(Data& data)
 			std::cerr << B_RED << "[ ERROR ] projectile without texture!" << NO_COLOR << std::endl;
 		return ;
 	}
-
-	
 	//	Render the projectile to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, _angle, NULL, _flip);
+	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
 }
 
 ProjectileType	Projectile::getType() const
