@@ -37,6 +37,7 @@ public:
 	EntityID			getClosestEnemy(Data& data) const;
 	int					getHp() const;
 	int					getMaxHp() const;
+	bool				isInvulnerable() const;
 
 	void	setPosition(float x, float y);
 	void	setTexture(SDL_Texture* texture);
@@ -45,10 +46,13 @@ public:
 	void	takeDamage(int damage);
 	void	heal(int amount);
 	void	setMaxHp(int hp);
+	void 	setInvulnerable(int invulnerable);
+	void 	setInvulnerable();
 
 protected:
 	void	handleKeyboardMovement();
 	void	handleGamepadMovement(Data& data);
+	void	updateInvulnerabilityTimer();
 
 	SDL_Texture*	_texture;		// Just a pointer (the Manager handles the memory)
 	SDL_FlipMode	_flip;	
@@ -61,6 +65,9 @@ protected:
 
 	int				_hp;
 	int				_maxHp;
+	Uint64			_invulnerabilityTimer;
+	bool			_isInvulnerable;
+	Uint64			_lastDamageTime;
 	float			_speed;
 	float			_dirX;
 	float			_dirY;

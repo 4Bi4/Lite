@@ -72,6 +72,7 @@ protected:
 	bool			_active;
 	int				_hp;
 	int				_maxHp;
+	int				_damage;
 	float			_speed;
 	float			_dirX;
 	float			_dirY;

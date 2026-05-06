@@ -26,6 +26,7 @@ Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
 	_id{ -1, 0 },
 	_active(false),
 	_hp(30), _maxHp(30),
+	_damage(10),
 	_speed(100),
 	_dirX(0), _dirY(0) {}
 
@@ -105,6 +106,18 @@ void	Enemy::update(float deltaTime, Data& data)
 		_destRect.x = maxX - _destRect.w;
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
+
+	//check if the enemy is colliding with the player
+	SDL_FRect playerRect = data.getGame()->getPlayer()->getRect();
+	if (SDL_HasRectIntersectionFloat(&_hitbox, &playerRect))
+	{
+		//	If colliding, deal damage to the player
+		std::cout << "PlayerHealth before: " << data.getGame()->getPlayer()->getHp() << "\n";
+		if(!data.getGame()->getPlayer()->isInvulnerable()){
+			data.getGame()->getPlayer()->takeDamage(_damage);
+			data.getGame()->getPlayer()->setInvulnerable(); // Set player invulnerable after taking damage with default value
+		}
+	}
 }
 
 void	Enemy::setUp(EnemyType type, SDL_Texture* texture)
