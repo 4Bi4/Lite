@@ -78,7 +78,8 @@ ProjectileStats	Weapon::getProjectileStats(Entity* holder, ProjectileType type)
 
 	//	TESTING:
 	//	For now we hardcode the values
-	ProjectileStats stats = { _damage, 400, 1, 0 };
+	
+	ProjectileStats stats = { _damage, 400, 1, 0, 1.0f };
 	return (stats);
 }
 

@@ -22,6 +22,8 @@ Player::Player(SDL_Texture* texture) :
 	_target{ -1, 0 },
 	_weapon(nullptr),
 	_hp(100), _maxHp(100),
+	_isInvulnerable(false),
+	_lastDamageTime(0),
 	_speed(400.0f),
 	_dirX(0.0f), _dirY(0.0f) {}
 
@@ -111,6 +113,9 @@ void	Player::update(float deltaTime, Data& data)
 		_destRect.x = maxX - _destRect.w;
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
+
+
+	updateInvulnerabilityTimer();
 
 	//	Update the player's target
 	setTarget(getClosestEnemy(data), *data.getGame());
@@ -207,6 +212,11 @@ int	Player::getMaxHp() const
 	return (_maxHp);
 }
 
+bool Player::isInvulnerable() const
+{
+	return _isInvulnerable;
+}
+
 void	Player::setPosition(float x, float y)
 {
 	_destRect.x = x  - (PIXEL_SIZE / 2.0f);
@@ -261,4 +271,28 @@ void	Player::setMaxHp(int hp)
 	_maxHp = hp;
 	if (_hp > _maxHp)
 		_hp = _maxHp;
+}
+
+void Player::setInvulnerable(int invulnerable)
+{
+	_invulnerabilityTimer = invulnerable;
+	_isInvulnerable = true;
+	_lastDamageTime = SDL_GetTicks();
+}
+
+void Player::setInvulnerable()
+{
+	_invulnerabilityTimer = 500; // Default invulnerability time
+	_isInvulnerable = true;
+	_lastDamageTime = SDL_GetTicks();
+}
+
+void Player::updateInvulnerabilityTimer()
+{
+	if (_isInvulnerable)
+	{
+		Uint64 currentTime = SDL_GetTicks();
+		if (currentTime - _lastDamageTime >= _invulnerabilityTimer)
+			_isInvulnerable = false;
+	}
 }

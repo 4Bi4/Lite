@@ -49,14 +49,14 @@ void	ProjectileManager::update(float deltaTimeNS, Data& data)
 		if (!projectile.isActive())
 			continue;
 
-		const SDL_FRect projectileRect = projectile.getRect();
+		const SDL_FRect projectileRect = projectile.getHitbox();
 		for (size_t j = 0; j < enemies.size(); ++j)
 		{
 			Enemy& enemy = enemies[j];
 			if (!enemy.isActive())
 				continue;
 
-			if (SDL_HasRectIntersectionFloat(&projectileRect, &enemy.getRect()))
+			if (SDL_HasRectIntersectionFloat(&projectileRect, &enemy.getHitbox()))
 			{
 				enemy.takeDamage(projectile.getStats().damage);
 				projectile.consumePierce();

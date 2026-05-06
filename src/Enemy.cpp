@@ -20,11 +20,13 @@ Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
 	_flip(SDL_FLIP_NONE),
 	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE },
+	_hitbox{ 10.0f, 10.0f, 40.0f, 40.0f },
 	_manager(manager),
 	_type(DEFAULT),
 	_id{ -1, 0 },
 	_active(false),
 	_hp(30), _maxHp(30),
+	_damage(10),
 	_speed(100),
 	_dirX(0), _dirY(0) {}
 
@@ -88,6 +90,10 @@ void	Enemy::update(float deltaTime, Data& data)
 	_destRect.x += _dirX * _speed * deltaTime / 1000000000.0f;
 	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
 
+	//move hitbox with the enemy
+	_hitbox.x = _destRect.x + 5.0f;
+	_hitbox.y = _destRect.y + 5.0f;
+
 	//	Out of bounds check
 	float maxX = data.getGame()->getMap()->getWidth() * PIXEL_SIZE;
     float maxY = data.getGame()->getMap()->getHeight() * PIXEL_SIZE;
@@ -100,6 +106,18 @@ void	Enemy::update(float deltaTime, Data& data)
 		_destRect.x = maxX - _destRect.w;
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
+
+	//check if the enemy is colliding with the player
+	SDL_FRect playerRect = data.getGame()->getPlayer()->getRect();
+	if (SDL_HasRectIntersectionFloat(&_hitbox, &playerRect))
+	{
+		//	If colliding, deal damage to the player
+		std::cout << "PlayerHealth before: " << data.getGame()->getPlayer()->getHp() << "\n";
+		if(!data.getGame()->getPlayer()->isInvulnerable()){
+			data.getGame()->getPlayer()->takeDamage(_damage);
+			data.getGame()->getPlayer()->setInvulnerable(); // Set player invulnerable after taking damage with default value
+		}
+	}
 }
 
 void	Enemy::setUp(EnemyType type, SDL_Texture* texture)
@@ -140,6 +158,11 @@ EntityID	Enemy::getID() const
 const SDL_FRect&	Enemy::getRect() const
 {
 	return (_destRect);
+}
+
+const SDL_FRect&	Enemy::getHitbox() const
+{
+	return (_hitbox);
 }
 
 EnemyType	Enemy::getType() const

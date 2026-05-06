@@ -102,6 +102,12 @@
 #define MAX_ENEMIES 2000
 #define MAX_PROJECTILES 2000
 
+/****************************/
+//---- MATH CONSTANTS ----  //
+/****************************/
+
+#define PI 3.14159265358979323846f
+
 //	Global variable for debug mode
 //	Debug Mode prints information on the console about the engine's state
 namespace Debug
