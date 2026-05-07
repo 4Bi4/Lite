@@ -92,6 +92,7 @@ struct ProjectileStats
 	float	speed = 0.0f;
 	int		pierceCount = 0;
 	float	knockback = 0.0f;
+	float	sizeMultiplier = 1.0f;
 };
 
 enum ProjectileType

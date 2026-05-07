@@ -14,6 +14,8 @@
 
 #include "../include/lite.hpp"
 
+#include <cmath>
+
 Projectile::Projectile(ProjectileType type, ProjectileStats stats, EntityID target, ProjectileManager* manager) :
 	_active(false),
 	_flip(SDL_FLIP_NONE),
@@ -44,17 +46,24 @@ void	Projectile::spawn(ProjectileID id, ProjectileType type, ProjectileStats sta
 	_target = target;
 	_active = true;
 	_flip = SDL_FLIP_NONE;
+	_destRect.w = (float)PIXEL_SIZE * _stats.sizeMultiplier;
+	_destRect.h = (float)PIXEL_SIZE * _stats.sizeMultiplier;
 	_destRect.x = x - (_destRect.w * 0.5f);
 	_destRect.y = y - (_destRect.h * 0.5f);
-	_destRect.w = (float)PIXEL_SIZE;
-	_destRect.h = (float)PIXEL_SIZE;
-	_srcRect.w = (float)PIXEL_SIZE;
-	_srcRect.h = (float)PIXEL_SIZE;
+	_srcRect.w = (float)PIXEL_SIZE * _stats.sizeMultiplier;
+	_srcRect.h = (float)PIXEL_SIZE * _stats.sizeMultiplier;
+	_hitbox = _destRect;
+
 
 	switch (_type)
 	{
 		case (FIRE) :
 			_texture = TextureManager::loadTexture(FIREBALL_TEXTURE, nullptr);
+			_hitbox.w *= 0.2f; // Increase hitbox size based on sizeMultiplier
+			_hitbox.h *= 0.2f;
+			_hitbox.x = _destRect.x + (_destRect.w * 0.5f) - (_hitbox.w * 0.5f);
+   			_hitbox.y = _destRect.y + (_destRect.h * 0.5f) - (_hitbox.h * 0.5f);
+
 			break;
 		default :
 			_texture = TextureManager::loadTexture(DEFAULT_PLAYER_TEXTURE, nullptr);
@@ -69,6 +78,11 @@ void	Projectile::despawn()
 SDL_FRect	Projectile::getRect() const
 {
 	return (_destRect);
+}
+
+SDL_FRect	Projectile::getHitbox() const
+{
+	return (_hitbox);
 }
 
 ProjectileID	Projectile::getID() const
@@ -99,10 +113,20 @@ void	Projectile::update(float deltaTimeNS, Data& data)
 	{
 		dirX /= length;
 		dirY /= length;
+
+		_angle = (std::atan2(dirY, dirX) * 180.0f / PI);
 	}
 
 	_destRect.x += dirX * _stats.speed * deltaTimeNS / 1000000000.0f;
 	_destRect.y += dirY * _stats.speed * deltaTimeNS / 1000000000.0f;
+
+	//	Update hitbox position
+	// Update hitbox position (keeping it centered)
+	float offsetX = (_destRect.w - _hitbox.w) * 0.5f;
+	float offsetY = (_destRect.h - _hitbox.h) * 0.5f;
+
+	_hitbox.x = _destRect.x + offsetX;
+	_hitbox.y = _destRect.y + offsetY;	
 }
 
 void	Projectile::render(Data& data)

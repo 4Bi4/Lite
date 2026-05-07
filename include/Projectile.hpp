@@ -31,6 +31,7 @@ public:
 	void	update(float deltaTimeNS, Data& data);
 
 	SDL_FRect					getRect() const;
+	SDL_FRect					getHitbox() const;
 	ProjectileID				getID() const;
 	ProjectileType				getType() const;
 	ProjectileStats				getStats() const;
@@ -50,6 +51,8 @@ protected:
 	SDL_Texture*				_texture;
 	SDL_FRect					_srcRect;
 	SDL_FRect					_destRect;
+	SDL_FRect					_hitbox;
+	float						_angle;
 
 	ProjectileType				_type;
 	ProjectileStats				_stats;

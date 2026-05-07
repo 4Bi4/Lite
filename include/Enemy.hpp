@@ -43,6 +43,7 @@ public:
 	int					getHp() const;
 	EntityID			getID() const;
 	const SDL_FRect&	getRect() const;
+	const SDL_FRect&	getHitbox() const;
 	EnemyType			getType() const;
 	bool				isActive() const;
 	int					getMaxHp() const;
@@ -60,7 +61,8 @@ protected:
 	SDL_FlipMode	_flip;
 
 	SDL_FRect		_destRect;		// Position (x,y) and size on screen (w,h)
-	SDL_FRect		_srcRect;		// The crop of the original image to render (x,y,w,h)
+	SDL_FRect		_srcRect;
+	SDL_FRect		_hitbox;		// The hitbox for collision detection (x,y,w,h)
 
 	EnemyManager*	_manager;
 
@@ -70,6 +72,7 @@ protected:
 	bool			_active;
 	int				_hp;
 	int				_maxHp;
+	int				_damage;
 	float			_speed;
 	float			_dirX;
 	float			_dirY;
