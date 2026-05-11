@@ -114,7 +114,6 @@ void	Player::update(float deltaTime, Data& data)
 	if (_destRect.y + _destRect.h > maxY)
 		_destRect.y = maxY - _destRect.h;
 
-
 	updateInvulnerabilityTimer();
 
 	//	Update the player's target
