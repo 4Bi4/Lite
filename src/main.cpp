@@ -20,7 +20,7 @@ volatile sig_atomic_t g_signalNumber = 0;
 
 void handle_signal(int sig)
 {
-	// These are async-signal-safe operations
+	//	These are async-signal-safe operations
 	g_signalNumber = sig;
 	g_signalReceived = 1;
 }
@@ -74,6 +74,9 @@ int	main(int argc, char* argv[])
 	//	Signal Handler (Ctrl+C)
 	signal(SIGINT,  handle_signal);
 	signal(SIGTERM, handle_signal);
+
+	//	Init RNG seed
+	std::srand(std::time(NULL));
 
 	//	Initialize SDL and its subsystems
 	if (Debug::state == true)
