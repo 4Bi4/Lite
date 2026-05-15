@@ -127,6 +127,8 @@ void	Projectile::update(float deltaTimeNS, Data& data)
 
 	_hitbox.x = _destRect.x + offsetX;
 	_hitbox.y = _destRect.y + offsetY;	
+
+	_angle = std::atan2(dirY, dirX) * 180.0f / PI;
 }
 
 void	Projectile::render(Data& data)
@@ -141,7 +143,7 @@ void	Projectile::render(Data& data)
 		return ;
 	}
 	//	Render the projectile to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
+	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, _angle, NULL, _flip);
 }
 
 ProjectileType	Projectile::getType() const
