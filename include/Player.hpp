@@ -34,7 +34,7 @@ public:
 	const SDL_Texture*	getTexture() const;
 	EntityID			getTarget() const;
 	Weapon*				getWeapon() const;
-	EntityID			getClosestEnemy(Data& data) const;
+	EntityID			getClosestEnemy(EnemyManager& enemyManager) const;
 	int					getHp() const;
 	int					getMaxHp() const;
 	bool				isInvulnerable() const;

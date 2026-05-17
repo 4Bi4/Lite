@@ -24,7 +24,7 @@ public:
 	ProjectileManager();
 	~ProjectileManager();
 
-	void	update(float deltaTimeNS, Data& data);
+	void	update(float deltaTimeNS, Game& game);
 	void	render(Data& data);
 
 	void	clearProjectiles();

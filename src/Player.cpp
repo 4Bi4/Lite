@@ -117,7 +117,8 @@ void	Player::update(float deltaTime, Data& data)
 	updateInvulnerabilityTimer();
 
 	//	Update the player's target
-	setTarget(getClosestEnemy(data), *data.getGame());
+	EntityID newTarget = getClosestEnemy(*data.getGame()->getEnemyManager());
+	setTarget(newTarget, *data.getGame());
 
 	//	Debug player info
 	if (Debug::state == true)
@@ -176,15 +177,14 @@ Weapon*	Player::getWeapon() const
 }
 
 //	Returns the index of the closest enemy, or nullptr if there are no enemies
-EntityID	Player::getClosestEnemy(Data& data) const
+EntityID	Player::getClosestEnemy(EnemyManager& enemyManager) const
 {
-	EnemyManager*	enemyManager = data.getGame()->getEnemyManager();
-	const std::vector<Enemy>& enemies = enemyManager->getEnemies();	
+	const std::vector<Enemy>& enemies = enemyManager.getEnemies();	
 
 	EntityID closest = { -1, 0 };
 	float	closestDist = MAXFLOAT;
 	
-	for (size_t i = 0; i < enemyManager->getEnemies().size(); i++)
+	for (size_t i = 0; i < enemyManager.getEnemies().size(); i++)
 	{
 		//	Skip the non used enemies
 		if (!enemies[i].isActive())

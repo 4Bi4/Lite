@@ -15,8 +15,18 @@
 #include "../include/lite.hpp"
 
 Camera::Camera(int width, int height) :
-	_view{0, 0, (float)width, (float)height},
-	_zoom{1.0f} {}
+	_view{ 0, 0, (float)width, (float)height },
+	_zoom(1.0f) {}
+
+//	Centers the camera on the center of the map
+void	Camera::update(int mapW, int mapH)
+{
+	float logicalW = this->_view.w;
+	float logicalH = this->_view.h;
+
+	this->_view.x = (mapW * PIXEL_SIZE - logicalW) / 2.0f;
+	this->_view.y = (mapH * PIXEL_SIZE - logicalH) / 2.0f;
+}
 
 //	Centers the camera on a target (usually the player) and clamps it to the map boundaries
 void	Camera::update(const SDL_FRect& target, int mapW, int mapH)
@@ -81,4 +91,21 @@ SDL_FRect	Camera::apply(const SDL_FRect& worldRect) const
 		worldRect.w * this->_zoom,
 		worldRect.h * this->_zoom
 	};
+}
+
+void	Camera::setZoom(float zoom)
+{
+	if (zoom < 0)
+	{
+		if (Debug::state == true)
+			std::cerr << B_RED << "[ ERROR ]" << NO_COLOR << "trying to set zoom to a negative value wtf -> " << BLUE << zoom << NO_COLOR << std::endl;
+		return ;
+	}
+	_zoom = zoom;
+}
+
+//	Returns the current camera view (position and size)
+const SDL_FRect& Camera::getView() const
+{
+	return this->_view;
 }

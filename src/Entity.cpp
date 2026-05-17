@@ -36,51 +36,6 @@ Entity::Entity(float x, float y) :
 
 Entity::~Entity() {}
 
-void	Entity::render(Data& data)
-{
-	//	Get the Entity's position relative to the camera
-	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
-
-	//	Render the Entity to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
-}
-
-void	Entity::update(float deltaTime, Data& data)
-{
-	//	call special physics function HERE (if there is one)
-
-	float	length = std::sqrt(_dirX * _dirX + _dirY * _dirY);
-
-	//	Normalize the vector to prevent faster diagonal movement
-	if (length > 0)
-	{
-		_dirX /= length;
-		_dirY /= length;
-	}
-
-	//	Check if we need to flip the texture
-	if (_dirX < 0)
-		_flip = SDL_FLIP_NONE;
-	else if (_dirX > 0)
-		_flip = SDL_FLIP_HORIZONTAL;
-
-	//	Move the Entity based on direction, speed and delta time (in seconds)
-	_destRect.x += _dirX * _speed * deltaTime / 1000000000.0f;
-	_destRect.y += _dirY * _speed * deltaTime / 1000000000.0f;
-
-	//	Out of bounds check
-	float maxX = data.getGame()->getMap()->getWidth() * PIXEL_SIZE;
-    float maxY = data.getGame()->getMap()->getHeight() * PIXEL_SIZE;
-
-	if (_destRect.x < 0)
-		_destRect.x = 0;
-	if (_destRect.y < 0)
-		_destRect.y = 0;
-	if (_destRect.x + _destRect.w > maxX)
-		_destRect.x = maxX - _destRect.w;
-	if (_destRect.y + _destRect.h > maxY)
-		_destRect.y = maxY - _destRect.h;
-}
 //	Default behavior: do nothing
 void	Entity::die() {}
 

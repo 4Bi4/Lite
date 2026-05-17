@@ -29,7 +29,7 @@ EnemyManager::~EnemyManager()
 	this->_generations.clear();
 }
 
-void	EnemyManager::update(float deltaTimeNS, Data& data)
+void	EnemyManager::update(float deltaTimeNS, Game& game)
 {
 	//	Spawn
 	this->_spawnTimer += deltaTimeNS / 1000000000.0f;
@@ -38,7 +38,7 @@ void	EnemyManager::update(float deltaTimeNS, Data& data)
 		//	The amount of enemies to spawn
 		Uint16 count = (_spawnTimer / _spawnRate);
 		for (int i = 0; i < count; i++)
-			spawnEnemy(data, DEFAULT);
+			spawnEnemy(game, DEFAULT);
 		this->_spawnTimer = 0.0f;
 	}
 
@@ -51,19 +51,16 @@ void	EnemyManager::update(float deltaTimeNS, Data& data)
 	//	Check deaths
 	for (size_t i = 0; i < _enemies.size(); i++)
 	{
-		if (_enemies[i].isActive() && _enemies[i].getHp() <= 0)
-		{
-			_enemies[i].die();
-			_generations[i]++; //	Increment generation to invalidate old EntityIDs
-			_enemyCount--;
-		}
-	}
-
-	//	Update all enemies
-	for (size_t i = 0; i < _enemies.size(); i++)
-	{
 		if (_enemies[i].isActive())
-			_enemies[i].update(deltaTimeNS, data);
+		{
+			if (_enemies[i].getHp() <= 0)
+			{
+				_enemies[i].die();
+				_generations[i]++; //	Increment generation to invalidate old EntityIDs
+				_enemyCount--;
+			}
+			_enemies[i].update(deltaTimeNS, game);
+		}
 	}
 }
 
@@ -76,7 +73,9 @@ void	EnemyManager::render(Data& data)
 	}
 }
 
-void	EnemyManager::spawnEnemy(Data& data, EnemyType type)
+//	Spawn the specified enemy type on a random location on the map
+//	(Avoids spawning near the player)
+void	EnemyManager::spawnEnemy(Game& game, EnemyType type)
 {
 	int	index = findAvailableSlot();
 
@@ -87,7 +86,7 @@ void	EnemyManager::spawnEnemy(Data& data, EnemyType type)
 		return ;
 	}
 
-	//	Create object
+	//	Create new object
 	EntityID newID = { index, _generations[index]};
 
 	//	Get the texture
@@ -110,16 +109,16 @@ void	EnemyManager::spawnEnemy(Data& data, EnemyType type)
 	//	Get a random spawn position on the map
 	float	spawnX, spawnY;
 
-	spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
-	spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
+	spawnX = (rand() % (game.getMap()->getWidth() * PIXEL_SIZE));
+	spawnY = (rand() % (game.getMap()->getHeight() * PIXEL_SIZE));
 
-	float distanceToPlayer = Entity::distanceTo(*data.getGame()->getPlayer(), Entity(spawnX, spawnY));
-	while (distanceToPlayer < 600.0f)
+	float distanceToPlayer = Entity::distanceTo(*game.getPlayer(), Entity(spawnX, spawnY));
+	while (distanceToPlayer < 300.0f)
 	{
 		//	If the spawn point is too close to the player, try again
-		spawnX = (rand() % (data.getGame()->getMap()->getWidth() * PIXEL_SIZE));
-		spawnY = (rand() % (data.getGame()->getMap()->getHeight() * PIXEL_SIZE));
-		distanceToPlayer = Entity::distanceTo(*data.getGame()->getPlayer(), Entity(spawnX, spawnY));
+		spawnX = (rand() % (game.getMap()->getWidth() * PIXEL_SIZE));
+		spawnY = (rand() % (game.getMap()->getHeight() * PIXEL_SIZE));
+		distanceToPlayer = Entity::distanceTo(*game.getPlayer(), Entity(spawnX, spawnY));
 	}
 
 	//	Spawn the new enemy
@@ -129,7 +128,7 @@ void	EnemyManager::spawnEnemy(Data& data, EnemyType type)
 	_enemyCount++;
 }
 
-//	Retuns the index of the first available spot
+//	Returns the index of the first available spot
 //	on the enemy pool
 //	\returns
 //	and int from 0 to MAX_ENEMIES,
@@ -144,6 +143,7 @@ int	EnemyManager::findAvailableSlot()
 	return (-1); // Total chaos: the pool is full!
 }
 
+//	Removes all enemies from the enemy pool
 void	EnemyManager::clearEnemies()
 {
 	for (size_t i = 0; i < this->_enemies.size(); i++)

@@ -23,9 +23,12 @@ public:
 
 	SDL_FRect	apply(const SDL_FRect& worldRect) const;
 	void		resizeView(float newWidth, float newHeight);
+	void		update(int mapW, int mapH);
 	void		update(const SDL_FRect& target, int mapW, int mapH);
 
-	const SDL_FRect& getView() const { return _view; }
+	void		setZoom(float zoom);
+
+	const SDL_FRect& getView() const;
 
 private:
 	SDL_FRect	_view;

@@ -16,6 +16,7 @@
 
 #include "lite_common.hpp"
 
+class Game;
 class ProjectileManager;
 
 class Projectile
@@ -28,7 +29,7 @@ public:
 	void	despawn();
 
 	void	render(Data& data);
-	void	update(float deltaTimeNS, Data& data);
+	void	update(float deltaTimeNS, Game& game);
 
 	SDL_FRect					getRect() const;
 	SDL_FRect					getHitbox() const;
@@ -53,6 +54,8 @@ protected:
 	SDL_FRect					_destRect;
 	SDL_FRect					_hitbox;
 	float						_angle;
+	float						_dirX;
+	float						_dirY;
 
 	ProjectileType				_type;
 	ProjectileStats				_stats;

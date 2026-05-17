@@ -25,8 +25,6 @@ public:
 	Entity(float x, float y);
 	virtual ~Entity();
 
-	virtual void		update(float deltaTime, Data& data);
-	virtual void		render(Data& data);
 	virtual void		die();
 
 	virtual const SDL_FRect&	getRect() const;

@@ -83,7 +83,7 @@ int	main(int argc, char* argv[])
 		std::cout << "initializing SDL..." << std::endl;
 	if (initSDL(data) != 0)
 		return (1);
-	loadTextures(data);
+	preloadTextures(data);
 	if (initSDLText(data) != 0)
 		return (1);
 

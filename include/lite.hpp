@@ -41,18 +41,21 @@
 // --- CLASS DECLARATIONS --- //
 /******************************/
 
-class Map;
-
 class Data;
+class Game;
 class TextureManager;
+
+class Map;
 class Camera;
 
-class Entity;
 class Weapon;
+class Projectile;
+class ProjectileManager;
+
+class Entity;
 class Enemy;
 class Player;
 class EnemyManager;
-class Game;
 
 /*****************************/
 // 	---- GAME FUNCTIONS ---- //
@@ -79,6 +82,8 @@ int			checkArgs(char* argv[], Data& data);
 
 int				initSDL(Data &data);
 int				initSDLText(Data& data);
-void			loadTextures(Data& data);
-void			drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy);
+void			preloadTextures(Data& data);
 SDL_Texture*	loadTexture(SDL_Renderer* ren, const std::string& path);
+
+void			drawTextCentered(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy);
+void			drawTextLeftAligned(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int x, int y);

@@ -16,13 +16,6 @@
 
 #include "lite_common.hpp"
 
-//	Here we will list the type of enemies so
-//	they can be easily identified
-enum EnemyType
-{
-	DEFAULT
-};
-
 class EnemyManager;
 
 class Enemy : public Entity
@@ -36,9 +29,9 @@ public:
 	void	spawn(EntityID id, float x, float y);
 	void	die();
 
-	void	calcNextMove(Data& data);
+	void	calcNextMove(Game& game);
 	void	render(Data& data);
-	void	update(float deltaTime, Data& data);
+	void	update(float deltaTime, Game& game);
 
 	int					getHp() const;
 	EntityID			getID() const;

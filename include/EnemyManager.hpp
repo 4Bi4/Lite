@@ -22,11 +22,11 @@ public:
 	EnemyManager();
 	~EnemyManager();
 
-	void	update(float dt, Data& data);
+	void	update(float dt, Game& game);
 	void	render(Data& data);
 
 	void	clearEnemies();
-	void	spawnEnemy(Data& data, EnemyType type);
+	void	spawnEnemy(Game& game, EnemyType type);
 
 	void	setSpawnRate(float rate);
 

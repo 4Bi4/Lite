@@ -67,6 +67,7 @@
 #define TARGET_WIDTH 1920.0f
 
 //	This is more like a zoom adjustment tbh
+//	Bigger = closer
 #define FOV 20.0f
 
 //	Default FPS limit

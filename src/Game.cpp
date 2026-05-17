@@ -59,7 +59,7 @@ int	Game::gameLoop(Data& data)
 		this->render(data);
 
 		//	Round timer
-		drawText(data.getRenderer(),
+		drawTextCentered(data.getRenderer(),
 			data.getFontLarge(),
 			std::to_string((int)this->getRemainingTime()),
 			{ 0, 0, 0, 0},
@@ -72,16 +72,19 @@ int	Game::gameLoop(Data& data)
 			if (frameCount % 10 == 0)
 				fps = (1.0 / ((double)deltaTime / 1000000000.0));
 
-			drawText(data.getRenderer(),
+			//	Draw FPS counter
+			drawTextLeftAligned(data.getRenderer(),
 				data.getFontSmall(),
 				"FPS: " + std::to_string(fps),
 				{ 255, 255, 255 , 255},
-				45, 10);
-			drawText(data.getRenderer(),
+				10, 10);
+			//	Draw Enemy counter
+
+			drawTextLeftAligned(data.getRenderer(),
 				data.getFontSmall(),
-				"E: " + std::to_string(_enemyManager.getEnemyCount()),
+				"Enemies: " + std::to_string(_enemyManager.getEnemyCount()),
 				{ 255, 255, 255 , 255},
-				25, 30);
+				10, 30);
 		}
 
 		//	Frame limiting (if vsync is disabled)
@@ -123,14 +126,16 @@ void	Game::update(float deltaTimeNS, Data& data)
 	_roundTimer += deltaTimeNS / 1000000000.0f;
 
 	//	Update managers
-	_enemyManager.update(deltaTimeNS, data);
+	_enemyManager.update(deltaTimeNS, *data.getGame());
+	_projectileManager.update(deltaTimeNS, *data.getGame());
+
+	//	Update
 	_player.update(deltaTimeNS, data);
-	_projectileManager.update(deltaTimeNS, data);
 
 	//	Attack
+	_player.attack(*data.getGame());
 	//	TODO:
 	//	Add enemy attacks here 
-	_player.attack(*data.getGame());
 
 	//	End of round check
 	if (_roundTimer >= _roundDuration)
