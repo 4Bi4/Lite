@@ -76,6 +76,7 @@ void		renderBackground(Data& data, SDL_Color color);
 // 	---- UTILS FUNCTIONS ---- //
 /******************************/
 
+uint64_t	packCellKey(int32_t x, int32_t y);
 int			checkArgs(char* argv[], Data& data);
 
 /**********************************/

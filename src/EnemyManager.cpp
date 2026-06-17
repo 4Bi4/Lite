@@ -61,56 +61,154 @@ void	EnemyManager::update(float deltaTimeNS, Game& game)
 	resolveCollisions();
 }
 
-//	Manages the render position of enemies dont overlap each other
-void	EnemyManager::resolveCollisions()
+//	Helper function for colisions
+//	Computes the size of the spatial grid cells based on the largest enemy hitbox
+float	EnemyManager::computeCellSize() const
+{
+	//  Each enemy contributes 30% of its hitbox width to the min separation
+	//  (0.3 instead of 0.5 to make them overlap a bit)
+	const float sepFactor = 0.3f;
+	float maxHitW = 0.0f;
+
+	for (size_t i = 0; i < _enemies.size(); i++)
+	{
+		if (!_enemies[i].isActive())
+			continue;
+		float w = _enemies[i].getHitbox().w;
+		if (w > maxHitW)
+			maxHitW = w;
+	}
+	return (maxHitW * sepFactor * 2.0f);
+}
+
+//	Helper function for collisions
+//	Builds a spatial grid of enemies for efficient collision resolution
+void	EnemyManager::buildGrid(std::unordered_map<uint64_t,
+			std::vector<size_t> >& grid,
+			float invCellSize) const
 {
 	for (size_t i = 0; i < _enemies.size(); i++)
 	{
 		if (!_enemies[i].isActive())
 			continue;
+		const SDL_FRect& r = _enemies[i].getRect();
+		float cx = r.x + r.w * 0.5f;
+		float cy = r.y + r.h * 0.5f;
+		int32_t gx = (int32_t)std::floor(cx * invCellSize);
+		int32_t gy = (int32_t)std::floor(cy * invCellSize);
+		grid[packCellKey(gx, gy)].push_back(i);
+	}
+}
 
-		for (size_t j = i + 1; j < _enemies.size(); j++)
+//	Helper function for collisions
+//  Push two overlapping enemies apart, splitting the overlap evenly
+void	EnemyManager::resolvePair(size_t idxA, size_t idxB, float halfHitA)
+{
+	//  Fallback push direction on exact overlap (must be a unit vector)
+	const float fallbackX = 1.0f;
+	const float fallbackY = 0.0f;
+
+	//  Recompute centres live: a prior push may have moved A
+	const SDL_FRect& rectA = _enemies[idxA].getRect();
+	const SDL_FRect& rectB = _enemies[idxB].getRect();
+
+	float centerAX = rectA.x + rectA.w * 0.5f;
+	float centerAY = rectA.y + rectA.h * 0.5f;
+	float centerBX = rectB.x + rectB.w * 0.5f;
+	float centerBY = rectB.y + rectB.h * 0.5f;
+
+	float dx = centerBX - centerAX;
+	float dy = centerBY - centerAY;
+
+	//  Minimum separation = sum of each enemy's own hitbox radius
+	float minDist   = halfHitA + _enemies[idxB].getHitbox().w * 0.3f;
+	float minDistSq = minDist * minDist;
+	float distSq    = dx * dx + dy * dy;
+
+	//  If they dont touch, skip (no sqrt for non-overlaps)
+	if (distSq >= minDistSq)
+		return;
+
+	float dist = std::sqrt(distSq);
+	//  Push direction — fallback to x-axis on exact overlap
+	//      (If the distance is 0, we cant divide by it
+	//      so we use a default direction of (1, 0))
+	float nx = (dist > 0.0f) ? dx / dist : fallbackX;
+	float ny = (dist > 0.0f) ? dy / dist : fallbackY;
+	//  Split the overlap evenly between both enemies
+	float push = (minDist - dist) * 0.5f;
+
+	_enemies[idxA].setPosition(centerAX - nx * push, centerAY - ny * push);
+	_enemies[idxB].setPosition(centerBX + nx * push, centerBY + ny * push);
+}
+
+//	Helper function for collisions
+//  Test one enemy against everyone in its 3x3 block of cells
+void    EnemyManager::resolveAgainstNeighbours(
+			std::unordered_map<uint64_t, std::vector<size_t> >& grid,
+			size_t idxA, int32_t baseX, int32_t baseY)
+{
+	//  Hitbox width doesnt change when the enemy moves, so hoist it
+	float halfHitA = _enemies[idxA].getHitbox().w * 0.3f;
+
+	//  Walk this cell + its 8 neighbours
+	for (int32_t oy = -1; oy <= 1; oy++)
+	{
+		for (int32_t ox = -1; ox <= 1; ox++)
 		{
-			if (!_enemies[j].isActive())
+			std::unordered_map<uint64_t, std::vector<size_t> >::iterator
+				n = grid.find(packCellKey(baseX + ox, baseY + oy));
+			if (n == grid.end())
 				continue;
 
-			const SDL_FRect& rectA = _enemies[i].getRect();
-			const SDL_FRect& rectB = _enemies[j].getRect();
-			const SDL_FRect& hitA  = _enemies[i].getHitbox();
-			const SDL_FRect& hitB  = _enemies[j].getHitbox();
-
-			//	Minimum separation = sum of each enemy's own hitbox radius
-			//	(0.3 instead of 0.5 to make them overlap a bit)
-			float minDist = (hitA.w * 0.3f) + (hitB.w * 0.3f);
-
-			float centerAX = rectA.x + rectA.w * 0.5f;
-			float centerAY = rectA.y + rectA.h * 0.5f;
-			float centerBX = rectB.x + rectB.w * 0.5f;
-			float centerBY = rectB.y + rectB.h * 0.5f;
-
-			float dx   = centerBX - centerAX;
-			float dy   = centerBY - centerAY;
-			float dist = std::sqrt(dx * dx + dy * dy);
-
-			//	If they dont touch, skip
-			if (dist >= minDist)
-				continue;
-
-			//	Push direction — fallback to x-axis on exact overlap
-			//		(If the distance is 0, we cant divide by it
-			//		so we use a default direction of (1, 0))
-			float nx = (dist > 0.0f) ? dx / dist : 1.0f;
-			float ny = (dist > 0.0f) ? dy / dist : 0.0f;
-
-			//	Split the overlap evenly between both enemies
-			float push = (minDist - dist) * 0.5f;
-
-			_enemies[i].setPosition(centerAX - nx * push, centerAY - ny * push);
-			_enemies[j].setPosition(centerBX + nx * push, centerBY + ny * push);
+			for (size_t b = 0; b < n->second.size(); b++)
+			{
+				size_t idxB = n->second[b];
+				//  Each pair exactly once (also skips self)
+				if (idxB <= idxA)
+					continue;
+				if (!_enemies[idxB].isActive())
+					continue;
+				resolvePair(idxA, idxB, halfHitA);
+			}
 		}
 	}
 }
 
+//	Helper function for collisions
+//  Manages the render position of enemies dont overlap each other
+//  Uniform spatial grid: only compares enemies in neighbouring cells ~O(n)
+void    EnemyManager::resolveCollisions()
+{
+	if (_enemies.size() < 2)
+		return;
+
+	float cellSize = computeCellSize();
+	if (cellSize <= 0.0f)
+		return;
+
+	std::unordered_map<uint64_t, std::vector<size_t> > grid;
+	grid.reserve(_enemies.size());
+	buildGrid(grid, 1.0f / cellSize);
+
+	//  Resolve, testing only the 3x3 block of cells around each one
+	for (std::unordered_map<uint64_t, std::vector<size_t> >::const_iterator
+			cell = grid.begin(); cell != grid.end(); ++cell)
+	{
+		int32_t baseX = (int32_t)(cell->first >> 32);
+		int32_t baseY = (int32_t)(cell->first & 0xFFFFFFFF);
+
+		for (size_t a = 0; a < cell->second.size(); a++)
+		{
+			size_t idxA = cell->second[a];
+			if (!_enemies[idxA].isActive())
+				continue;
+			resolveAgainstNeighbours(grid, idxA, baseX, baseY);
+		}
+	}
+}
+
+//	Adds all active enemies to the render queue if they are visible on the screen
 void	EnemyManager::addToQueue(Data& data)
 {
 	Camera* cam = data.getGame()->getCamera();

@@ -100,7 +100,7 @@
 
 #define ROUND_TIME 20.0f	// In seconds
 
-#define MAX_ENEMIES 4000
+#define MAX_ENEMIES 10000
 #define MAX_PROJECTILES 2000
 
 /****************************/

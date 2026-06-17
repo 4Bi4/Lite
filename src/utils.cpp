@@ -27,7 +27,8 @@ void	printUsage()
 
 //	Checks user argumets for flags (like "--debug")
 //	exits the program if "--help" is passed
-//	RETURN: 0 on success, 1 on error
+//	\returns
+//	0 on success, 1 on error
 int		checkArgs(char* argv[], Data& data)
 {
 	for (int i = 1; argv[i] ; i++)
@@ -52,5 +53,13 @@ int		checkArgs(char* argv[], Data& data)
 		}
 	}
 	return (0);
+}
+
+//  Pack two signed cell coords into one 64-bit key
+//	\returns
+//	A 64-bit integer where the high 32 bits are x and the low 32 bits are y
+uint64_t	packCellKey(int32_t x, int32_t y)
+{
+    return (((uint64_t)(uint32_t)x << 32) | (uint64_t)(uint32_t)y);
 }
 

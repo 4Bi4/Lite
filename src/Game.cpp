@@ -222,7 +222,7 @@ void	Game::nextRound()
 
 	//	Calculate spawn rate based on the current round
 	//	(It's missing a spawnrate multiplier)
-	float rate = std::max(0.02f, 3.0f / (_currentRound + 3.0f));
+	float rate = 3.0f / (_currentRound + 3.0f);
 	_enemyManager.setSpawnRate(rate);
 
 	//	Console output
