@@ -109,3 +109,9 @@ const SDL_FRect& Camera::getView() const
 {
 	return this->_view;
 }
+
+//	Checks if a world-space rectangle is visible within the camera view
+bool	Camera::isVisible(const SDL_FRect& worldRect) const
+{
+	return (SDL_HasRectIntersectionFloat(&this->_view, &worldRect));
+}

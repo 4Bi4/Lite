@@ -157,9 +157,7 @@ void	Projectile::update(float deltaTimeNS, Game& game)
 
 			if (projCenterX < -BUFFER || projCenterX > mapWidth + BUFFER ||
 				projCenterY < -BUFFER || projCenterY > mapHeight + BUFFER)
-			{
 				despawn();
-			}
 		}
 	}
 }

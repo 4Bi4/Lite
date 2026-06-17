@@ -27,15 +27,20 @@ TO DO LIST:
 
 	[x] Pintar el Suelo: Cargar una textura pequeña y repetirla (tiling) por todo el mapa para que el usuario sienta que se está moviendo.
 
-	[ ] Sistema de Spawning de Enemigos: Crear una clase Enemy y un EnemyManager que los haga aparecer en los bordes de la pantalla y los dirija hacia el jugador.
+	[x] Sistema de Spawning de Enemigos: Crear una clase Enemy y un EnemyManager que los haga aparecer en los bordes de la pantalla y los dirija hacia el jugador.
 
 	[x] IA Simple de Persecución: Los enemigos deben calcular su vector de dirección hacia la x, y del jugador (usando la misma normalización que ya hiciste).
 
-	[ ] Detección de Colisiones (AABB): Implementar una función que compruebe si dos SDL_FRect se solapan. La necesitarás para:
+	[x] Detección de Colisiones (AABB): Implementar una función que compruebe si dos SDL_FRect se solapan. La necesitarás para:
 		Jugador vs Enemigo (recibir daño).
 		Proyectil vs Enemigo (matar).
 
-	[ ] Sistema de Disparo Automático: Un temporizador que busque al enemigo más cercano y cree un objeto Projectile que se mueva hacia él.
+	[x] Sistema de Disparo Automático: Un temporizador que busque al enemigo más cercano y cree un objeto Projectile que se mueva hacia él.
+
+	[ ] Implementar una render queue para player, enemies y pickups (cuando los haya)
+
+	[ ] Añadir pickups que dropeen los enemigos
+		(por ahora puntuacion basica pero en el futuro monedas, xp, etc...)
 
 BONUS:
 	[x] Soporte para mandos (tested on a PS5 controller)

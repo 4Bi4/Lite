@@ -209,6 +209,8 @@ void	Game::nextRound()
 
 	//	Increase the wave duration
 	_roundDuration += 2.0f;
+	if (_roundDuration > 90.0f)
+		_roundDuration = 90.0f;
 
 	//	TODO:
 	//	Look into this formula ↓ ↓ ↓

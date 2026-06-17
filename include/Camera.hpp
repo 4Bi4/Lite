@@ -28,7 +28,8 @@ public:
 
 	void		setZoom(float zoom);
 
-	const SDL_FRect& getView() const;
+	const SDL_FRect&	getView() const;
+	bool				isVisible(const SDL_FRect& worldRect) const;
 
 private:
 	SDL_FRect	_view;
