@@ -21,7 +21,7 @@ Game::Game(Data& data) :
 	_map(DEFAULT_MAP_HEIGHT, DEFAULT_MAP_WIDTH),
 	_roundTimer(0.0f),
 	_roundDuration(0),
-	_currentRound(10),
+	_currentRound(0),
 	_isPaused(false),
 	_isGameOver(false) {}
 
@@ -112,7 +112,7 @@ int	Game::gameLoop(Data& data)
 		std::cout << "target frametime is:  " << (double)data.getTargetFrameTime() * 1000000.0 << " ns" << std::endl;
 	}
 
-	return(0);
+	return (0);
 }
 
 //	Runs the game logic (movement, entities, etc...)
@@ -175,7 +175,7 @@ bool	Game::displaySignalDebugInfo(long long frameCount, long long totalTime, Uin
 	extern volatile sig_atomic_t g_signalNumber;
 	
 	if (!g_signalReceived)
-		return false;
+		return (false);
 
 	// Signal information
 	std::string sigName = (g_signalNumber == SIGINT) ? "SIGINT (Ctrl+C)" : 
@@ -203,7 +203,7 @@ bool	Game::displaySignalDebugInfo(long long frameCount, long long totalTime, Uin
 	std::cout << B_YELLOW << "Game Status: " << NO_COLOR << (_isPaused ? "PAUSED" : "RUNNING") << std::endl;
 	std::cout << B_RED << "Exiting...\n" << NO_COLOR << std::endl;
 
-	return true; // Signal handled
+	return (true); // Signal handled
 }
 
 void	Game::nextRound()
@@ -213,7 +213,7 @@ void	Game::nextRound()
 	_roundTimer = 0.0f;
 
 	//	Calculate round time
-	_roundDuration = ROUND_TIME + _currentRound * 2.0f;
+	_roundDuration = ROUND_TIME + _currentRound * 2.0f - 1.0f; //	-1 to make the first round 20 seconds instead of 21
 
 	//	Cap the round duration to a maximum of 90 seconds
 	//	(we put 91 so it displays 90 on the screen, since we cast to int)
