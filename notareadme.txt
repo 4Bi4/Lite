@@ -37,7 +37,7 @@ TO DO LIST:
 
 	[x] Sistema de Disparo Automático: Un temporizador que busque al enemigo más cercano y cree un objeto Projectile que se mueva hacia él.
 
-	[ ] Implementar una render queue para player, enemies y pickups (cuando los haya)
+	[x] Implementar una render queue para player, enemies y pickups (cuando los haya)
 
 	[ ] Añadir pickups que dropeen los enemigos
 		(por ahora puntuacion basica pero en el futuro monedas, xp, etc...)
