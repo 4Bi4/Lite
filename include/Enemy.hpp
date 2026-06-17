@@ -30,7 +30,7 @@ public:
 	void	die();
 
 	void	calcNextMove(Game& game);
-	void	render(Data& data);
+	void	addToQueue(Data& data);
 	void	update(float deltaTime, Game& game);
 
 	int					getHp() const;

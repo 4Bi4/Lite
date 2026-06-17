@@ -12,35 +12,35 @@
 *                                                               *
 \***************************************************************/
 
-#pragma once
+#include "../include/lite.hpp"
 
-#include "lite_common.hpp"
+#include <algorithm>
 
-class EnemyManager
+RenderQueue::RenderQueue() {}
+
+RenderQueue::~RenderQueue() {}
+
+//	Submit a render entry to the queue
+void	RenderQueue::submit(SDL_Texture* texture, const SDL_FRect& srcRect, const SDL_FRect& screenRect, double angle, SDL_FlipMode flip, float sortKey)
 {
-public:
-	EnemyManager();
-	~EnemyManager();
+	_entries.push_back({ texture, srcRect, screenRect, angle, flip, sortKey });
+}
 
-	void	update(float dt, Game& game);
-	void	addToQueue(Data& data);
+//	Flush the queue and render all entries
+void	RenderQueue::flush(SDL_Renderer* renderer)
+{
+	//	Sort by world-space bottom Y so lower entities render on top (painter's algorithm)
+	std::sort(
+		_entries.begin(),
+		_entries.end(),
+		[](const RenderEntry& a, const RenderEntry& b)
+			{ return (a.sortKey < b.sortKey); }
+	);
 
-	void	clearEnemies();
-	void	spawnEnemy(Game& game, EnemyType type);
+	//	Draw all entries in order
+	for (const RenderEntry& entry : _entries)
+		SDL_RenderTextureRotated(renderer, entry.texture, &entry.srcRect, &entry.screenRect, entry.angle, NULL, entry.flip);
 
-	void	setSpawnRate(float rate);
-
-	int						findAvailableSlot();
-	std::vector<Enemy>&		getEnemies();	
-	static Enemy*			getEnemy(EntityID id, Game& game);
-	Uint16					getEnemyCount()	const;
-
-private:
-	std::vector<Enemy>	_enemies;
-	std::vector<Uint32>	_generations;//	Used to track generations for EntityIDs
-
-	const int		_maxEnemies;
-	float 			_spawnTimer;
-	float			_spawnRate;
-	Uint16			_enemyCount;
-};
+	//	Clear for next frame (keeps allocated memory)
+	_entries.clear();
+}

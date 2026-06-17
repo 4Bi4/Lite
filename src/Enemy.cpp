@@ -32,19 +32,18 @@ Enemy::Enemy(SDL_Texture* texture, EnemyManager* manager) :
 
 Enemy::~Enemy() {}
 
-void	Enemy::render(Data& data)
+void	Enemy::addToQueue(Data& data)
 {
-	//	Get the enemy's position relative to the camera
-	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
-
 	if (!_texture)
 	{
 		if (Debug::state == true)
 			std::cerr << B_RED << "[ ERROR ] enemy without texture!" << NO_COLOR << std::endl;
 		return ;
 	}
-	//	Render the enemy to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
+	//	Get the enemy's position relative to the camera
+	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
+	//	Submit to the render queue — drawn in Y-sorted order by flush()
+	data.getGame()->getRenderQueue()->submit(_texture, _srcRect, screenRect, 0.0, _flip, _destRect.y + _destRect.h);
 }
 
 //	(Movement "AI") updates dirX and dirY with the next

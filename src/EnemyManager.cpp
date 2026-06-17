@@ -64,13 +64,13 @@ void	EnemyManager::update(float deltaTimeNS, Game& game)
 	}
 }
 
-void	EnemyManager::render(Data& data)
+void	EnemyManager::addToQueue(Data& data)
 {
 	Camera* cam = data.getGame()->getCamera();
 	for (size_t i = 0; i < _enemies.size(); i++)
 	{
 		if (_enemies[i].isActive() && cam->isVisible(_enemies[i].getRect()))
-			_enemies[i].render(data);
+			_enemies[i].addToQueue(data);
 	}
 }
 

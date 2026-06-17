@@ -125,13 +125,13 @@ void	Player::update(float deltaTime, Data& data)
 		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
 }
 
-void	Player::render(Data& data)
+void	Player::addToQueue(Data& data)
 {
 	//	Get the player's position relative to the camera
 	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
-	//	Render the player to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
+	//	Submit to the render queue — drawn in Y-sorted order by flush()
+	data.getGame()->getRenderQueue()->submit(_texture, _srcRect, screenRect, 0.0, _flip, _destRect.y + _destRect.h);
 }
 
 //	Attacks the player's target with their weapon

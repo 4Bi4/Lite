@@ -23,6 +23,7 @@
 #include "Camera.hpp"
 #include "Map.hpp"
 #include "TextureManager.hpp"
+#include "RenderQueue.hpp"
 
 #include "Entity.hpp"
 #include "Weapon.hpp"
@@ -47,6 +48,7 @@ class TextureManager;
 
 class Map;
 class Camera;
+class RenderQueue;
 
 class Weapon;
 class Projectile;

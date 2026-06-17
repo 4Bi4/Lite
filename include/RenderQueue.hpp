@@ -16,31 +16,25 @@
 
 #include "lite_common.hpp"
 
-class EnemyManager
+struct RenderEntry
+{
+	SDL_Texture*	texture;
+	SDL_FRect		srcRect;
+	SDL_FRect		screenRect;
+	double			angle;
+	SDL_FlipMode	flip;
+	float			sortKey;	//	World-space bottom Y — lower renders first
+};
+
+class RenderQueue
 {
 public:
-	EnemyManager();
-	~EnemyManager();
+	RenderQueue();
+	~RenderQueue();
 
-	void	update(float dt, Game& game);
-	void	addToQueue(Data& data);
-
-	void	clearEnemies();
-	void	spawnEnemy(Game& game, EnemyType type);
-
-	void	setSpawnRate(float rate);
-
-	int						findAvailableSlot();
-	std::vector<Enemy>&		getEnemies();	
-	static Enemy*			getEnemy(EntityID id, Game& game);
-	Uint16					getEnemyCount()	const;
+	void	submit(SDL_Texture* texture, const SDL_FRect& srcRect, const SDL_FRect& screenRect, double angle, SDL_FlipMode flip, float sortKey);
+	void	flush(SDL_Renderer* renderer);
 
 private:
-	std::vector<Enemy>	_enemies;
-	std::vector<Uint32>	_generations;//	Used to track generations for EntityIDs
-
-	const int		_maxEnemies;
-	float 			_spawnTimer;
-	float			_spawnRate;
-	Uint16			_enemyCount;
+	std::vector<RenderEntry>	_entries;
 };

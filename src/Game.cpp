@@ -158,8 +158,13 @@ void	Game::render(Data& data)
 	_map.drawMap(data.getRenderer(), &_camera);
 
 	//	--- Foreground ---
-	_enemyManager.render(data);
-	_player.render(data);
+	//	 (rendering queue)
+	_enemyManager.addToQueue(data);
+	_player.addToQueue(data);
+	
+	_renderQueue.flush(data.getRenderer());
+
+	//	--- Projectiles (always on top) ---
 	_projectileManager.render(data);
 }
 
@@ -282,6 +287,11 @@ Camera*	Game::getCamera()
 Map*	Game::getMap()
 {
 	return (&_map);
+}
+
+RenderQueue*	Game::getRenderQueue()
+{
+	return (&_renderQueue);
 }
 
 //	Setters
