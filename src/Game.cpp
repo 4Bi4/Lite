@@ -20,8 +20,8 @@ Game::Game(Data& data) :
 	_camera(data.getHres(), data.getVres()),
 	_map(DEFAULT_MAP_HEIGHT, DEFAULT_MAP_WIDTH),
 	_roundTimer(0.0f),
-	_roundDuration(ROUND_TIME),
-	_currentRound(1),
+	_roundDuration(0),
+	_currentRound(0),
 	_isPaused(false),
 	_isGameOver(false) {}
 
@@ -59,7 +59,7 @@ int	Game::gameLoop(Data& data)
 		this->render(data);
 
 		//	Round timer
-		drawText(data.getRenderer(),
+		drawTextCentered(data.getRenderer(),
 			data.getFontLarge(),
 			std::to_string((int)this->getRemainingTime()),
 			{ 0, 0, 0, 0},
@@ -72,16 +72,19 @@ int	Game::gameLoop(Data& data)
 			if (frameCount % 10 == 0)
 				fps = (1.0 / ((double)deltaTime / 1000000000.0));
 
-			drawText(data.getRenderer(),
+			//	Draw FPS counter
+			drawTextLeftAligned(data.getRenderer(),
 				data.getFontSmall(),
 				"FPS: " + std::to_string(fps),
 				{ 255, 255, 255 , 255},
-				45, 10);
-			drawText(data.getRenderer(),
+				10, 10);
+			//	Draw Enemy counter
+
+			drawTextLeftAligned(data.getRenderer(),
 				data.getFontSmall(),
-				"E: " + std::to_string(_enemyManager.getEnemyCount()),
+				"Enemies: " + std::to_string(_enemyManager.getEnemyCount()),
 				{ 255, 255, 255 , 255},
-				25, 30);
+				10, 30);
 		}
 
 		//	Frame limiting (if vsync is disabled)
@@ -109,7 +112,7 @@ int	Game::gameLoop(Data& data)
 		std::cout << "target frametime is:  " << (double)data.getTargetFrameTime() * 1000000.0 << " ns" << std::endl;
 	}
 
-	return(0);
+	return (0);
 }
 
 //	Runs the game logic (movement, entities, etc...)
@@ -122,16 +125,6 @@ void	Game::update(float deltaTimeNS, Data& data)
 	//	Convert nanoseconds to seconds
 	_roundTimer += deltaTimeNS / 1000000000.0f;
 
-	//	Update managers
-	_enemyManager.update(deltaTimeNS, data);
-	_player.update(deltaTimeNS, data);
-	_projectileManager.update(deltaTimeNS, data);
-
-	//	Attack
-	//	TODO:
-	//	Add enemy attacks here 
-	_player.attack(*data.getGame());
-
 	//	End of round check
 	if (_roundTimer >= _roundDuration)
 	{
@@ -140,6 +133,18 @@ void	Game::update(float deltaTimeNS, Data& data)
 		//	for now we just go next
 		nextRound();
 	}
+
+	//	Update managers
+	_enemyManager.update(deltaTimeNS, *data.getGame());
+	_projectileManager.update(deltaTimeNS, *data.getGame());
+
+	//	Update
+	_player.update(deltaTimeNS, data);
+
+	//	Attack
+	_player.attack(*data.getGame());
+	//	TODO:
+	//	Add enemy attacks here
 }
 
 //	Render logic and camera control
@@ -153,8 +158,13 @@ void	Game::render(Data& data)
 	_map.drawMap(data.getRenderer(), &_camera);
 
 	//	--- Foreground ---
-	_enemyManager.render(data);
-	_player.render(data);
+	//	 (rendering queue)
+	_enemyManager.addToQueue(data);
+	_player.addToQueue(data);
+	
+	_renderQueue.flush(data.getRenderer());
+
+	//	--- Projectiles (always on top) ---
 	_projectileManager.render(data);
 }
 
@@ -165,7 +175,7 @@ bool	Game::displaySignalDebugInfo(long long frameCount, long long totalTime, Uin
 	extern volatile sig_atomic_t g_signalNumber;
 	
 	if (!g_signalReceived)
-		return false;
+		return (false);
 
 	// Signal information
 	std::string sigName = (g_signalNumber == SIGINT) ? "SIGINT (Ctrl+C)" : 
@@ -193,7 +203,7 @@ bool	Game::displaySignalDebugInfo(long long frameCount, long long totalTime, Uin
 	std::cout << B_YELLOW << "Game Status: " << NO_COLOR << (_isPaused ? "PAUSED" : "RUNNING") << std::endl;
 	std::cout << B_RED << "Exiting...\n" << NO_COLOR << std::endl;
 
-	return true; // Signal handled
+	return (true); // Signal handled
 }
 
 void	Game::nextRound()
@@ -202,14 +212,23 @@ void	Game::nextRound()
 	_currentRound++;
 	_roundTimer = 0.0f;
 
-	//	Increase the wave duration
-	_roundDuration += 2.0f;
+	//	Calculate round time
+	_roundDuration = ROUND_TIME + _currentRound * 2.0f - 1.0f; //	-1 to make the first round 20 seconds instead of 21
 
-	//	TODO:
-	//	Look into this formula ↓ ↓ ↓
-	float rate = std::max(0.2f, 1.5f - (_currentRound * 0.1f));
+	//	Cap the round duration to a maximum of 90 seconds
+	//	(we put 91 so it displays 90 on the screen, since we cast to int)
+	if (_roundDuration > 91.0f)
+		_roundDuration = 91.0f;
+
+	//	Calculate spawn rate based on the current round
+	//	(It's missing a spawnrate multiplier)
+	float rate = 3.0f / (_currentRound + 3.0f);
 	_enemyManager.setSpawnRate(rate);
-	std::cout << B_YELLOW << "¡ROUND " << _currentRound << ", GO!\n" << NO_COLOR << std::endl;
+
+	//	Console output
+	std::cout << B_YELLOW << "\n¡ROUND " << _currentRound << ", GO!\n" << NO_COLOR << std::endl;
+	if (Debug::state == true)
+		std::cout << "Spawn rate: " << rate << "s\n" << std::endl;
 }
 
 void	Game::togglePause()
@@ -275,6 +294,11 @@ Camera*	Game::getCamera()
 Map*	Game::getMap()
 {
 	return (&_map);
+}
+
+RenderQueue*	Game::getRenderQueue()
+{
+	return (&_renderQueue);
 }
 
 //	Setters

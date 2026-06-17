@@ -16,23 +16,25 @@
 
 #include "lite_common.hpp"
 
-class Camera
+struct RenderEntry
+{
+	SDL_Texture*	texture;
+	SDL_FRect		srcRect;
+	SDL_FRect		screenRect;
+	double			angle;
+	SDL_FlipMode	flip;
+	float			sortKey;	//	World-space bottom Y — lower renders first
+};
+
+class RenderQueue
 {
 public:
-	Camera(int width, int height);
+	RenderQueue();
+	~RenderQueue();
 
-	SDL_FRect	apply(const SDL_FRect& worldRect) const;
-	void		resizeView(float newWidth, float newHeight);
-	void		update(int mapW, int mapH);
-	void		update(const SDL_FRect& target, int mapW, int mapH);
-
-	void		setZoom(float zoom);
-
-	const SDL_FRect&	getView() const;
-	bool				isVisible(const SDL_FRect& worldRect) const;
+	void	submit(SDL_Texture* texture, const SDL_FRect& srcRect, const SDL_FRect& screenRect, double angle, SDL_FlipMode flip, float sortKey);
+	void	flush(SDL_Renderer* renderer);
 
 private:
-	SDL_FRect	_view;
-
-	float		_zoom;
+	std::vector<RenderEntry>	_entries;
 };

@@ -26,23 +26,23 @@ ProjectileManager::~ProjectileManager()
 	this->_generations.clear();
 }
 
-void	ProjectileManager::update(float deltaTimeNS, Data& data)
+void	ProjectileManager::update(float deltaTimeNS, Game& game)
 {
-	//	Move active projectiles first.
+	//	Move active projectiles
 	for (size_t i = 0; i < _projectiles.size(); ++i)
 	{
 		Projectile& projectile = _projectiles[i];
 		const bool wasActive = projectile.isActive();
 		if (wasActive)
 		{
-			projectile.update(deltaTimeNS, data);
+			projectile.update(deltaTimeNS, game);
 			if (!projectile.isActive())
 				_generations[i]++;
 		}
 	}
 
 	//	Check collision with the first enemy that intersects
-	std::vector<Enemy>& enemies = data.getGame()->getEnemyManager()->getEnemies();
+	std::vector<Enemy>& enemies = game.getEnemyManager()->getEnemies();
 	for (size_t i = 0; i < _projectiles.size(); ++i)
 	{
 		Projectile& projectile = _projectiles[i];

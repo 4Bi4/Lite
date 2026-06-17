@@ -42,6 +42,7 @@ public:
 	Player*				getPlayer();
 	Camera*				getCamera();
 	Map*				getMap();
+	RenderQueue*		getRenderQueue();
 
 	//	Setters
 	void			setPlayer(const Player& player);
@@ -57,6 +58,7 @@ private:
 	Player				_player;
 	Camera				_camera;
 	Map					_map;
+	RenderQueue			_renderQueue;
 
 	float			_roundTimer;
 	float			_roundDuration;

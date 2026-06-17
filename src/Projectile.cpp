@@ -21,6 +21,8 @@ Projectile::Projectile(ProjectileType type, ProjectileStats stats, EntityID targ
 	_flip(SDL_FLIP_NONE),
 	_srcRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE},
 	_destRect{ 0.0f, 0.0f, (float)PIXEL_SIZE, (float)PIXEL_SIZE},
+	_dirX(0.0f),
+	_dirY(0.0f),
 	_type(type),
 	_stats(stats),
 	_target(target),
@@ -46,6 +48,8 @@ void	Projectile::spawn(ProjectileID id, ProjectileType type, ProjectileStats sta
 	_target = target;
 	_active = true;
 	_flip = SDL_FLIP_NONE;
+	_dirX = 0.0f;
+	_dirY = 0.0f;
 	_destRect.w = (float)PIXEL_SIZE * _stats.sizeMultiplier;
 	_destRect.h = (float)PIXEL_SIZE * _stats.sizeMultiplier;
 	_destRect.x = x - (_destRect.w * 0.5f);
@@ -90,45 +94,72 @@ ProjectileID	Projectile::getID() const
 	return (_id);
 }
 
-void	Projectile::update(float deltaTimeNS, Data& data)
+void	Projectile::update(float deltaTimeNS, Game& game)
 {
-	Enemy* target = EnemyManager::getEnemy(_target, *data.getGame());
-	if (!target)
+	Enemy* target = EnemyManager::getEnemy(_target, game);
+
+	// If a target exists, track it
+	if (target)
 	{
+		const SDL_FRect& targetRect = target->getRect();
+		const float targetCenterX = targetRect.x + (targetRect.w * 0.5f);
+		const float targetCenterY = targetRect.y + (targetRect.h * 0.5f);
+		const float projectileCenterX = _destRect.x + (_destRect.w * 0.5f);
+		const float projectileCenterY = _destRect.y + (_destRect.h * 0.5f);
+
+		float dirX = targetCenterX - projectileCenterX;
+		float dirY = targetCenterY - projectileCenterY;
+		float length = std::sqrt((dirX * dirX) + (dirY * dirY));
+
+		if (length > 0.0f)
+		{
+			dirX /= length;
+			dirY /= length;
+			
+			// Store the normalized direction
+			_dirX = dirX;
+			_dirY = dirY;
+			
+			_angle = (std::atan2(dirY, dirX) * 180.0f / PI);
+		}
+	}
+	else if (_dirX == 0.0f && _dirY == 0.0f)
+	{
+		// No target and no stored direction, despawn
 		despawn();
 		return;
 	}
 
-	const SDL_FRect& targetRect = target->getRect();
-	const float targetCenterX = targetRect.x + (targetRect.w * 0.5f);
-	const float targetCenterY = targetRect.y + (targetRect.h * 0.5f);
-	const float projectileCenterX = _destRect.x + (_destRect.w * 0.5f);
-	const float projectileCenterY = _destRect.y + (_destRect.h * 0.5f);
+	// Move in the stored direction
+	_destRect.x += _dirX * _stats.speed * deltaTimeNS / 1000000000.0f;
+	_destRect.y += _dirY * _stats.speed * deltaTimeNS / 1000000000.0f;
 
-	float dirX = targetCenterX - projectileCenterX;
-	float dirY = targetCenterY - projectileCenterY;
-	float length = std::sqrt((dirX * dirX) + (dirY * dirY));
-
-	if (length > 0.0f)
-	{
-		dirX /= length;
-		dirY /= length;
-
-		_angle = (std::atan2(dirY, dirX) * 180.0f / PI);
-	}
-
-	_destRect.x += dirX * _stats.speed * deltaTimeNS / 1000000000.0f;
-	_destRect.y += dirY * _stats.speed * deltaTimeNS / 1000000000.0f;
-
-	//	Update hitbox position
-	// Update hitbox position (keeping it centered)
+	// Update hitbox position
 	float offsetX = (_destRect.w - _hitbox.w) * 0.5f;
 	float offsetY = (_destRect.h - _hitbox.h) * 0.5f;
 
 	_hitbox.x = _destRect.x + offsetX;
-	_hitbox.y = _destRect.y + offsetY;	
+	_hitbox.y = _destRect.y + offsetY;
 
-	_angle = std::atan2(dirY, dirX) * 180.0f / PI;
+	// Check if projectile is outside map + 3 tiles buffer (when no target)
+	if (!target)
+	{
+		Map* map = game.getMap();
+		if (map)
+		{
+			float mapWidth = (float)map->getWidth() * PIXEL_SIZE;
+			float mapHeight = (float)map->getHeight() * PIXEL_SIZE;
+			const float BUFFER = 3.0f * PIXEL_SIZE;	// 3 tiles buffer
+
+			// Check if projectile center is outside the map with buffer
+			float projCenterX = _destRect.x + (_destRect.w * 0.5f);
+			float projCenterY = _destRect.y + (_destRect.h * 0.5f);
+
+			if (projCenterX < -BUFFER || projCenterX > mapWidth + BUFFER ||
+				projCenterY < -BUFFER || projCenterY > mapHeight + BUFFER)
+				despawn();
+		}
+	}
 }
 
 void	Projectile::render(Data& data)

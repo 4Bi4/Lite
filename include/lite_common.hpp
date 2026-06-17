@@ -67,6 +67,7 @@
 #define TARGET_WIDTH 1920.0f
 
 //	This is more like a zoom adjustment tbh
+//	Bigger = closer
 #define FOV 20.0f
 
 //	Default FPS limit
@@ -99,7 +100,7 @@
 
 #define ROUND_TIME 20.0f	// In seconds
 
-#define MAX_ENEMIES 2000
+#define MAX_ENEMIES 10000
 #define MAX_PROJECTILES 2000
 
 /****************************/

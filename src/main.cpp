@@ -14,6 +14,11 @@
 
 #include "../include/lite.hpp"
 
+// THIS IS FOR THE TEXTURE MANAGER
+//	|	|	|	|	|	|	|	|
+//	V	V	V	V	V	V	V	V
+std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;
+
 // Signal tracking (volatile and atomic for async-signal-safe access)
 volatile sig_atomic_t g_signalReceived = 0;
 volatile sig_atomic_t g_signalNumber = 0;
@@ -24,11 +29,6 @@ void handle_signal(int sig)
 	g_signalNumber = sig;
 	g_signalReceived = 1;
 }
-
-// THIS IS FOR THE TEXTURE MANAGER
-//	|	|	|	|	|	|	|	|
-//	V	V	V	V	V	V	V	V
-std::unordered_map<std::string, SDL_Texture*> TextureManager::textureCache;
 
 //	Starts a new game
 //	\returns
@@ -83,9 +83,9 @@ int	main(int argc, char* argv[])
 		std::cout << "initializing SDL..." << std::endl;
 	if (initSDL(data) != 0)
 		return (1);
-	loadTextures(data);
 	if (initSDLText(data) != 0)
 		return (1);
+	preloadTextures(data);
 
 	//	Start the game
 	if (initGame(data) != 0)

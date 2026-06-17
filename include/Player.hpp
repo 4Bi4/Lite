@@ -26,7 +26,7 @@ public:
 
 	void	handleInput(Data& data);
 	void	update(float deltaTime, Data& data);
-	void	render(Data& data);
+	void	addToQueue(Data& data);
 
 	void	attack(Game& game) const;
 
@@ -34,7 +34,7 @@ public:
 	const SDL_Texture*	getTexture() const;
 	EntityID			getTarget() const;
 	Weapon*				getWeapon() const;
-	EntityID			getClosestEnemy(Data& data) const;
+	EntityID			getClosestEnemy(EnemyManager& enemyManager) const;
 	int					getHp() const;
 	int					getMaxHp() const;
 	bool				isInvulnerable() const;

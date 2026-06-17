@@ -12,27 +12,35 @@
 *                                                               *
 \***************************************************************/
 
-#pragma once
+#include "../include/lite.hpp"
 
-#include "lite_common.hpp"
+#include <algorithm>
 
-class Camera
+RenderQueue::RenderQueue() {}
+
+RenderQueue::~RenderQueue() {}
+
+//	Submit a render entry to the queue
+void	RenderQueue::submit(SDL_Texture* texture, const SDL_FRect& srcRect, const SDL_FRect& screenRect, double angle, SDL_FlipMode flip, float sortKey)
 {
-public:
-	Camera(int width, int height);
+	_entries.push_back({ texture, srcRect, screenRect, angle, flip, sortKey });
+}
 
-	SDL_FRect	apply(const SDL_FRect& worldRect) const;
-	void		resizeView(float newWidth, float newHeight);
-	void		update(int mapW, int mapH);
-	void		update(const SDL_FRect& target, int mapW, int mapH);
+//	Flush the queue and render all entries
+void	RenderQueue::flush(SDL_Renderer* renderer)
+{
+	//	Sort by world-space bottom Y so lower entities render on top (painter's algorithm)
+	std::sort(
+		_entries.begin(),
+		_entries.end(),
+		[](const RenderEntry& a, const RenderEntry& b)
+			{ return (a.sortKey < b.sortKey); }
+	);
 
-	void		setZoom(float zoom);
+	//	Draw all entries in order
+	for (const RenderEntry& entry : _entries)
+		SDL_RenderTextureRotated(renderer, entry.texture, &entry.srcRect, &entry.screenRect, entry.angle, NULL, entry.flip);
 
-	const SDL_FRect&	getView() const;
-	bool				isVisible(const SDL_FRect& worldRect) const;
-
-private:
-	SDL_FRect	_view;
-
-	float		_zoom;
-};
+	//	Clear for next frame (keeps allocated memory)
+	_entries.clear();
+}

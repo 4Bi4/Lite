@@ -122,8 +122,29 @@ int	initSDL(Data& data)
 	return (0);
 }
 
+//	Helper: prints text left-aligned at (x, y) via SDL_ttf
+void	drawTextLeftAligned(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int x, int y)
+{
+	SDL_Surface* surf = TTF_RenderText_Blended(font, text.c_str(), text.size(), color);
+	if (!surf)
+		return;
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
+	SDL_FRect dst = {
+		static_cast<float>(x),
+		static_cast<float>(y),
+		static_cast<float>(surf->w),
+		static_cast<float>(surf->h)
+	};
+	SDL_DestroySurface(surf);
+	if (tex)
+	{
+		SDL_RenderTexture(ren, tex, nullptr, &dst);
+		SDL_DestroyTexture(tex);
+	}
+}
+
 //	Helper: prints text centred at (cx, cy) via SDL_ttf
-void	drawText(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
+void	drawTextCentered(SDL_Renderer* ren, TTF_Font* font, const std::string& text, SDL_Color color, int cx, int cy)
 {
 	SDL_Surface* surf = TTF_RenderText_Blended(font, text.c_str(), text.size(), color);
 	if (!surf)

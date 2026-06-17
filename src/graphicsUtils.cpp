@@ -59,7 +59,7 @@ void	makeBGRainbow(Data& data)
 		hue -= 360.0f;
 }
 
-void	loadTextures(Data& data)
+void	preloadTextures(Data& data)
 {
 	if (!TextureManager::loadTexture(DIRT_TEXTURE, data.getRenderer()))
 		std::cerr << B_RED << "[ERROR] loading texture: map wall" << NO_COLOR << std::endl;

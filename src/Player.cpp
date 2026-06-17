@@ -117,20 +117,21 @@ void	Player::update(float deltaTime, Data& data)
 	updateInvulnerabilityTimer();
 
 	//	Update the player's target
-	setTarget(getClosestEnemy(data), *data.getGame());
+	EntityID newTarget = getClosestEnemy(*data.getGame()->getEnemyManager());
+	setTarget(newTarget, *data.getGame());
 
 	//	Debug player info
 	if (Debug::state == true)
 		std::cout << "Player position: (" << _destRect.x << ", " << _destRect.y << ")      \r" << std::flush;
 }
 
-void	Player::render(Data& data)
+void	Player::addToQueue(Data& data)
 {
 	//	Get the player's position relative to the camera
 	SDL_FRect screenRect = data.getGame()->getCamera()->apply(_destRect);
 
-	//	Render the player to the screen
-	SDL_RenderTextureRotated(data.getRenderer(), _texture, &_srcRect, &screenRect, 0.0, NULL, _flip);
+	//	Submit to the render queue — drawn in Y-sorted order by flush()
+	data.getGame()->getRenderQueue()->submit(_texture, _srcRect, screenRect, 0.0, _flip, _destRect.y + _destRect.h);
 }
 
 //	Attacks the player's target with their weapon
@@ -150,6 +151,12 @@ void	Player::attack(Game& game) const
 	//  (for now the player can only have 1 weapon)
 	if (distToTarget <= _weapon->getRange())
 		_weapon->attack(target, game);
+
+	//	TODO:
+	//	Update stats here
+	//	(kills or whatever we want)
+	//	  |  |  |  |  |  |  |  |
+	//	  V  V  V  V  V  V  V  V
 }
 
 //	Returns 4 floats.
@@ -176,15 +183,14 @@ Weapon*	Player::getWeapon() const
 }
 
 //	Returns the index of the closest enemy, or nullptr if there are no enemies
-EntityID	Player::getClosestEnemy(Data& data) const
+EntityID	Player::getClosestEnemy(EnemyManager& enemyManager) const
 {
-	EnemyManager*	enemyManager = data.getGame()->getEnemyManager();
-	const std::vector<Enemy>& enemies = enemyManager->getEnemies();	
+	const std::vector<Enemy>& enemies = enemyManager.getEnemies();	
 
 	EntityID closest = { -1, 0 };
 	float	closestDist = MAXFLOAT;
 	
-	for (size_t i = 0; i < enemyManager->getEnemies().size(); i++)
+	for (size_t i = 0; i < enemyManager.getEnemies().size(); i++)
 	{
 		//	Skip the non used enemies
 		if (!enemies[i].isActive())

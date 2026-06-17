@@ -16,7 +16,9 @@
 
 #include "lite_common.hpp"
 
-//	MAIN DATA STUFF
+/***************************/
+// --- MAIN DATA STUFF --- //
+/***************************/
 
 //	Holds all the SDL-related data
 struct SdlData
@@ -27,7 +29,7 @@ struct SdlData
 	TTF_Font*		fontSmall = nullptr;
 };
 
-//	State machine
+//	Main state machine
 enum state
 {
 	LOADING,
@@ -37,7 +39,9 @@ enum state
 	CLOSING,
 };
 
-//	ENTITY STUFF
+/************************/
+// --- ENTITY STUFF --- //
+/************************/
 
 struct EntityID
 {
@@ -58,14 +62,25 @@ inline bool EntityID::operator==(const EntityID& other)
 	return ((this->index == other.index) && (this->gen == other.gen));
 }
 
-//	WEAPON STUFF
+//	Here we will list the type of enemies so
+//	they can be easily identified
+enum EnemyType
+{
+	DEFAULT
+};
+
+/************************/
+// --- WEAPON STUFF --- //
+/************************/
 
 enum WeaponType
 {
 	FIREBALL
 };
 
-//	PROJECTILE STUFF
+/****************************/
+// --- PROJECTILE STUFF --- //
+/****************************/
 
 struct ProjectileID
 {
