@@ -42,12 +42,6 @@ void	EnemyManager::update(float deltaTimeNS, Game& game)
 		this->_spawnTimer = 0.0f;
 	}
 
-	//	TODO:
-	//	Update stats here
-	//	(kills or whatever we want)
-	//	  |  |  |  |  |  |  |  |
-	//	  V  V  V  V  V  V  V  V
-
 	//	Check deaths
 	for (size_t i = 0; i < _enemies.size(); i++)
 	{
@@ -60,6 +54,59 @@ void	EnemyManager::update(float deltaTimeNS, Game& game)
 				_enemyCount--;
 			}
 			_enemies[i].update(deltaTimeNS, game);
+		}
+	}
+
+	//	Separate overlapping enemies
+	resolveCollisions();
+}
+
+//	Manages the render position of enemies dont overlap each other
+void	EnemyManager::resolveCollisions()
+{
+	for (size_t i = 0; i < _enemies.size(); i++)
+	{
+		if (!_enemies[i].isActive())
+			continue;
+
+		for (size_t j = i + 1; j < _enemies.size(); j++)
+		{
+			if (!_enemies[j].isActive())
+				continue;
+
+			const SDL_FRect& rectA = _enemies[i].getRect();
+			const SDL_FRect& rectB = _enemies[j].getRect();
+			const SDL_FRect& hitA  = _enemies[i].getHitbox();
+			const SDL_FRect& hitB  = _enemies[j].getHitbox();
+
+			//	Minimum separation = sum of each enemy's own hitbox radius
+			//	(0.3 instead of 0.5 to make them overlap a bit)
+			float minDist = (hitA.w * 0.3f) + (hitB.w * 0.3f);
+
+			float centerAX = rectA.x + rectA.w * 0.5f;
+			float centerAY = rectA.y + rectA.h * 0.5f;
+			float centerBX = rectB.x + rectB.w * 0.5f;
+			float centerBY = rectB.y + rectB.h * 0.5f;
+
+			float dx   = centerBX - centerAX;
+			float dy   = centerBY - centerAY;
+			float dist = std::sqrt(dx * dx + dy * dy);
+
+			//	If they dont touch, skip
+			if (dist >= minDist)
+				continue;
+
+			//	Push direction — fallback to x-axis on exact overlap
+			//		(If the distance is 0, we cant divide by it
+			//		so we use a default direction of (1, 0))
+			float nx = (dist > 0.0f) ? dx / dist : 1.0f;
+			float ny = (dist > 0.0f) ? dy / dist : 0.0f;
+
+			//	Split the overlap evenly between both enemies
+			float push = (minDist - dist) * 0.5f;
+
+			_enemies[i].setPosition(centerAX - nx * push, centerAY - ny * push);
+			_enemies[j].setPosition(centerBX + nx * push, centerBY + ny * push);
 		}
 	}
 }
@@ -113,10 +160,11 @@ void	EnemyManager::spawnEnemy(Game& game, EnemyType type)
 	spawnX = (rand() % (game.getMap()->getWidth() * PIXEL_SIZE));
 	spawnY = (rand() % (game.getMap()->getHeight() * PIXEL_SIZE));
 
+	//	Check if the spawn point is too close to the player
 	float distanceToPlayer = Entity::distanceTo(*game.getPlayer(), Entity(spawnX, spawnY));
 	while (distanceToPlayer < 300.0f)
 	{
-		//	If the spawn point is too close to the player, try again
+		//	If it's too close to the player, try again
 		spawnX = (rand() % (game.getMap()->getWidth() * PIXEL_SIZE));
 		spawnY = (rand() % (game.getMap()->getHeight() * PIXEL_SIZE));
 		distanceToPlayer = Entity::distanceTo(*game.getPlayer(), Entity(spawnX, spawnY));
@@ -141,7 +189,7 @@ int	EnemyManager::findAvailableSlot()
 		if (!_enemies[i].isActive())
 			return (i);
 	}
-	return (-1); // Total chaos: the pool is full!
+	return (-1); // The pool is full
 }
 
 //	Removes all enemies from the enemy pool

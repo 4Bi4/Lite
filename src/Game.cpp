@@ -20,8 +20,8 @@ Game::Game(Data& data) :
 	_camera(data.getHres(), data.getVres()),
 	_map(DEFAULT_MAP_HEIGHT, DEFAULT_MAP_WIDTH),
 	_roundTimer(0.0f),
-	_roundDuration(ROUND_TIME),
-	_currentRound(1),
+	_roundDuration(0),
+	_currentRound(10),
 	_isPaused(false),
 	_isGameOver(false) {}
 
@@ -125,6 +125,15 @@ void	Game::update(float deltaTimeNS, Data& data)
 	//	Convert nanoseconds to seconds
 	_roundTimer += deltaTimeNS / 1000000000.0f;
 
+	//	End of round check
+	if (_roundTimer >= _roundDuration)
+	{
+		//	TODO:
+		//  Make some kind of mid round pause
+		//	for now we just go next
+		nextRound();
+	}
+
 	//	Update managers
 	_enemyManager.update(deltaTimeNS, *data.getGame());
 	_projectileManager.update(deltaTimeNS, *data.getGame());
@@ -135,16 +144,7 @@ void	Game::update(float deltaTimeNS, Data& data)
 	//	Attack
 	_player.attack(*data.getGame());
 	//	TODO:
-	//	Add enemy attacks here 
-
-	//	End of round check
-	if (_roundTimer >= _roundDuration)
-	{
-		//	TODO:
-		//  Make some kind of mid round pause
-		//	for now we just go next
-		nextRound();
-	}
+	//	Add enemy attacks here
 }
 
 //	Render logic and camera control
@@ -212,16 +212,23 @@ void	Game::nextRound()
 	_currentRound++;
 	_roundTimer = 0.0f;
 
-	//	Increase the wave duration
-	_roundDuration += 2.0f;
-	if (_roundDuration > 90.0f)
-		_roundDuration = 90.0f;
+	//	Calculate round time
+	_roundDuration = ROUND_TIME + _currentRound * 2.0f;
 
-	//	TODO:
-	//	Look into this formula ↓ ↓ ↓
-	float rate = std::max(0.2f, 1.5f - (_currentRound * 0.1f));
+	//	Cap the round duration to a maximum of 90 seconds
+	//	(we put 91 so it displays 90 on the screen, since we cast to int)
+	if (_roundDuration > 91.0f)
+		_roundDuration = 91.0f;
+
+	//	Calculate spawn rate based on the current round
+	//	(It's missing a spawnrate multiplier)
+	float rate = std::max(0.02f, 3.0f / (_currentRound + 3.0f));
 	_enemyManager.setSpawnRate(rate);
-	std::cout << B_YELLOW << "¡ROUND " << _currentRound << ", GO!\n" << NO_COLOR << std::endl;
+
+	//	Console output
+	std::cout << B_YELLOW << "\n¡ROUND " << _currentRound << ", GO!\n" << NO_COLOR << std::endl;
+	if (Debug::state == true)
+		std::cout << "Spawn rate: " << rate << "s\n" << std::endl;
 }
 
 void	Game::togglePause()

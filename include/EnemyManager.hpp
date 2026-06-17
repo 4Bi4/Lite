@@ -36,6 +36,8 @@ public:
 	Uint16					getEnemyCount()	const;
 
 private:
+	void	resolveCollisions();
+
 	std::vector<Enemy>	_enemies;
 	std::vector<Uint32>	_generations;//	Used to track generations for EntityIDs
 

@@ -151,6 +151,12 @@ void	Player::attack(Game& game) const
 	//  (for now the player can only have 1 weapon)
 	if (distToTarget <= _weapon->getRange())
 		_weapon->attack(target, game);
+
+	//	TODO:
+	//	Update stats here
+	//	(kills or whatever we want)
+	//	  |  |  |  |  |  |  |  |
+	//	  V  V  V  V  V  V  V  V
 }
 
 //	Returns 4 floats.
